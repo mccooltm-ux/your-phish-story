@@ -1,6 +1,6 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// Using Resend for email — simplest API, free tier = 100 emails/day
+// Using Resend for email â simplest API, free tier = 100 emails/day
 // Sign up at resend.com, get API key, set as RESEND_API_KEY env var
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'mccooltm@gmail.com';
@@ -50,7 +50,7 @@ module.exports = async function handler(req, res) {
       console.log('Order notification sent:', orderDetails.phishnet_username);
     } catch (emailErr) {
       console.error('Failed to send notification email:', emailErr.message);
-      // Don't fail the webhook — Stripe will retry, and we don't want duplicate charges
+      // Don't fail the webhook â Stripe will retry, and we don't want duplicate charges
     }
   }
 
@@ -60,10 +60,10 @@ module.exports = async function handler(req, res) {
 
 async function sendNotificationEmail(order) {
   const giftLine = order.is_gift
-    ? `\n🎁 GIFT ORDER — Deliver to: ${order.gift_recipient_email}`
+    ? `\nð GIFT ORDER â Deliver to: ${order.gift_recipient_email}`
     : '';
 
-  const subject = `New Phish Story Order: ${order.phishnet_username}`;
+  const subject = `New MyPhisHistory Order: ${order.phishnet_username}`;
   const body = `
 New order received!
 
@@ -81,7 +81,7 @@ Action needed: Generate the PDF and email it to ${order.is_gift ? order.gift_rec
 
   const htmlBody = `
 <div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <h2 style="color: #e8723a; margin-bottom: 4px;">New Phish Story Order</h2>
+  <h2 style="color: #e8723a; margin-bottom: 4px;">New MyPhisHistory Order</h2>
   <p style="color: #666; font-size: 14px; margin-top: 0;">${order.created}</p>
 
   <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
@@ -95,7 +95,7 @@ Action needed: Generate the PDF and email it to ${order.is_gift ? order.gift_rec
     </tr>
     ${order.is_gift ? `
     <tr style="border-bottom: 1px solid #eee; background: #fff8f0;">
-      <td style="padding: 10px 0; color: #e8723a; font-size: 14px;">🎁 Gift — Deliver To</td>
+      <td style="padding: 10px 0; color: #e8723a; font-size: 14px;">ð Gift â Deliver To</td>
       <td style="padding: 10px 0; font-weight: 600; font-size: 14px;">${order.gift_recipient_email}</td>
     </tr>` : ''}
     <tr style="border-bottom: 1px solid #eee;">
@@ -110,7 +110,7 @@ Action needed: Generate the PDF and email it to ${order.is_gift ? order.gift_rec
 
   <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 20px 0;">
     <strong style="font-size: 14px;">Quick links:</strong><br>
-    <a href="https://api.phish.net/v5/shows/username/${order.phishnet_username}.json" style="font-size: 13px;">Show History JSON</a> ·
+    <a href="https://api.phish.net/v5/shows/username/${order.phishnet_username}.json" style="font-size: 13px;">Show History JSON</a> Â·
     <a href="https://phish.net/user/${order.phishnet_username}" style="font-size: 13px;">Phishnet Profile</a>
   </div>
 
@@ -126,7 +126,7 @@ Action needed: Generate the PDF and email it to ${order.is_gift ? order.gift_rec
       'Authorization': `Bearer ${RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      from: 'Your Phish Story <orders@yourphishstory.com>',
+      from: 'MyPhisHistory <onboarding@resend.dev>',
       to: [NOTIFICATION_EMAIL],
       subject: subject,
       text: body,
@@ -136,7 +136,7 @@ Action needed: Generate the PDF and email it to ${order.is_gift ? order.gift_rec
 
   if (!response.ok) {
     const errText = await response.text();
-    throw new Error(`Resend API error: ${response.status} — ${errText}`);
+    throw new Error(`Resend API error: ${response.status} â ${errText}`);
   }
 }
 
