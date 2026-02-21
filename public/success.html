@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Confirmed — Your Phish Story</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg-card: #161b22;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #e8723a;
+      --border: #30363d;
+      --success: #3fb950;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 40px 24px;
+      text-align: center;
+    }
+    .check-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(63, 185, 80, 0.1);
+      border: 2px solid var(--success);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 32px;
+    }
+    .check-circle svg {
+      width: 36px;
+      height: 36px;
+      stroke: var(--success);
+    }
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      color: #fff;
+      margin-bottom: 16px;
+      font-weight: 400;
+    }
+    .message {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      line-height: 1.7;
+    }
+    .message strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+    .details {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+    .details h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 14px;
+    }
+    .detail-row:not(:last-child) {
+      border-bottom: 1px solid var(--border);
+    }
+    .detail-label { color: var(--text-muted); }
+    .detail-value { color: var(--text); font-weight: 500; }
+    .back-link {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .back-link:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="check-circle">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+      </svg>
+    </div>
+    <h1>You're in.</h1>
+    <p class="message">
+      Your Phish Story is being crafted. We'll have your personalized PDF in your inbox within <strong>48 hours</strong>.
+    </p>
+    <div class="details">
+      <h3>What happens next</h3>
+      <div class="detail-row">
+        <span class="detail-label">Step 1</span>
+        <span class="detail-value">We pull your show history from Phishnet</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Step 2</span>
+        <span class="detail-value">Your document is personally generated</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Step 3</span>
+        <span class="detail-value">PDF delivered to your email</span>
+      </div>
+    </div>
+    <p style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">
+      Questions? Reach out at <a href="mailto:mccooltm@gmail.com" style="color:var(--accent);text-decoration:none;">mccooltm@gmail.com</a>
+    </p>
+    <a href="/" class="back-link">&larr; Back to Your Phish Story</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Phish Story — Every Show. Every Era. One Document.</title>
+  <meta name="description" content="Enter your Phishnet username. Get a personalized 25-page PDF documenting your complete Phish show history — narrative, stats, rare catches, era analysis, and a letter to the fan you used to be.">
+  <meta property="og:title" content="Your Phish Story">
+  <meta property="og:description" content="Your complete Phish show history, turned into a 25-page personalized document.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d1117;
+      --bg-card: #161b22;
+      --bg-card-hover: #1c2129;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #e8723a;
+      --accent-hover: #f08a55;
+      --accent-glow: rgba(232, 114, 58, 0.15);
+      --border: #30363d;
+      --success: #3fb950;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- HERO --- */
+    .hero {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 80px 24px 48px;
+      text-align: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      background: var(--accent-glow);
+      border: 1px solid rgba(232, 114, 58, 0.3);
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 32px;
+      letter-spacing: 0.02em;
+    }
+
+    h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      line-height: 1.15;
+      margin-bottom: 24px;
+      color: #fff;
+      font-weight: 400;
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 560px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+
+    .hero-sub strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* --- SAMPLE PAGES --- */
+    .samples {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+
+    .samples-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .sample-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .sample-card:hover {
+      border-color: var(--accent);
+    }
+
+    .sample-img {
+      width: 100%;
+      aspect-ratio: 8.5/11;
+      background: #1a1f27;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sample-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .sample-label {
+      padding: 14px 16px;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* --- WHAT YOU GET --- */
+    .features {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+
+    .features h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 12px;
+      color: #fff;
+      font-weight: 400;
+    }
+
+    .features-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      font-size: 15px;
+    }
+
+    .feature-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 560px) {
+      .feature-list { grid-template-columns: 1fr; }
+    }
+
+    .feature-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .feature-item h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .feature-item p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.55;
+    }
+
+    /* --- TESTIMONIAL --- */
+    .testimonial {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+      text-align: center;
+    }
+
+    .testimonial blockquote {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      color: #fff;
+      line-height: 1.5;
+      font-weight: 400;
+      font-style: italic;
+      margin-bottom: 16px;
+    }
+
+    .testimonial cite {
+      font-style: normal;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* --- ORDER SECTION --- */
+    .order-section {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .order-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px 32px;
+      text-align: center;
+    }
+
+    .order-card h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      color: #fff;
+      margin-bottom: 8px;
+      font-weight: 400;
+    }
+
+    .order-card .price {
+      font-size: 2.4rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .order-card .price-note {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .form-group input::placeholder {
+      color: #484f58;
+    }
+
+    .form-group .input-hint {
+      font-size: 12px;
+      color: #484f58;
+      margin-top: 4px;
+    }
+
+    .gift-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+      padding: 12px 16px;
+      background: var(--bg);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .gift-toggle:hover { color: var(--text); }
+
+    .gift-toggle input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .gift-fields {
+      display: none;
+      margin-bottom: 16px;
+    }
+
+    .gift-fields.visible {
+      display: block;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 16px 32px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .order-footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #484f58;
+      line-height: 1.5;
+    }
+
+    /* --- FOOTER --- */
+    footer {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 32px 24px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 13px;
+      color: #484f58;
+    }
+
+    footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    footer a:hover { color: var(--text); }
+
+    /* --- ERROR / STATUS --- */
+    .form-error {
+      background: rgba(248, 81, 73, 0.1);
+      border: 1px solid rgba(248, 81, 73, 0.3);
+      color: #f85149;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .form-error.visible { display: block; }
+
+    /* --- USERNAME VALIDATION --- */
+    .username-status {
+      font-size: 12px;
+      margin-top: 4px;
+      min-height: 18px;
+    }
+
+    .username-status.checking { color: var(--text-muted); }
+    .username-status.valid { color: var(--success); }
+    .username-status.invalid { color: #f85149; }
+
+    /* --- DIVIDER --- */
+    .divider {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .divider hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 64px;
+    }
+
+    /* --- FAQ --- */
+    .faq {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 0 24px 64px;
+    }
+
+    .faq h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      text-align: center;
+      margin-bottom: 32px;
+      color: #fff;
+      font-weight: 400;
+    }
+
+    .faq-item {
+      margin-bottom: 24px;
+    }
+
+    .faq-item h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .faq-item p {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">Early Access — Limited to 10 orders/week</div>
+    <h1>The story of your Phish life, written by someone who was paying attention.</h1>
+    <p class="hero-sub">
+      Enter your Phishnet username. We'll build a personalized <strong>25-page PDF</strong> documenting your complete show history — narrative prose, stats, rare catches, era analysis, and a letter to the fan you used to be.
+    </p>
+    <a href="#order" style="display:inline-block;padding:14px 36px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;transition:background 0.2s;">Get Your Phish Story</a>
+  </section>
+
+  <!-- SAMPLE PAGES -->
+  <section class="samples">
+    <div class="samples-grid">
+      <div class="sample-card">
+        <div class="sample-img" id="sample-1">
+          <span>Sample page — Stats Dashboard</span>
+        </div>
+        <div class="sample-label">Stats dashboard with show frequency, venue map, and song breakdown</div>
+      </div>
+      <div class="sample-card">
+        <div class="sample-img" id="sample-2">
+          <span>Sample page — Letter to Past Self</span>
+        </div>
+        <div class="sample-label">A personal letter to the fan you were at your first show</div>
+      </div>
+      <div class="sample-card">
+        <div class="sample-img" id="sample-3">
+          <span>Sample page — Era Analysis</span>
+        </div>
+        <div class="sample-label">Deep narrative on each era of Phish you've been part of</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT YOU GET -->
+  <section class="features">
+    <h2>What's in your Phish Story</h2>
+    <p class="features-subtitle">~25 pages. Personalized to your exact show history. Not a template.</p>
+    <div class="feature-list">
+      <div class="feature-item">
+        <h3>Letter to Your Past Self</h3>
+        <p>Written to the version of you standing outside your first show. What you didn't know yet about the ride ahead.</p>
+      </div>
+      <div class="feature-item">
+        <h3>Stats Dashboard</h3>
+        <p>4 custom charts: shows by year, songs seen most, venue distribution, and set position breakdown.</p>
+      </div>
+      <div class="feature-item">
+        <h3>Rarest Catches</h3>
+        <p>The bustouts, debuts, and statistical anomalies hiding in your show history. Songs you saw that almost nobody else did.</p>
+      </div>
+      <div class="feature-item">
+        <h3>Era Narrative</h3>
+        <p>Where you were during 1.0, the hiatus, the reunion, the evolution. The story of Phish told through your attendance.</p>
+      </div>
+      <div class="feature-item">
+        <h3>Crown Jewel Deep Dives</h3>
+        <p>Your 3-5 most notable shows broken down in detail — what happened, why it mattered, where it sits in Phish history.</p>
+      </div>
+      <div class="feature-item">
+        <h3>Tier List &amp; Great Debates</h3>
+        <p>We rank your top jams, weigh in on the debates (Tweezers vs. Ghost), and see where your taste actually falls.</p>
+      </div>
+      <div class="feature-item">
+        <h3>Relisten Guide</h3>
+        <p>10 shows from your history worth going back to, with specific jams and timestamps. Your personal highlight reel.</p>
+      </div>
+      <div class="feature-item">
+        <h3>Complete Show List</h3>
+        <p>Every show, every date, every venue — formatted and designed as a keepsake reference.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL -->
+  <section class="testimonial">
+    <blockquote>"I've been a phan for 30 years. This is the first time I've seen it all in one place."</blockquote>
+    <cite>— John Barber, 116 shows</cite>
+  </section>
+
+  <div class="divider"><hr></div>
+
+  <!-- ORDER -->
+  <section class="order-section" id="order">
+    <div class="order-card">
+      <h2>Get Your Phish Story</h2>
+      <div class="price">$55</div>
+      <div class="price-note">Digital PDF — delivered within 48 hours</div>
+
+      <div class="form-error" id="form-error"></div>
+
+      <form id="order-form" onsubmit="return false;">
+        <div class="form-group">
+          <label for="phishnet-username">Phishnet Username</label>
+          <input type="text" id="phishnet-username" name="phishnet_username" placeholder="e.g. jbarber" required autocomplete="off" />
+          <div class="username-status" id="username-status"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Your Email</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          <div class="input-hint">We'll deliver your PDF here</div>
+        </div>
+
+        <label class="gift-toggle">
+          <input type="checkbox" id="gift-check" />
+          This is a gift for someone else
+        </label>
+
+        <div class="gift-fields" id="gift-fields">
+          <div class="form-group">
+            <label for="gift-email">Recipient's Email</label>
+            <input type="email" id="gift-email" name="gift_email" placeholder="friend@example.com" />
+            <div class="input-hint">We'll send the PDF to this address</div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="submit-btn">
+          Get Your Phish Story — $55
+        </button>
+      </form>
+
+      <div class="order-footer">
+        Secure payment via Stripe. Your PDF is manually crafted and delivered within 48 hours.
+        <br>Questions? <a href="mailto:mccooltm@gmail.com" style="color:var(--text-muted);">mccooltm@gmail.com</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq">
+    <h2>Questions</h2>
+    <div class="faq-item">
+      <h3>What do I need?</h3>
+      <p>Just your Phishnet username. If you don't have one, create a free account at phish.net and add your shows. The more complete your show history, the better your document.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How is this different from just looking at my Phishnet profile?</h3>
+      <p>Phishnet gives you data. We turn that data into a narrative — era analysis, personality reads, crown jewel deep dives, a letter to your past self. The stats are free. The story isn't.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Is this a good gift?</h3>
+      <p>It's the best gift. "Your friend just hit their 100th show" is basically the reason this exists. Use the gift option at checkout — we'll deliver directly to their inbox.</p>
+    </div>
+    <div class="faq-item">
+      <h3>How long does delivery take?</h3>
+      <p>48 hours or less. Each document is individually generated, not templated. We're in early access and manually reviewing every order.</p>
+    </div>
+    <div class="faq-item">
+      <h3>Will there be a printed version?</h3>
+      <p>Coming soon. We're testing the digital version first.</p>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Your Phish Story &middot; A passion project, not affiliated with Phish or Phish.net</p>
+    <p style="margin-top: 8px;"><a href="mailto:mccooltm@gmail.com">Contact</a></p>
+  </footer>
+
+  <script>
+    // --- Phishnet username validation ---
+    let usernameTimeout = null;
+    let usernameValid = false;
+
+    const usernameInput = document.getElementById('phishnet-username');
+    const usernameStatus = document.getElementById('username-status');
+
+    usernameInput.addEventListener('input', function () {
+      const val = this.value.trim();
+      usernameValid = false;
+      clearTimeout(usernameTimeout);
+
+      if (!val) {
+        usernameStatus.textContent = '';
+        usernameStatus.className = 'username-status';
+        return;
+      }
+
+      usernameStatus.textContent = 'Checking username...';
+      usernameStatus.className = 'username-status checking';
+
+      usernameTimeout = setTimeout(() => validateUsername(val), 600);
+    });
+
+    async function validateUsername(username) {
+      try {
+        const res = await fetch(`https://api.phish.net/v5/shows/username/${encodeURIComponent(username)}.json`);
+        const data = await res.json();
+
+        if (data && data.data && data.data.length > 0) {
+          usernameValid = true;
+          usernameStatus.textContent = `Found ${data.data.length} shows`;
+          usernameStatus.className = 'username-status valid';
+        } else {
+          usernameValid = false;
+          usernameStatus.textContent = 'No shows found for this username. Check spelling or add shows on phish.net.';
+          usernameStatus.className = 'username-status invalid';
+        }
+      } catch (err) {
+        // Don't block form submission on API failure
+        usernameValid = true;
+        usernameStatus.textContent = 'Could not verify username — you can still proceed.';
+        usernameStatus.className = 'username-status checking';
+      }
+    }
+
+    // --- Gift toggle ---
+    const giftCheck = document.getElementById('gift-check');
+    const giftFields = document.getElementById('gift-fields');
+    giftCheck.addEventListener('change', function () {
+      giftFields.classList.toggle('visible', this.checked);
+    });
+
+    // --- Form submission ---
+    const form = document.getElementById('order-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const formError = document.getElementById('form-error');
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      formError.classList.remove('visible');
+
+      const username = usernameInput.value.trim();
+      const email = document.getElementById('email').value.trim();
+      const isGift = giftCheck.checked;
+      const giftEmail = document.getElementById('gift-email').value.trim();
+
+      // Validate
+      if (!username) {
+        showError('Please enter your Phishnet username.');
+        return;
+      }
+      if (!email) {
+        showError('Please enter your email address.');
+        return;
+      }
+      if (isGift && !giftEmail) {
+        showError('Please enter the recipient\'s email for gift delivery.');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Redirecting to payment...';
+
+      try {
+        const res = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phishnet_username: username,
+            email: email,
+            is_gift: isGift,
+            gift_email: isGift ? giftEmail : null
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error(data.error || 'Something went wrong. Please try again.');
+        }
+      } catch (err) {
+        showError(err.message || 'Something went wrong. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Get Your Phish Story — $55';
+      }
+    });
+
+    function showError(msg) {
+      formError.textContent = msg;
+      formError.classList.add('visible');
+    }
+
+    // Smooth scroll for CTA
+    document.querySelector('a[href="#order"]').addEventListener('click', function (e) {
+      e.preventDefault();
+      document.getElementById('order').scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
