@@ -36,7 +36,7 @@ module.exports = async function handler(req, res) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: 'Your Phish Story — Personalized PDF',
+              name: 'Your Phish Story â Personalized PDF',
               description: `Personalized show history document for Phishnet user: ${phishnet_username}`,
             },
             unit_amount: 5500, // $55.00 in cents
