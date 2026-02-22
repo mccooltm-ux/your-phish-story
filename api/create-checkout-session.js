@@ -44,8 +44,8 @@ module.exports = async function handler(req, res) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.DOMAIN || 'https://yourphishstory.com'}/success.html`,
-      cancel_url: `${process.env.DOMAIN || 'https://yourphishstory.com'}/#order`,
+      success_url: `${process.env.DOMAIN || 'https://myphishistory.com'}/success.html`,
+      cancel_url: `${process.env.DOMAIN || 'https://myphishistory.com'}/#order`,
     });
 
     return res.status(200).json({ url: session.url });
