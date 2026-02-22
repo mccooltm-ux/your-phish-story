@@ -626,9 +626,11 @@
 
     async function validateUsername(username) {
       try {
-        const res = await fetch(`https://api.phish.net/v5/shows/username/${encodeURIComponent(username)}.json`);
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        const res = await fetch(`https://api.phish.net/v5/shows/username/${encodeURIComponent(username)}.json`, { signal: controller.signal });
+        clearTimeout(timeout);
         const data = await res.json();
-
         if (data && data.data && data.data.length > 0) {
           usernameValid = true;
           usernameStatus.textContent = `Found ${data.data.length} shows`;
@@ -639,10 +641,9 @@
           usernameStatus.className = 'username-status invalid';
         }
       } catch (err) {
-        // Don't block form submission on API failure
         usernameValid = true;
-        usernameStatus.textContent = 'Could not verify username &mdash; you can still proceed.';
-        usernameStatus.className = 'username-status checking';
+        usernameStatus.textContent = '';
+        usernameStatus.className = 'username-status';
       }
     }
 
