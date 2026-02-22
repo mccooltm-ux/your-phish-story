@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'API key not configured' });
   }
   try {
-    const url = 'https://api.phish.net/v5/shows/username/' + encodeURIComponent(username) + '.json?apikey=' + apiKey;
+    const url = 'https://api.phish.net/v5/attendance/username/' + encodeURIComponent(username) + '.json?apikey=' + apiKey;
     const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
     const data = await response.json();
     res.setHeader('Cache-Control', 's-maxage=60');
