@@ -4,6 +4,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 // Sign up at resend.com, get API key, set as RESEND_API_KEY env var
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'mccooltm@gmail.com';
+const PHISHNET_API_KEY = process.env.PHISHNET_API_KEY || '';
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -74,7 +75,7 @@ Payment ID: ${order.payment_id}
 Date: ${order.created}
 
 Phishnet profile: https://phish.net/user/${order.phishnet_username}
-Show history API: https://api.phish.net/v5/shows/username/${order.phishnet_username}.json
+Show history API: https://api.phish.net/v5/shows/username/${order.phishnet_username}.json?apikey=${PHISHNET_API_KEY}
 
 Action needed: Generate the PDF and email it to ${order.is_gift ? order.gift_recipient_email : order.customer_email}
 `.trim();
@@ -110,7 +111,7 @@ Action needed: Generate the PDF and email it to ${order.is_gift ? order.gift_rec
 
   <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 20px 0;">
     <strong style="font-size: 14px;">Quick links:</strong><br>
-    <a href="https://api.phish.net/v5/shows/username/${order.phishnet_username}.json" style="font-size: 13px;">Show History JSON</a> &middot;
+    <a href="https://api.phish.net/v5/shows/username/${order.phishnet_username}.json?apikey=${PHISHNET_API_KEY}" style="font-size: 13px;">Show History JSON</a> &middot;
     <a href="https://phish.net/user/${order.phishnet_username}" style="font-size: 13px;">Phishnet Profile</a>
   </div>
 
