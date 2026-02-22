@@ -101,7 +101,7 @@ function buildClaudePrompt(username, shows) {
   const lastShow = shows[shows.length - 1];
   const setlistUrls = shows.map(s => s.setlist_url).join('\n');
 
-  return `You are writing MyPhisHistory — a personalized deep-dive PDF for a Phish fan. The fan's Phish.net username is "${username}".
+  return `You are writing MyPhisHistory â a personalized deep-dive PDF for a Phish fan. The fan's Phish.net username is "${username}".
 
 Here is their complete attendance history (${showCount} shows, ${firstShow.date} through ${lastShow.date}):
 
@@ -112,17 +112,17 @@ ${setlistUrls}
 
 Please create an extensive, personalized PDF document that includes:
 
-1. **What Your Show History Says About You** — Analyze their attendance patterns. Are they a completist? A festival warrior? Coast-to-coaster? Era collector? Give them their fan identity with personality and specifics.
+1. **What Your Show History Says About You** â Analyze their attendance patterns. Are they a completist? A festival warrior? Coast-to-coaster? Era collector? Give them their fan identity with personality and specifics.
 
-2. **A Letter to the Fan You Used to Be** — Write a personal, narrative letter addressed to the version of them that attended their first show (${firstShow.date} at ${firstShow.venue}). Make it vivid, emotional, and specific to THEIR timeline. Reference real Phish history, the eras they lived through, what was happening in the Phish world at each phase. This is the emotional centerpiece.
+2. **A Letter to the Fan You Used to Be** â Write a personal, narrative letter addressed to the version of them that attended their first show (${firstShow.date} at ${firstShow.venue}). Make it vivid, emotional, and specific to THEIR timeline. Reference real Phish history, the eras they lived through, what was happening in the Phish world at each phase. This is the emotional centerpiece.
 
-3. **By the Numbers** — Stats section: total shows, unique venues, states/countries, tours, years active, longest gap between shows, busiest year, most-visited venue, etc.
+3. **By the Numbers** â Stats section: total shows, unique venues, states/countries, tours, years active, longest gap between shows, busiest year, most-visited venue, etc.
 
-4. **Rare Catches & Notable Shows** — Research the setlists from their shows. Call out any rarities, bustouts, debut performances, famous jams, or historically significant shows they were at.
+4. **Rare Catches & Notable Shows** â Research the setlists from their shows. Call out any rarities, bustouts, debut performances, famous jams, or historically significant shows they were at.
 
-5. **Era Analysis** — Break down what eras of Phish they've experienced (1.0, 2.0, 3.0, 4.0) and what each era meant for the band and for their personal timeline.
+5. **Era Analysis** â Break down what eras of Phish they've experienced (1.0, 2.0, 3.0, 4.0) and what each era meant for the band and for their personal timeline.
 
-Use the setlist URLs above to research specific shows. Be specific — reference actual songs, actual venues, actual dates. No generic filler. Write like a music journalist who deeply understands Phish and is genuinely impressed by this person's history. The tone should be warm, knowing, and celebratory.`;
+Use the setlist URLs above to research specific shows. Be specific â reference actual songs, actual venues, actual dates. No generic filler. Write like a music journalist who deeply understands Phish and is genuinely impressed by this person's history. The tone should be warm, knowing, and celebratory.`;
 }
 
 async function sendNotificationEmail(order) {
@@ -131,14 +131,14 @@ async function sendNotificationEmail(order) {
   const claudePrompt = shows ? buildClaudePrompt(order.phishnet_username, shows) : null;
 
   const giftLine = order.is_gift
-    ? `\n🎁 GIFT ORDER - Deliver to: ${order.gift_recipient_email}`
+    ? `\nð GIFT ORDER - Deliver to: ${order.gift_recipient_email}`
     : '';
 
   const subject = `New MyPhisHistory Order: ${order.phishnet_username}`;
 
   const promptSection = claudePrompt
     ? `\n\n========== COPY-PASTE CLAUDE PROMPT ==========\n${claudePrompt}\n========== END PROMPT ==========`
-    : `\n\n⚠️ Could not fetch attendance data. Manual lookup needed:\nhttps://api.phish.net/v5/attendance/username/${order.phishnet_username}.json?apikey=${PHISHNET_API_KEY}`;
+    : `\n\nâ ï¸ Could not fetch attendance data. Manual lookup needed:\nhttps://api.phish.net/v5/attendance/username/${order.phishnet_username}.json?apikey=${PHISHNET_API_KEY}`;
 
   const body = `
 New order received!
@@ -150,7 +150,7 @@ Payment ID: ${order.payment_id}
 Date: ${order.created}
 
 Phishnet profile: https://phish.net/user/${order.phishnet_username}
-${shows ? `Shows found: ${shows.length}` : 'Shows: ⚠️ fetch failed'}
+${shows ? `Shows found: ${shows.length}` : 'Shows: â ï¸ fetch failed'}
 
 Action needed: Generate the PDF and email it to ${order.is_gift ? order.gift_recipient_email : order.customer_email}
 ${promptSection}
@@ -170,9 +170,9 @@ ${promptSection}
   const promptHtml = claudePrompt
     ? `<div style="background:#1a1a2e;color:#e0e0e0;padding:16px;border-radius:8px;margin:20px 0;font-family:monospace;font-size:12px;white-space:pre-wrap;line-height:1.5;max-height:600px;overflow:auto;">${claudePrompt.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\*\*(.*?)\*\*/g, '<strong style="color:#e8723a;">$1</strong>')}</div>
       <p style="text-align:center;margin:8px 0;">
-        <a href="#" onclick="return false;" style="background:#e8723a;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">↑ Copy the prompt above and paste into Claude ↑</a>
+        <a href="#" onclick="return false;" style="background:#e8723a;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">â Copy the prompt above and paste into Claude â</a>
       </p>`
-    : `<div style="background:#fff3cd;padding:16px;border-radius:8px;margin:20px 0;font-size:13px;">⚠️ Could not fetch attendance data automatically. <a href="https://api.phish.net/v5/attendance/username/${order.phishnet_username}.json?apikey=${PHISHNET_API_KEY}">Click here for manual lookup</a></div>`;
+    : `<div style="background:#fff3cd;padding:16px;border-radius:8px;margin:20px 0;font-size:13px;">â ï¸ Could not fetch attendance data automatically. <a href="https://api.phish.net/v5/attendance/username/${order.phishnet_username}.json?apikey=${PHISHNET_API_KEY}">Click here for manual lookup</a></div>`;
 
   const htmlBody = `
     <div style="font-family: -apple-system, sans-serif; max-width: 700px; margin: 0 auto; padding: 20px;">
@@ -189,7 +189,7 @@ ${promptSection}
           <td style="padding: 10px 0; font-size: 14px;">${order.customer_email}</td>
         </tr>
         ${order.is_gift ? `<tr style="border-bottom: 1px solid #eee; background: #fff8f0;">
-          <td style="padding: 10px 0; color: #e8723a; font-size: 14px;">🎁 Gift - Deliver To</td>
+          <td style="padding: 10px 0; color: #e8723a; font-size: 14px;">ð Gift - Deliver To</td>
           <td style="padding: 10px 0; font-weight: 600; font-size: 14px;">${order.gift_recipient_email}</td>
         </tr>` : ''}
         <tr style="border-bottom: 1px solid #eee;">
@@ -212,7 +212,7 @@ ${promptSection}
         ${showListHtml}
       </table>` : ''}
 
-      <h3 style="color:#e8723a;margin-bottom:8px;">📋 Copy-Paste Claude Prompt</h3>
+      <h3 style="color:#e8723a;margin-bottom:8px;">ð Copy-Paste Claude Prompt</h3>
       ${promptHtml}
 
       <p style="color: #888; font-size: 13px; margin-top: 20px;">
@@ -228,7 +228,7 @@ ${promptSection}
       'Authorization': `Bearer ${RESEND_API_KEY}`
     },
     body: JSON.stringify({
-      from: 'MyPhisHistory <onboarding@resend.dev>',
+      from: 'MyPhisHistory <noreply@myphishistory.com>',
       to: NOTIFICATION_EMAIL,
       subject: subject,
       text: body,
