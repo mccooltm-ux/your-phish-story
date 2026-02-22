@@ -628,7 +628,7 @@
       try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 3000);
-        const res = await fetch(`https://api.phish.net/v5/shows/username/${encodeURIComponent(username)}.json`, { signal: controller.signal });
+        const res = await fetch(`/api/validate-username?username=${encodeURIComponent(username)}`, { signal: controller.signal });
         clearTimeout(timeout);
         const data = await res.json();
         if (data && data.data && data.data.length > 0) {
