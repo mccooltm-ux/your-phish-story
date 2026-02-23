@@ -48,6 +48,7 @@ module.exports = async function handler(req, res) {
         email: meta.customer_email || session.customer_email || '',
         is_gift: meta.is_gift === 'true',
         gift_email: meta.gift_recipient_email || null,
+        full_name: meta.full_name || null,
         amount: (session.amount_total || 0) / 100,
         status: fulfillmentStatus,
         date: new Date(session.created * 1000).toLocaleDateString('en-US', {
