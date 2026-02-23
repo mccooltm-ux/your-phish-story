@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyPhisHistory — Admin</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      color: #e0e0e0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 24px;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #222;
+    }
+    .header h1 {
+      font-size: 22px;
+      color: #f5f5f5;
+      letter-spacing: -0.5px;
+    }
+    .header h1 span { color: #e85d04; }
+    .stats {
+      display: flex;
+      gap: 24px;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #f5f5f5;
+    }
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #666;
+      letter-spacing: 0.5px;
+    }
+    .login-gate {
+      max-width: 400px;
+      margin: 120px auto;
+      text-align: center;
+    }
+    .login-gate input {
+      background: #141414;
+      border: 1px solid #333;
+      color: #e0e0e0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+    .login-gate button {
+      background: #e85d04;
+      color: #fff;
+      border: none;
+      padding: 12px 32px;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .login-gate button:hover { background: #d45303; }
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .filters button {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #aaa;
+      padding: 6px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .filters button.active {
+      background: #e85d04;
+      border-color: #e85d04;
+      color: #fff;
+    }
+    .order-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .order-table th {
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      color: #666;
+      letter-spacing: 0.5px;
+      padding: 8px 12px;
+      border-bottom: 1px solid #222;
+    }
+    .order-table td {
+      padding: 12px;
+      border-bottom: 1px solid #1a1a1a;
+      font-size: 14px;
+    }
+    .order-table tr:hover { background: #111; }
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .status-pending { background: #332200; color: #f48c06; }
+    .status-delivered { background: #0a2e0a; color: #4ade80; }
+    .status-refunded { background: #2e0a0a; color: #f87171; }
+    .btn-sm {
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      border: 1px solid #333;
+      background: #1a1a1a;
+      color: #ccc;
+      cursor: pointer;
+      margin-right: 4px;
+    }
+    .btn-sm:hover { background: #252525; }
+    .btn-deliver { border-color: #4ade80; color: #4ade80; }
+    .btn-deliver:hover { background: #0a2e0a; }
+    .btn-refund { border-color: #f87171; color: #f87171; }
+    .btn-refund:hover { background: #2e0a0a; }
+    .loading {
+      text-align: center;
+      color: #666;
+      padding: 60px 0;
+      font-size: 15px;
+    }
+    .empty {
+      text-align: center;
+      color: #444;
+      padding: 60px 0;
+    }
+    .gift-tag {
+      background: #1a1a2e;
+      color: #818cf8;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 6px;
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      color: #e0e0e0;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+      z-index: 100;
+    }
+    .toast.show { display: block; }
+    .toast.success { border-color: #4ade80; }
+    .toast.error { border-color: #f87171; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 50;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: #141414;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 28px;
+      max-width: 480px;
+      width: 90%;
+    }
+    .modal h3 {
+      font-size: 18px;
+      color: #f5f5f5;
+      margin-bottom: 16px;
+    }
+    .modal p {
+      color: #999;
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .modal-actions button {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid #333;
+    }
+    .modal-cancel {
+      background: #1a1a1a;
+      color: #ccc;
+    }
+    .modal-confirm-refund {
+      background: #7f1d1d;
+      color: #fca5a5;
+      border-color: #991b1b;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Gate -->
+  <div id="login-gate" class="login-gate">
+    <h2 style="color:#f5f5f5;margin-bottom:8px;">MyPhisHistory Admin</h2>
+    <p style="color:#666;margin-bottom:24px;font-size:14px;">Enter admin password</p>
+    <input type="password" id="admin-pass" placeholder="Password" autofocus>
+    <button onclick="doLogin()">Enter</button>
+  </div>
+
+  <!-- Dashboard (hidden until login) -->
+  <div id="dashboard" style="display:none;">
+    <div class="header">
+      <h1>MyPhis<span>History</span> Admin</h1>
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-value" id="stat-total">—</div>
+          <div class="stat-label">Orders</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="stat-pending">—</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value" id="stat-revenue">—</div>
+          <div class="stat-label">Revenue</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <button class="active" onclick="setFilter('all', this)">All</button>
+      <button onclick="setFilter('pending', this)">Pending</button>
+      <button onclick="setFilter('delivered', this)">Delivered</button>
+      <button onclick="setFilter('refunded', this)">Refunded</button>
+      <button onclick="loadOrders()" style="margin-left:auto;">Refresh</button>
+    </div>
+
+    <div id="orders-container">
+      <div class="loading">Loading orders...</div>
+    </div>
+  </div>
+
+  <!-- Refund Confirmation Modal -->
+  <div class="modal-overlay" id="refund-modal">
+    <div class="modal">
+      <h3>Confirm Refund</h3>
+      <p id="refund-modal-text">Are you sure you want to refund this order?</p>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeRefundModal()">Cancel</button>
+        <button class="modal-confirm-refund" id="refund-confirm-btn" onclick="confirmRefund()">Issue Refund</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    let ADMIN_SECRET = '';
+    let allOrders = [];
+    let currentFilter = 'all';
+    let pendingRefundId = null;
+
+    // --- Login ---
+    document.getElementById('admin-pass').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doLogin();
+    });
+
+    function doLogin() {
+      ADMIN_SECRET = document.getElementById('admin-pass').value;
+      if (!ADMIN_SECRET) return;
+      document.getElementById('login-gate').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      loadOrders();
+    }
+
+    // --- Load Orders ---
+    async function loadOrders() {
+      document.getElementById('orders-container').innerHTML = '<div class="loading">Loading orders...</div>';
+      try {
+        const res = await fetch('/api/admin/orders', {
+          headers: { 'X-Admin-Secret': ADMIN_SECRET }
+        });
+        if (res.status === 401) {
+          document.getElementById('orders-container').innerHTML = '<div class="loading" style="color:#f87171;">Invalid password</div>';
+          return;
+        }
+        const data = await res.json();
+        allOrders = data.orders || [];
+        updateStats();
+        renderOrders();
+      } catch (err) {
+        document.getElementById('orders-container').innerHTML = '<div class="loading" style="color:#f87171;">Failed to load orders</div>';
+      }
+    }
+
+    function updateStats() {
+      const total = allOrders.length;
+      const pending = allOrders.filter(o => o.status === 'pending').length;
+      const revenue = allOrders.filter(o => o.status !== 'refunded').reduce((sum, o) => sum + o.amount, 0);
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-pending').textContent = pending;
+      document.getElementById('stat-revenue').textContent = '$' + revenue.toFixed(0);
+    }
+
+    // --- Render ---
+    function renderOrders() {
+      const filtered = currentFilter === 'all'
+        ? allOrders
+        : allOrders.filter(o => o.status === currentFilter);
+
+      if (filtered.length === 0) {
+        document.getElementById('orders-container').innerHTML = '<div class="empty">No orders found</div>';
+        return;
+      }
+
+      let html = `<table class="order-table">
+        <thead><tr>
+          <th>Date</th><th>Username</th><th>Email</th><th>Amount</th><th>Status</th><th>Actions</th>
+        </tr></thead><tbody>`;
+
+      filtered.forEach(order => {
+        const statusClass = 'status-' + order.status;
+        const giftTag = order.is_gift ? `<span class="gift-tag">Gift → ${order.gift_email}</span>` : '';
+        const actions = [];
+
+        if (order.status === 'pending') {
+          actions.push(`<button class="btn-sm btn-deliver" onclick="markDelivered('${order.payment_id}')">Mark Delivered</button>`);
+          actions.push(`<button class="btn-sm btn-refund" onclick="showRefundModal('${order.payment_id}', '${order.username}')">Refund</button>`);
+        } else if (order.status === 'delivered') {
+          actions.push(`<button class="btn-sm btn-refund" onclick="showRefundModal('${order.payment_id}', '${order.username}')">Refund</button>`);
+        }
+
+        html += `<tr>
+          <td style="white-space:nowrap;color:#888;">${order.date}</td>
+          <td><strong>${order.username}</strong>${giftTag}</td>
+          <td style="color:#888;">${order.email}</td>
+          <td>$${order.amount}</td>
+          <td><span class="status-badge ${statusClass}">${order.status}</span></td>
+          <td>${actions.join('')}</td>
+        </tr>`;
+      });
+
+      html += '</tbody></table>';
+      document.getElementById('orders-container').innerHTML = html;
+    }
+
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderOrders();
+    }
+
+    // --- Mark Delivered ---
+    async function markDelivered(paymentId) {
+      try {
+        const res = await fetch('/api/admin/fulfill', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Admin-Secret': ADMIN_SECRET },
+          body: JSON.stringify({ payment_id: paymentId, action: 'delivered' })
+        });
+        if (res.ok) {
+          showToast('Order marked as delivered', 'success');
+          loadOrders();
+        } else {
+          const err = await res.json();
+          showToast('Error: ' + (err.error || 'Unknown'), 'error');
+        }
+      } catch (e) {
+        showToast('Network error', 'error');
+      }
+    }
+
+    // --- Refund ---
+    function showRefundModal(paymentId, username) {
+      pendingRefundId = paymentId;
+      document.getElementById('refund-modal-text').textContent =
+        `Refund the order for ${username}? This will return $20 to the customer and cannot be undone.`;
+      document.getElementById('refund-modal').classList.add('show');
+    }
+
+    function closeRefundModal() {
+      pendingRefundId = null;
+      document.getElementById('refund-modal').classList.remove('show');
+    }
+
+    async function confirmRefund() {
+      if (!pendingRefundId) return;
+      const btn = document.getElementById('refund-confirm-btn');
+      btn.textContent = 'Processing...';
+      btn.disabled = true;
+      try {
+        const res = await fetch('/api/admin/fulfill', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Admin-Secret': ADMIN_SECRET },
+          body: JSON.stringify({ payment_id: pendingRefundId, action: 'refund' })
+        });
+        if (res.ok) {
+          showToast('Refund issued successfully', 'success');
+          loadOrders();
+        } else {
+          const err = await res.json();
+          showToast('Refund failed: ' + (err.error || 'Unknown'), 'error');
+        }
+      } catch (e) {
+        showToast('Network error', 'error');
+      }
+      closeRefundModal();
+      btn.textContent = 'Issue Refund';
+      btn.disabled = false;
+    }
+
+    // --- Toast ---
+    function showToast(msg, type) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = 'toast show ' + type;
+      setTimeout(() => toast.className = 'toast', 3000);
+    }
+  </script>
+</body>
+</html>
