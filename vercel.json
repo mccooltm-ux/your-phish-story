@@ -5,8 +5,18 @@
     "api/*.js": {
       "memory": 128,
       "maxDuration": 10
+    },
+    "api/cron/*.js": {
+      "memory": 128,
+      "maxDuration": 10
     }
   },
+  "crons": [
+    {
+      "path": "/api/cron/follow-up",
+      "schedule": "0 14 * * *"
+    }
+  ],
   "routes": [
     {
       "src": "/api/(.*)",

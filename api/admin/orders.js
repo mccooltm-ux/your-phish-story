@@ -51,6 +51,8 @@ module.exports = async function handler(req, res) {
         full_name: meta.full_name || null,
         amount: (session.amount_total || 0) / 100,
         status: fulfillmentStatus,
+        delivered_at: piMeta.delivered_at || null,
+        follow_up_sent: piMeta.follow_up_sent || null,
         date: new Date(session.created * 1000).toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',

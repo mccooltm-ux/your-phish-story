@@ -30,14 +30,31 @@ module.exports = async function handler(req, res) {
     const session = event.data.object;
     const metadata = session.metadata;
 
+    // Get order count for badge
+    let orderCount = '?';
+    try {
+      const sessions = await stripe.checkout.sessions.list({ limit: 1, status: 'complete' });
+      orderCount = sessions.total_count || '?';
+    } catch (_) { /* non-critical */ }
+
+    const orderTime = new Date(session.created * 1000);
+    const deliveryDeadline = new Date(orderTime.getTime() + 48 * 60 * 60 * 1000);
+
     const orderDetails = {
+      full_name: metadata.full_name || null,
       phishnet_username: metadata.phishnet_username || 'UNKNOWN',
       customer_email: metadata.customer_email || session.customer_email || 'UNKNOWN',
       is_gift: metadata.is_gift === 'true',
       gift_recipient_email: metadata.gift_recipient_email || null,
       amount_paid: `$${(session.amount_total / 100).toFixed(2)}`,
       payment_id: session.payment_intent,
-      created: new Date(session.created * 1000).toLocaleString('en-US', {
+      order_number: orderCount,
+      delivery_deadline: deliveryDeadline.toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        dateStyle: 'full',
+        timeStyle: 'short'
+      }),
+      created: orderTime.toLocaleString('en-US', {
         timeZone: 'America/New_York',
         dateStyle: 'full',
         timeStyle: 'short'
@@ -134,22 +151,24 @@ async function sendNotificationEmail(order) {
     ? `\nð GIFT ORDER - Deliver to: ${order.gift_recipient_email}`
     : '';
 
-  const subject = `New MyPhisHistory Order: ${order.phishnet_username}`;
+  const subject = `Order #${order.order_number}: ${order.phishnet_username}`;
 
   const promptSection = claudePrompt
     ? `\n\n========== COPY-PASTE CLAUDE PROMPT ==========\n${claudePrompt}\n========== END PROMPT ==========`
     : `\n\nâ ï¸ Could not fetch attendance data. Manual lookup needed:\nhttps://api.phish.net/v5/attendance/username/${order.phishnet_username}.json?apikey=${PHISHNET_API_KEY}`;
 
   const body = `
-New order received!
-
+Order #${order.order_number} received!
+${order.full_name ? `\nCustomer Name: ${order.full_name}` : ''}
 Phishnet Username: ${order.phishnet_username}
 Customer Email: ${order.customer_email}${giftLine}
 Amount: ${order.amount_paid}
 Payment ID: ${order.payment_id}
 Date: ${order.created}
+Deliver by: ${order.delivery_deadline}
 
 Phishnet profile: https://phish.net/user/${order.phishnet_username}
+Admin panel: https://myphishistory.com/admin.html
 ${shows ? `Shows found: ${shows.length}` : 'Shows: â ï¸ fetch failed'}
 
 Action needed: Generate the PDF and email it to ${order.is_gift ? order.gift_recipient_email : order.customer_email}
@@ -176,10 +195,15 @@ ${promptSection}
 
   const htmlBody = `
     <div style="font-family: -apple-system, sans-serif; max-width: 700px; margin: 0 auto; padding: 20px;">
+      <div style="display:inline-block;background:#e8723a;color:white;padding:4px 12px;border-radius:12px;font-size:13px;font-weight:600;margin-bottom:8px;">Order #${order.order_number}</div>
       <h2 style="color: #e8723a; margin-bottom: 4px;">New MyPhisHistory Order</h2>
       <p style="color: #666; font-size: 14px; margin-top: 0;">${order.created}</p>
 
       <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        ${order.full_name ? `<tr style="border-bottom: 1px solid #eee;">
+          <td style="padding: 10px 0; color: #888; font-size: 14px;">Customer Name</td>
+          <td style="padding: 10px 0; font-weight: 600; font-size: 14px;">${order.full_name}</td>
+        </tr>` : ''}
         <tr style="border-bottom: 1px solid #eee;">
           <td style="padding: 10px 0; color: #888; font-size: 14px;">Phishnet Username</td>
           <td style="padding: 10px 0; font-weight: 600; font-size: 14px;"><a href="https://phish.net/user/${order.phishnet_username}">${order.phishnet_username}</a></td>
@@ -196,11 +220,16 @@ ${promptSection}
           <td style="padding: 10px 0; color: #888; font-size: 14px;">Amount</td>
           <td style="padding: 10px 0; font-size: 14px;">${order.amount_paid}</td>
         </tr>
-        <tr>
+        <tr style="border-bottom: 1px solid #eee;">
           <td style="padding: 10px 0; color: #888; font-size: 14px;">Payment ID</td>
           <td style="padding: 10px 0; font-size: 13px; font-family: monospace;">${order.payment_id}</td>
         </tr>
+        <tr style="background: #fff8f0;">
+          <td style="padding: 10px 0; color: #e8723a; font-size: 14px; font-weight: 600;">Deliver By</td>
+          <td style="padding: 10px 0; font-size: 14px; font-weight: 600;">${order.delivery_deadline}</td>
+        </tr>
       </table>
+      <p style="margin:0 0 16px 0;"><a href="https://myphishistory.com/admin.html" style="background:#333;color:white;padding:8px 16px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">Open Admin Panel</a></p>
 
       ${shows ? `<h3 style="color:#333;margin-bottom:8px;">Attendance History (${shows.length} shows)</h3>
       <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-family:-apple-system,sans-serif;">

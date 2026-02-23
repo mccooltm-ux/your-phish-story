@@ -101,6 +101,64 @@
       text-decoration: none;
     }
     .back-link:hover { color: var(--text); }
+    .share-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .share-section h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.25rem;
+      color: #fff;
+      margin-bottom: 8px;
+      font-weight: 400;
+    }
+    .share-section p {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+    .share-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .share-btn:hover { background: #1c2128; }
+    .share-btn-twitter { border-color: #1d9bf0; color: #1d9bf0; }
+    .share-btn-twitter:hover { background: rgba(29,155,240,0.1); }
+    .share-btn svg { width: 16px; height: 16px; }
+    .copied-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-card);
+      border: 1px solid var(--success);
+      color: var(--success);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+    .copied-toast.show { display: block; }
   </style>
 </head>
 <body>
@@ -129,10 +187,45 @@
         <span class="detail-value">PDF delivered to your email</span>
       </div>
     </div>
+    <div class="share-section">
+      <h3>Know another phan?</h3>
+      <p>Share the love — let your friends discover their own Phish story.</p>
+      <div class="share-buttons">
+        <button class="share-btn" onclick="copyShareLink()">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"/></svg>
+          Copy Link
+        </button>
+        <a class="share-btn share-btn-twitter" href="https://twitter.com/intent/tweet?text=Just%20got%20my%20personalized%20Phish%20show%20history%20PDF%20from%20%40MyPhisHistory%20%E2%80%94%20they%20pulled%20my%20entire%20show%20history%20and%20turned%20it%20into%20a%20deep%20dive.%20If%20you%27re%20a%20phan%2C%20check%20it%20out%3A&url=https%3A%2F%2Fmyphishistory.com%2F%3Fref%3Dfriend" target="_blank" rel="noopener" onclick="trackShare('twitter')">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Share on X
+        </a>
+      </div>
+    </div>
     <p style="font-size:14px;color:var(--text-muted);margin-bottom:24px;">
       Questions? Reach out at <a href="mailto:mccooltm@gmail.com" style="color:var(--accent);text-decoration:none;">mccooltm@gmail.com</a>
     </p>
     <a href="/" class="back-link">&larr; Back to MyPhisHistory</a>
   </div>
+  <div class="copied-toast" id="copied-toast">Link copied!</div>
+
+  <!-- PostHog -->
+  <script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once unregister opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing identify alias people.set people.set_once set_config reset get_distinct_id getFeatureFlag getFeatureFlagPayload reloadFeatureFlags group updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures getActiveMatchingSurveys getSurveys onFeatureFlags onSessionId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_V0eCSYRcSxR3lH1yIk4RSltPVoZWEtEp3i6pVo2fOZZ', { api_host: 'https://us.i.posthog.com' });
+    posthog.capture('purchase_completed');
+
+    function copyShareLink() {
+      navigator.clipboard.writeText('https://myphishistory.com/?ref=friend').then(function() {
+        var toast = document.getElementById('copied-toast');
+        toast.classList.add('show');
+        setTimeout(function() { toast.classList.remove('show'); }, 2000);
+      });
+      posthog.capture('share_clicked', { method: 'copy_link' });
+    }
+
+    function trackShare(method) {
+      posthog.capture('share_clicked', { method: method });
+    }
+  </script>
 </body>
 </html>

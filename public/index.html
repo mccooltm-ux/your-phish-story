@@ -8,6 +8,12 @@
   <meta property="og:title" content="MyPhisHistory">
   <meta property="og:description" content="Your complete Phish show history, turned into an extensive personalized PDF deep dive.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://myphishistory.com">
+  <meta property="og:image" content="https://myphishistory.com/images/og-preview.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MyPhisHistory">
+  <meta name="twitter:description" content="Your complete Phish show history, turned into an extensive personalized PDF deep dive.">
+  <meta name="twitter:image" content="https://myphishistory.com/images/og-preview.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -435,7 +441,67 @@
       color: var(--text-muted);
       line-height: 1.6;
     }
+
+    /* --- LIGHTBOX --- */
+    .lightbox-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .lightbox-overlay.active {
+      display: flex;
+    }
+
+    .lightbox-overlay img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 8px;
+      cursor: default;
+    }
+
+    .sample-card {
+      cursor: pointer;
+    }
+
+    /* --- MOBILE FIXES --- */
+    .gift-toggle {
+      min-height: 44px;
+    }
+
+    #contact-modal button,
+    #contact-modal input,
+    #contact-modal textarea {
+      min-height: 44px !important;
+    }
+
+    @media (max-width: 360px) {
+      .samples-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .gift-toggle {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    }
   </style>
+  <script>
+    !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug getPageviewId".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+    posthog.init('phc_V0eCSYRcSxR3lH1yIk4RSltPVoZWEtEp3i6pVo2fOZZ', {
+      api_host: 'https://us.i.posthog.com',
+      person_profiles: 'identified_only'
+    });
+  </script>
 </head>
 <body>
 
@@ -470,8 +536,19 @@
         </div>
         <div class="sample-label">By the numbers â shows, years, states, hours of live Phish</div>
       </div>
+      <div class="sample-card">
+        <div class="sample-img" id="sample-4">
+          <img src="/images/sample-eras.jpg" alt="Era Analysis">
+        </div>
+        <div class="sample-label">Era analysis &mdash; your journey through 1.0, 2.0, 3.0, and beyond</div>
+      </div>
     </div>
   </section>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox-overlay" id="lightbox-overlay">
+    <img id="lightbox-img" src="" alt="Sample page enlarged">
+  </div>
 
   <!-- WHAT YOU GET -->
   <section class="features">
@@ -721,10 +798,12 @@
           usernameValid = true;
           usernameStatus.textContent = `Found ${data.data.length} shows`;
           usernameStatus.className = 'username-status valid';
+          posthog.capture('username_validated', { username: username, show_count: data.data.length });
         } else {
           usernameValid = false;
           usernameStatus.textContent = 'No shows found for this username. Check spelling or add shows on phish.net.';
           usernameStatus.className = 'username-status invalid';
+          posthog.capture('username_failed', { username: username });
         }
       } catch (err) {
         usernameValid = true;
@@ -771,6 +850,7 @@
 
       submitBtn.disabled = true;
       submitBtn.textContent = 'Redirecting to payment...';
+      posthog.capture('checkout_started', { username: username, email: email, is_gift: isGift });
 
       try {
         const res = await fetch('/api/create-checkout-session', {
@@ -788,6 +868,7 @@
         const data = await res.json();
 
         if (data.url) {
+          posthog.capture('checkout_redirected', { username: username, email: email });
           window.location.href = data.url;
         } else {
           throw new Error(data.error || 'Something went wrong. Please try again.');
@@ -814,7 +895,7 @@
   <!-- Contact Modal -->
   <div id="contact-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;justify-content:center;align-items:center;">
     <div style="background:#1a1a2e;border-radius:12px;padding:32px;max-width:480px;width:90%;position:relative;border:1px solid #333;">
-      <button onclick="closeContactModal()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;">&times;</button>
+      <button onclick="closeContactModal()" style="position:absolute;top:8px;right:8px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;">&times;</button>
       <h3 style="color:#e85d04;margin:0 0 8px;">Contact Us</h3>
       <p style="color:#aaa;font-size:14px;margin:0 0 20px;">We'll get back to you as soon as possible.</p>
       <div style="margin-bottom:14px;">
@@ -848,17 +929,40 @@ document.getElementById('snapshot-form').addEventListener('submit', async functi
     errDiv.style.display = 'block';
     return;
   }
+  posthog.capture('snapshot_form_submit', { username: username, email: email });
   btn.disabled = true;
   btn.textContent = 'Loading your history...';
-  // Redirect to snapshot page with params
   window.location.href = '/snapshot.html?username=' + encodeURIComponent(username) + '&email=' + encodeURIComponent(email);
 });
 
-// Update hero CTA to point to snapshot section first
-var heroCTA = document.querySelector('a[href="#order"]');
-if (heroCTA && heroCTA.closest('section') !== document.getElementById('order').closest('section')) {
-  // Only change the hero CTA, not the in-page links
-}
+// Lightbox for sample cards
+(function() {
+  var overlay = document.getElementById('lightbox-overlay');
+  var lbImg = document.getElementById('lightbox-img');
+
+  document.querySelectorAll('.sample-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var img = card.querySelector('.sample-img img');
+      if (img) {
+        lbImg.src = img.src;
+        lbImg.alt = img.alt;
+        overlay.classList.add('active');
+      }
+    });
+  });
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target !== lbImg) {
+      overlay.classList.remove('active');
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && overlay.classList.contains('active')) {
+      overlay.classList.remove('active');
+    }
+  });
+})();
 </script>
 
 </body>

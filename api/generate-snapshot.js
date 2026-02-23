@@ -6,12 +6,12 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { username, email } = req.body;
+    const { username, email, share } = req.body;
 
     if (!username) {
       return res.status(400).json({ error: 'Phishnet username is required.' });
     }
-    if (!email) {
+    if (!share && !email) {
       return res.status(400).json({ error: 'Email is required.' });
     }
 
@@ -53,17 +53,19 @@ module.exports = async function handler(req, res) {
     const peakYear = Object.entries(showsByYear).sort((a, b) => b[1] - a[1])[0];
     const estimatedSongs = Math.min(Math.round(totalShows * 13.5), 900);
 
-    try {
-      const { Resend } = require('resend');
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
-        from: 'MyPhisHistory <support' + '@' + 'myphishistory.com>',
-        to: process.env.NOTIFICATION_EMAIL,
-        subject: 'Free Snapshot: ' + username + ' (' + totalShows + ' shows)',
-        html: '<div style="font-family:sans-serif;padding:20px;"><h2>New Free Snapshot Lead</h2><p><strong>Username:</strong> ' + username + '</p><p><strong>Email:</strong> ' + email + '</p><p><strong>Shows:</strong> ' + totalShows + '</p><p><strong>Years:</strong> ' + firstYear + '-' + lastYear + '</p><p><strong>Venues:</strong> ' + uniqueVenues + '</p></div>'
-      });
-    } catch (emailErr) {
-      console.error('Snapshot notification email failed:', emailErr.message);
+    if (!share) {
+      try {
+        const { Resend } = require('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: 'MyPhisHistory <support' + '@' + 'myphishistory.com>',
+          to: process.env.NOTIFICATION_EMAIL,
+          subject: 'Free Snapshot: ' + username + ' (' + totalShows + ' shows)',
+          html: '<div style="font-family:sans-serif;padding:20px;"><h2>New Free Snapshot Lead</h2><p><strong>Username:</strong> ' + username + '</p><p><strong>Email:</strong> ' + email + '</p><p><strong>Shows:</strong> ' + totalShows + '</p><p><strong>Years:</strong> ' + firstYear + '-' + lastYear + '</p><p><strong>Venues:</strong> ' + uniqueVenues + '</p></div>'
+        });
+      } catch (emailErr) {
+        console.error('Snapshot notification email failed:', emailErr.message);
+      }
     }
 
     return res.status(200).json({

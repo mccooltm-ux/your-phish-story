@@ -271,6 +271,7 @@
       color: #4ade80;
       margin-top: 4px;
     }
+    .status-overdue { background: #3b0a0a; color: #fb7185; }
   </style>
 </head>
 <body>
@@ -413,12 +414,15 @@
 
       let html = `<table class="order-table">
         <thead><tr>
-          <th>Date</th><th>Username</th><th>Name</th><th>Email</th><th>Amount</th><th>Status</th><th>Actions</th>
+          <th>Date</th><th>Username</th><th>Name</th><th>Email</th><th>Amount</th><th>Status</th><th>Delivered</th><th>Actions</th>
         </tr></thead><tbody>`;
 
       filtered.forEach(order => {
         const statusClass = 'status-' + order.status;
         const giftTag = order.is_gift ? `<span class="gift-tag">Gift → ${order.gift_email}</span>` : '';
+        const isOverdue = order.status === 'pending' && order.created && (Date.now() / 1000 - order.created) > 48 * 3600;
+        const overdueBadge = isOverdue ? ' <span class="status-badge status-overdue">Overdue</span>' : '';
+        const deliveredAt = order.delivered_at ? new Date(order.delivered_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—';
         const actions = [];
 
         if (order.status === 'pending') {
@@ -434,7 +438,8 @@
           <td style="color:#aaa;font-style:italic;">${order.full_name || '—'}</td>
           <td style="color:#888;">${order.email}</td>
           <td>$${order.amount}</td>
-          <td><span class="status-badge ${statusClass}">${order.status}</span></td>
+          <td><span class="status-badge ${statusClass}">${order.status}</span>${overdueBadge}</td>
+          <td style="white-space:nowrap;color:#888;">${deliveredAt}</td>
           <td>${actions.join('')}</td>
         </tr>`;
       });
@@ -474,7 +479,7 @@
     function showRefundModal(paymentId, username) {
       pendingRefundId = paymentId;
       document.getElementById('refund-modal-text').textContent =
-        `Refund the order for ${username}? This will return $20 to the customer and cannot be undone.`;
+        `Refund the order for ${username}? This will return $25 to the customer and cannot be undone.`;
       document.getElementById('refund-modal').classList.add('show');
     }
 
