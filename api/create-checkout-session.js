@@ -43,7 +43,7 @@ module.exports = async function handler(req, res) {
               name: 'MyPhisHistory - Personalized PDF',
               description: `Personalized show history document for Phishnet user: ${phishnet_username}`,
             },
-            unit_amount: 2000, // $20.00 in cents
+            unit_amount: 2500, // $20.00 in cents
           },
           quantity: 1,
         },
