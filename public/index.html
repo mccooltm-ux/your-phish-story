@@ -456,7 +456,7 @@
         <div class="sample-img" id="sample-1">
           <img src="/sample-showhistory.webp" alt="What Your Show History Says About You">
         </div>
-        <div class="sample-label">What your show history says about you — personality, patterns, and Phish DNA</div>
+        <div class="sample-label">What your show history says about you â personality, patterns, and Phish DNA</div>
       </div>
       <div class="sample-card">
         <div class="sample-img" id="sample-2">
@@ -468,7 +468,7 @@
         <div class="sample-img" id="sample-3">
           <img src="/sample-numbers.webp" alt="By the Numbers">
         </div>
-        <div class="sample-label">By the numbers — shows, years, states, hours of live Phish</div>
+        <div class="sample-label">By the numbers â shows, years, states, hours of live Phish</div>
       </div>
     </div>
   </section>
@@ -541,6 +541,12 @@
           <label for="email">Your Email</label>
           <input type="email" id="email" name="email" placeholder="you@example.com" required />
           <div class="input-hint">We'll deliver your PDF here</div>
+        </div>
+
+        <div class="form-group">
+          <label for="full-name">Your Full Name <span style="color:#666;font-weight:400;font-size:13px;">(optional)</span></label>
+          <input type="text" id="full-name" placeholder="e.g. Ted McCool">
+          <div class="input-hint" style="color:#e85d04;">Will appear on your PDF</div>
         </div>
 
         <label class="gift-toggle">
@@ -665,6 +671,7 @@
 
       const username = usernameInput.value.trim();
       const email = document.getElementById('email').value.trim();
+      const fullName = document.getElementById('full-name').value.trim();
       const isGift = giftCheck.checked;
       const giftEmail = document.getElementById('gift-email').value.trim();
 
@@ -693,7 +700,8 @@
             phishnet_username: username,
             email: email,
             is_gift: isGift,
-            gift_email: isGift ? giftEmail : null
+            gift_email: isGift ? giftEmail : null,
+            full_name: fullName || null
           })
         });
 
