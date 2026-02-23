@@ -7,7 +7,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { phishnet_username, email, is_gift, gift_email } = req.body;
+    const { phishnet_username, email, is_gift, gift_email, full_name } = req.body;
 
     // Validate required fields
     if (!phishnet_username || !email) {
@@ -20,6 +20,10 @@ module.exports = async function handler(req, res) {
       customer_email: email,
       is_gift: is_gift ? 'true' : 'false',
     };
+
+    if (full_name) {
+      metadata.full_name = full_name;
+    }
 
     if (is_gift && gift_email) {
       metadata.gift_recipient_email = gift_email;
