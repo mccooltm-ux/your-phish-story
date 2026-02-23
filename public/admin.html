@@ -220,6 +220,57 @@
       color: #fca5a5;
       border-color: #991b1b;
     }
+    .modal-confirm-deliver {
+      background: #065f46;
+      color: #6ee7b7;
+      border-color: #047857;
+    }
+    .btn-send { border-color: #e85d04; color: #e85d04; }
+    .btn-send:hover { background: #1a1000; }
+    .deliver-form label {
+      display: block;
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 4px;
+      margin-top: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .deliver-form input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      background: #1a1a1a;
+      border: 1px dashed #444;
+      border-radius: 8px;
+      color: #ccc;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .deliver-form input[type="file"]:hover { border-color: #e85d04; }
+    .deliver-form textarea {
+      width: 100%;
+      padding: 10px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #e0e0e0;
+      font-size: 13px;
+      resize: vertical;
+      min-height: 60px;
+      font-family: inherit;
+    }
+    .deliver-info {
+      background: #111;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 4px;
+    }
+    .deliver-info span { color: #f5f5f5; font-weight: 600; }
+    .file-status {
+      font-size: 12px;
+      color: #4ade80;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -273,6 +324,27 @@
       <div class="modal-actions">
         <button class="modal-cancel" onclick="closeRefundModal()">Cancel</button>
         <button class="modal-confirm-refund" id="refund-confirm-btn" onclick="confirmRefund()">Issue Refund</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deliver PDF Modal -->
+  <div class="modal-overlay" id="deliver-modal">
+    <div class="modal" style="max-width:520px;">
+      <h3>Deliver PDF</h3>
+      <div class="deliver-info">
+        Sending to <span id="deliver-username"></span> at <span id="deliver-email"></span>
+      </div>
+      <div class="deliver-form">
+        <label>PDF File</label>
+        <input type="file" id="deliver-file" accept=".pdf" onchange="onFileSelected()">
+        <div class="file-status" id="file-status"></div>
+        <label>Message (optional)</label>
+        <textarea id="deliver-message" placeholder="Thanks for your order! Your complete Phish show history is attached."></textarea>
+      </div>
+      <div class="modal-actions" style="margin-top:20px;">
+        <button class="modal-cancel" onclick="closeDeliverModal()">Cancel</button>
+        <button class="modal-confirm-deliver" id="deliver-send-btn" onclick="sendDelivery()" disabled>Send PDF</button>
       </div>
     </div>
   </div>
@@ -349,7 +421,7 @@
         const actions = [];
 
         if (order.status === 'pending') {
-          actions.push(`<button class="btn-sm btn-deliver" onclick="markDelivered('${order.payment_id}')">Mark Delivered</button>`);
+          actions.push(`<button class="btn-sm btn-send" onclick="showDeliverModal('${order.payment_id}', '${order.username}', '${order.email}', ${order.is_gift}, '${order.gift_email || ''}')">Deliver PDF</button>`);
           actions.push(`<button class="btn-sm btn-refund" onclick="showRefundModal('${order.payment_id}', '${order.username}')">Refund</button>`);
         } else if (order.status === 'delivered') {
           actions.push(`<button class="btn-sm btn-refund" onclick="showRefundModal('${order.payment_id}', '${order.username}')">Refund</button>`);
@@ -433,6 +505,95 @@
       closeRefundModal();
       btn.textContent = 'Issue Refund';
       btn.disabled = false;
+    }
+
+    // --- Deliver PDF ---
+    let deliverPaymentId = null;
+    let deliverEmail = null;
+    let deliverUsername = null;
+    let deliverFileBase64 = null;
+
+    function showDeliverModal(paymentId, username, email, isGift, giftEmail) {
+      deliverPaymentId = paymentId;
+      deliverUsername = username;
+      deliverEmail = isGift && giftEmail ? giftEmail : email;
+      deliverFileBase64 = null;
+      document.getElementById('deliver-username').textContent = username;
+      document.getElementById('deliver-email').textContent = deliverEmail;
+      document.getElementById('deliver-file').value = '';
+      document.getElementById('file-status').textContent = '';
+      document.getElementById('deliver-message').value = '';
+      document.getElementById('deliver-send-btn').disabled = true;
+      document.getElementById('deliver-send-btn').textContent = 'Send PDF';
+      document.getElementById('deliver-modal').classList.add('show');
+    }
+
+    function closeDeliverModal() {
+      deliverPaymentId = null;
+      deliverFileBase64 = null;
+      document.getElementById('deliver-modal').classList.remove('show');
+    }
+
+    function onFileSelected() {
+      const file = document.getElementById('deliver-file').files[0];
+      if (!file) return;
+      if (!file.name.toLowerCase().endsWith('.pdf')) {
+        document.getElementById('file-status').textContent = 'Please select a PDF file';
+        document.getElementById('file-status').style.color = '#f87171';
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        deliverFileBase64 = e.target.result.split(',')[1];
+        const sizeMB = (file.size / 1024 / 1024).toFixed(1);
+        document.getElementById('file-status').textContent = file.name + ' (' + sizeMB + ' MB) ready';
+        document.getElementById('file-status').style.color = '#4ade80';
+        document.getElementById('deliver-send-btn').disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    async function sendDelivery() {
+      if (!deliverPaymentId || !deliverFileBase64) return;
+      const btn = document.getElementById('deliver-send-btn');
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+      const message = document.getElementById('deliver-message').value.trim() ||
+        'Thanks for your order! Your complete Phish show history is attached.';
+      try {
+        const res = await fetch('/api/deliver', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            secret: 'myphishistory-deliver-2024',
+            to: deliverEmail,
+            username: deliverUsername,
+            pdf_base64: deliverFileBase64,
+            subject: deliverUsername + ', your PhisHistory is ready!',
+            message: message
+          })
+        });
+        if (res.ok) {
+          // Also mark as delivered
+          await fetch('/api/admin/fulfill', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Admin-Secret': ADMIN_SECRET },
+            body: JSON.stringify({ payment_id: deliverPaymentId, action: 'delivered' })
+          });
+          showToast('PDF delivered to ' + deliverEmail, 'success');
+          closeDeliverModal();
+          loadOrders();
+        } else {
+          const err = await res.json();
+          showToast('Delivery failed: ' + (err.error || 'Unknown'), 'error');
+          btn.textContent = 'Send PDF';
+          btn.disabled = false;
+        }
+      } catch (e) {
+        showToast('Network error', 'error');
+        btn.textContent = 'Send PDF';
+        btn.disabled = false;
+      }
     }
 
     // --- Toast ---
