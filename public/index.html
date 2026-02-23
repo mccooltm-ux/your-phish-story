@@ -444,7 +444,7 @@
     <div class="hero-badge">Early Access &mdash; Limited to 10 orders/week</div>
     <h1>The story of your Phish life, written by someone who was paying attention.</h1>
     <p class="hero-sub">
-      Enter your Phishnet username. We'll build an extensive personalized PDF deep dive that documents your complete show history, including narrative accounts, statistics, rare catches, era analysis, and a letter to the fan you used to be.
+      Start with a free snapshot of your stats. Upgrade to the full personalized PDF with narrative accounts, era analysis, rare catches, and a letter to the fan you used to be.
     </p>
     <a href="#order" style="display:inline-block;padding:14px 36px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;transition:background 0.2s;">Get MyPhisHistory</a>
   </section>
@@ -522,10 +522,32 @@
   <div class="divider"><hr></div>
 
   <!-- ORDER -->
-  <section class="order-section" id="order">
+  
+  <!-- Free Snapshot Section -->
+  <section id="snapshot" style="padding: 4rem 1.5rem 2rem; text-align: center; max-width: 900px; margin: 0 auto;">
+    <h2 style="font-family: Georgia, serif; font-size: 2rem; color: #e2e8f0; margin-bottom: 0.5rem;">See your numbers first &mdash; free.</h2>
+    <p style="color: #8b949e; font-size: 1.05rem; max-width: 500px; margin: 0 auto 2rem;">Enter your Phishnet username and get an instant snapshot of your show history. No payment required.</p>
+    <div style="background: #161b22; border: 1px solid #1c2333; border-radius: 16px; padding: 2rem; max-width: 480px; margin: 0 auto;">
+      <div style="display: inline-block; background: rgba(232,145,110,0.15); color: #e8916e; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 1.25rem;">FREE</div>
+      <h3 style="color: #e2e8f0; font-size: 1.25rem; margin-bottom: 0.25rem;">The Snapshot</h3>
+      <p style="color: #8b949e; font-size: 0.9rem; margin-bottom: 1.5rem;">Total shows, years active, venues visited, top songs, first &amp; last show.</p>
+      <form id="snapshot-form" style="text-align: left;">
+        <label style="display: block; color: #c9d1d9; font-size: 0.85rem; margin-bottom: 0.35rem; font-weight: bold;">Phishnet Username</label>
+        <input type="text" id="snapshot-username" placeholder="e.g. jfishman" required style="width: 100%; padding: 0.75rem 1rem; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #e2e8f0; font-size: 1rem; margin-bottom: 1rem; font-family: Georgia, serif;">
+        <label style="display: block; color: #c9d1d9; font-size: 0.85rem; margin-bottom: 0.35rem; font-weight: bold;">Your Email</label>
+        <input type="email" id="snapshot-email" placeholder="you@example.com" required style="width: 100%; padding: 0.75rem 1rem; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #e2e8f0; font-size: 1rem; margin-bottom: 0.35rem; font-family: Georgia, serif;">
+        <div style="color: #8b949e; font-size: 0.8rem; margin-bottom: 1.25rem;">We'll use this to send you upgrade offers. No spam.</div>
+        <button type="submit" id="snapshot-btn" style="width: 100%; padding: 0.9rem; background: transparent; border: 2px solid #e8916e; color: #e8916e; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; font-family: Georgia, serif; transition: all 0.2s;">Get My Free Snapshot</button>
+      </form>
+      <div id="snapshot-error" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #3a1c1c; color: #ff6b6b; border-radius: 8px; font-size: 0.9rem;"></div>
+    </div>
+    <p style="color: #484f58; font-size: 0.85rem; margin-top: 2rem;">Want the full story? <a href="#order" style="color: #e8916e; text-decoration: none;">See what's in the $25 PDF &darr;</a></p>
+  </section>
+  <div style="max-width: 900px; margin: 0 auto; padding: 0 1.5rem;"><hr style="border: none; border-top: 1px solid #1c2333; margin: 1rem 0 0;"></div>
+<section class="order-section" id="order">
     <div class="order-card">
-      <h2>Get MyPhisHistory</h2>
-      <div class="price">$20</div>
+      <h2>Get Your Full Phish Story</h2>
+      <div class="price">$25</div>
       <div class="price-note">Digital PDF &mdash; delivered within 48 hours</div>
 
       <div class="form-error" id="form-error"></div>
@@ -563,7 +585,7 @@
         </div>
 
         <button type="submit" class="btn-primary" id="submit-btn">
-          Get MyPhisHistory &mdash; $20
+          Get MyPhisHistory &mdash; $25
         </button>
       </form>
 
@@ -773,7 +795,7 @@
       } catch (err) {
         showError(err.message || 'Something went wrong. Please try again.');
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Get MyPhisHistory &mdash; $20';
+        submitBtn.textContent = 'Get MyPhisHistory &mdash; $25';
       }
     });
 
@@ -811,5 +833,33 @@
       <button id="contact-submit-btn" onclick="submitContactForm()" style="width:100%;padding:12px;background:#e85d04;color:#fff;border:none;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;">Send Message</button>
     </div>
   </div>
+
+<script>
+// Snapshot form handler
+document.getElementById('snapshot-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const username = document.getElementById('snapshot-username').value.trim();
+  const email = document.getElementById('snapshot-email').value.trim();
+  const btn = document.getElementById('snapshot-btn');
+  const errDiv = document.getElementById('snapshot-error');
+  errDiv.style.display = 'none';
+  if (!username || !email) {
+    errDiv.textContent = 'Please fill in both fields.';
+    errDiv.style.display = 'block';
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Loading your history...';
+  // Redirect to snapshot page with params
+  window.location.href = '/snapshot.html?username=' + encodeURIComponent(username) + '&email=' + encodeURIComponent(email);
+});
+
+// Update hero CTA to point to snapshot section first
+var heroCTA = document.querySelector('a[href="#order"]');
+if (heroCTA && heroCTA.closest('section') !== document.getElementById('order').closest('section')) {
+  // Only change the hero CTA, not the in-page links
+}
+</script>
+
 </body>
 </html>
