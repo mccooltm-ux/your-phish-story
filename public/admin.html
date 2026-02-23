@@ -334,6 +334,7 @@
       <h3>Deliver PDF</h3>
       <div class="deliver-info">
         Sending to <span id="deliver-username"></span> at <span id="deliver-email"></span>
+        <div id="deliver-name-row" style="margin-top:6px;color:#e85d04;font-size:13px;"></div>
       </div>
       <div class="deliver-form">
         <label>PDF File</label>
@@ -412,7 +413,7 @@
 
       let html = `<table class="order-table">
         <thead><tr>
-          <th>Date</th><th>Username</th><th>Email</th><th>Amount</th><th>Status</th><th>Actions</th>
+          <th>Date</th><th>Username</th><th>Name</th><th>Email</th><th>Amount</th><th>Status</th><th>Actions</th>
         </tr></thead><tbody>`;
 
       filtered.forEach(order => {
@@ -421,7 +422,7 @@
         const actions = [];
 
         if (order.status === 'pending') {
-          actions.push(`<button class="btn-sm btn-send" onclick="showDeliverModal('${order.payment_id}', '${order.username}', '${order.email}', ${order.is_gift}, '${order.gift_email || ''}')">Deliver PDF</button>`);
+          actions.push(`<button class="btn-sm btn-send" onclick="showDeliverModal('${order.payment_id}', '${order.username}', '${order.email}', ${order.is_gift}, '${order.gift_email || ''}', '${order.full_name || ''}')">Deliver PDF</button>`);
           actions.push(`<button class="btn-sm btn-refund" onclick="showRefundModal('${order.payment_id}', '${order.username}')">Refund</button>`);
         } else if (order.status === 'delivered') {
           actions.push(`<button class="btn-sm btn-refund" onclick="showRefundModal('${order.payment_id}', '${order.username}')">Refund</button>`);
@@ -430,6 +431,7 @@
         html += `<tr>
           <td style="white-space:nowrap;color:#888;">${order.date}</td>
           <td><strong>${order.username}</strong>${giftTag}</td>
+          <td style="color:#aaa;font-style:italic;">${order.full_name || '—'}</td>
           <td style="color:#888;">${order.email}</td>
           <td>$${order.amount}</td>
           <td><span class="status-badge ${statusClass}">${order.status}</span></td>
@@ -513,13 +515,14 @@
     let deliverUsername = null;
     let deliverFileBase64 = null;
 
-    function showDeliverModal(paymentId, username, email, isGift, giftEmail) {
+    function showDeliverModal(paymentId, username, email, isGift, giftEmail, fullName) {
       deliverPaymentId = paymentId;
       deliverUsername = username;
       deliverEmail = isGift && giftEmail ? giftEmail : email;
       deliverFileBase64 = null;
       document.getElementById('deliver-username').textContent = username;
       document.getElementById('deliver-email').textContent = deliverEmail;
+      document.getElementById('deliver-name-row').textContent = fullName ? 'Name: ' + fullName : '';
       document.getElementById('deliver-file').value = '';
       document.getElementById('file-status').textContent = '';
       document.getElementById('deliver-message').value = '';
