@@ -17,19 +17,29 @@ module.exports = async function handler(req, res) {
 
   try {
     // Fetch completed checkout sessions from Stripe (last 100)
+    // Expand payment_intent AND its latest_charge so we can check refund status
     const sessions = await stripe.checkout.sessions.list({
       limit: 100,
       status: 'complete',
-      expand: ['data.payment_intent']
+      expand: ['data.payment_intent.latest_charge']
     });
 
     const orders = sessions.data.map(session => {
       const meta = session.metadata || {};
       const pi = session.payment_intent;
       const piMeta = (pi && pi.metadata) || {};
+      const charge = (pi && pi.latest_charge && typeof pi.latest_charge === 'object') ? pi.latest_charge : null;
 
-      // Fulfillment status is stored on the payment intent metadata
-      const fulfillmentStatus = piMeta.fulfillment_status || 'pending';
+      // Determine fulfillment status:
+      // 1. If Stripe shows the charge was refunded (via any method), mark as refunded
+      // 2. Otherwise use our custom metadata
+      // 3. Default to 'pending'
+      let fulfillmentStatus = piMeta.fulfillment_status || 'pending';
+      if (charge && charge.refunded) {
+        fulfillmentStatus = 'refunded';
+      } else if (charge && charge.amount_refunded > 0) {
+        fulfillmentStatus = 'refunded';
+      }
 
       return {
         session_id: session.id,
