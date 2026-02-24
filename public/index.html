@@ -541,15 +541,9 @@
       </div>
       <div class="sample-card">
         <div class="sample-img" id="sample-3">
-          <img src="/sample-numbers.webp" alt="By the Numbers">
+          <img src="/images/sample-stats.jpg" alt="By the Numbers">
         </div>
-        <div class="sample-label">Performances Worth Revisiting — standout jams from your shows with listening links</div>
-      </div>
-      <div class="sample-card">
-        <div class="sample-img" id="sample-4">
-          <img src="/images/sample-eras.jpg" alt="Era Analysis">
-        </div>
-        <div class="sample-label">Era analysis &mdash; your journey through 1.0, 2.0, 3.0, and beyond</div>
+        <div class="sample-label">By the Numbers — total shows, hours spent, peak years, and venue breakdowns</div>
       </div>
     </div>
   </section>
@@ -653,20 +647,17 @@
     <div style="background: #161b22; border: 1px solid #1c2333; border-radius: 16px; padding: 2rem; max-width: 480px; margin: 0 auto;">
       <div style="display: inline-block; background: rgba(232,145,110,0.15); color: #e8916e; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 1.25rem;">FREE</div>
       <h3 style="color: #e2e8f0; font-size: 1.25rem; margin-bottom: 0.25rem;">The Snapshot</h3>
-      <p style="color: #8b949e; font-size: 0.9rem; margin-bottom: 1.5rem;">Total shows, years active, venues visited, top songs, first &amp; last show.</p>
+      <p style="color: #8b949e; font-size: 0.9rem; margin-bottom: 1.5rem;">Total shows, years active, top venues, shows by year, first &amp; last show.</p>
       <form id="snapshot-form" style="text-align: left;">
         <label style="display: block; color: #c9d1d9; font-size: 0.85rem; margin-bottom: 0.35rem; font-weight: bold;">Phishnet Username</label>
-        <input type="text" id="snapshot-username" placeholder="e.g. jfishman" required style="width: 100%; padding: 0.75rem 1rem; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #e2e8f0; font-size: 1rem; margin-bottom: 1rem; font-family: Georgia, serif;">
-        <label style="display: block; color: #c9d1d9; font-size: 0.85rem; margin-bottom: 0.35rem; font-weight: bold;">Your Email</label>
-        <input type="email" id="snapshot-email" placeholder="you@example.com" required style="width: 100%; padding: 0.75rem 1rem; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #e2e8f0; font-size: 1rem; margin-bottom: 0.35rem; font-family: Georgia, serif;">
-        <div style="color: #8b949e; font-size: 0.8rem; margin-bottom: 1.25rem;">We'll send your snapshot results here.</div>
+        <input type="text" id="snapshot-username" placeholder="e.g. jfishman" required style="width: 100%; padding: 0.75rem 1rem; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #e2e8f0; font-size: 1rem; margin-bottom: 0.35rem; font-family: Georgia, serif;">
+        <div class="username-status" id="snapshot-username-status" style="margin-bottom: 1rem;"></div>
         <button type="submit" id="snapshot-btn" style="width: 100%; padding: 0.9rem; background: transparent; border: 2px solid #e8916e; color: #e8916e; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; font-family: Georgia, serif; transition: all 0.2s;">Get My Free Snapshot</button>
       </form>
       <div id="snapshot-error" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #3a1c1c; color: #ff6b6b; border-radius: 8px; font-size: 0.9rem;"></div>
     </div>
     <p style="color: #484f58; font-size: 0.85rem; margin-top: 2rem;">Want the full story? <a href="#order" style="color: #e8916e; text-decoration: none;">See what's in the $25 PDF &darr;</a></p><div style="max-width:600px;margin:24px auto 32px;text-align:left;display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;">
 <div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Cover & Stats</span> — Your career at a glance, including headline numbers, timeline, and patterns</div>
-<div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Geography</span> — Every venue and state you’ve attended, ranked and visualized</div>
 <div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Performances Worth Revisiting</span> — Verified standout jams from your shows with streaming links</div>
 <div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Crown Jewels</span> — Your best shows ranked, with deep dives into the defining nights</div>
 <div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Your Eras</span> — Your personal journey through each phase of the band’s career</div>
@@ -747,7 +738,7 @@
     </div>
     <div class="faq-item">
       <h3>What if I only have a few shows?</h3>
-      <p>Even 5 shows make a great document. We've written stories for everyone from first-timers to 500+ show vets. The narrative adapts to your history.</p>
+      <p>Even 5 shows make a great document. The narrative adapts to your history — whether you're a first-timer or a 500-show vet.</p>
     </div>
   </section>
 
@@ -903,6 +894,7 @@
 
       submitBtn.disabled = true;
       submitBtn.textContent = 'Redirecting to payment...';
+      posthog.identify(email, { email: email, phishnet_username: username });
       posthog.capture('checkout_started', { username: username, email: email, is_gift: isGift });
 
       try {
@@ -1013,24 +1005,72 @@
   </div>
 
 <script>
-// Snapshot form handler
-document.getElementById('snapshot-form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const username = document.getElementById('snapshot-username').value.trim();
-  const email = document.getElementById('snapshot-email').value.trim();
-  const btn = document.getElementById('snapshot-btn');
-  const errDiv = document.getElementById('snapshot-error');
-  errDiv.style.display = 'none';
-  if (!username || !email) {
-    errDiv.textContent = 'Please fill in both fields.';
-    errDiv.style.display = 'block';
-    return;
+// Snapshot form — username validation
+(function() {
+  var snapshotUsernameInput = document.getElementById('snapshot-username');
+  var snapshotStatus = document.getElementById('snapshot-username-status');
+  var snapshotValid = false;
+  var snapshotTimeout = null;
+
+  snapshotUsernameInput.addEventListener('input', function() {
+    var val = this.value.trim();
+    snapshotValid = false;
+    clearTimeout(snapshotTimeout);
+    if (!val) {
+      snapshotStatus.textContent = '';
+      snapshotStatus.className = 'username-status';
+      return;
+    }
+    snapshotStatus.textContent = 'Checking username...';
+    snapshotStatus.className = 'username-status checking';
+    snapshotTimeout = setTimeout(function() { validateSnapshotUsername(val); }, 600);
+  });
+
+  async function validateSnapshotUsername(username) {
+    try {
+      var controller = new AbortController();
+      var timeout = setTimeout(function() { controller.abort(); }, 3000);
+      var res = await fetch('/api/validate-username?username=' + encodeURIComponent(username), { signal: controller.signal });
+      clearTimeout(timeout);
+      var data = await res.json();
+      if (data && data.data && data.data.length > 0) {
+        snapshotValid = true;
+        snapshotStatus.textContent = 'Found ' + data.data.length + ' shows';
+        snapshotStatus.className = 'username-status valid';
+      } else {
+        snapshotValid = false;
+        snapshotStatus.textContent = 'No shows found for this username. Check spelling or add shows on phish.net.';
+        snapshotStatus.className = 'username-status invalid';
+      }
+    } catch (err) {
+      snapshotValid = true;
+      snapshotStatus.textContent = '';
+      snapshotStatus.className = 'username-status';
+    }
   }
-  posthog.capture('snapshot_form_submit', { username: username, email: email });
-  btn.disabled = true;
-  btn.textContent = 'Loading your history...';
-  window.location.href = '/snapshot.html?username=' + encodeURIComponent(username) + '&email=' + encodeURIComponent(email);
-});
+
+  document.getElementById('snapshot-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var username = snapshotUsernameInput.value.trim();
+    var btn = document.getElementById('snapshot-btn');
+    var errDiv = document.getElementById('snapshot-error');
+    errDiv.style.display = 'none';
+    if (!username) {
+      errDiv.textContent = 'Please enter your Phishnet username.';
+      errDiv.style.display = 'block';
+      return;
+    }
+    if (!snapshotValid) {
+      errDiv.textContent = 'Please wait for username validation to complete.';
+      errDiv.style.display = 'block';
+      return;
+    }
+    posthog.capture('snapshot_form_submit', { username: username });
+    btn.disabled = true;
+    btn.textContent = 'Loading your history...';
+    window.location.href = '/snapshot.html?username=' + encodeURIComponent(username);
+  });
+})();
 
 // Lightbox for sample cards
 (function() {

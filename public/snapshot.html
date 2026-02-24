@@ -71,15 +71,14 @@ body { font-family: 'Inter', sans-serif; background: #0d1117; color: #c9d1d9; mi
 <script>
 const params=new URLSearchParams(window.location.search);
 const username=params.get("username");
-const email=params.get("email");
 const isShare=params.get("share")==="true";
 
-if(!username||(!isShare&&!email)){showError("Missing Info","We need your username and email to generate your snapshot.")}else{generateSnapshot()}
+if(!username){showError("Missing Info","We need your Phishnet username to generate your snapshot.")}else{generateSnapshot()}
 
 async function generateSnapshot(){
   try{
     const body={username};
-    if(isShare){body.share=true}else{body.email=email}
+    if(isShare){body.share=true}
     const res=await fetch("/api/generate-snapshot",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
     const data=await res.json();
     if(!res.ok||!data.success){showError("No Shows Found",data.error||"Check your Phishnet username and try again.");return}

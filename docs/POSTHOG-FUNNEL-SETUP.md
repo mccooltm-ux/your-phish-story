@@ -60,12 +60,36 @@ Track the share → referral → conversion loop.
 
 ---
 
+## Funnel 5: Waitlist Conversion
+
+Track users who hit the order cap and join the waitlist.
+
+| Step | Event | Description |
+|------|-------|-------------|
+| 1 | `checkout_started` | Submitted the order form |
+| 2 | `waitlist_shown` | Order cap reached, waitlist UI displayed |
+| 3 | `waitlist_joined` | User submitted their info to join waitlist |
+
+---
+
+## User Identification
+
+`posthog.identify(email)` is called at two key moments:
+- When a user submits the **order form** (checkout_started) — identified by email
+- On **snapshot.html** load — if email is available from URL params
+
+This stitches anonymous pageview sessions to identified users, so you can track the full journey from first visit to purchase.
+
+---
+
 ## Key Properties to Watch
 
 | Property | Set By | Where |
 |----------|--------|-------|
 | `ref_source` | `posthog.register()` on landing page | Persists across the session as a super property |
 | `username` | Various events | Phishnet username |
+| `email` | `posthog.identify()` | Person property, set on checkout/snapshot |
+| `phishnet_username` | `posthog.identify()` | Person property |
 | `total_shows` | `snapshot_viewed`, `upsell_clicked` | Show count for the user |
 | `is_gift` | `checkout_started` | Whether order is a gift |
 | `is_share` | `snapshot_viewed` | Whether snapshot is being viewed via share link |

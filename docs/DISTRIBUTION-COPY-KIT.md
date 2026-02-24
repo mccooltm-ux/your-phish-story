@@ -62,7 +62,7 @@ myphishistory.com
 **Tweet 4 (optional):**
 Built this as a passion project. Zero VC, zero ads, just a fan who wanted to make something cool for other fans.
 
-Early access — only taking 10 orders/week while I make sure every PDF is great.
+Early access — limited first wave while I make sure every PDF is great.
 
 ---
 

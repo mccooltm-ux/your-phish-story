@@ -1,6 +1,6 @@
 # MyPhisHistory Product Roadmap
 
-> Last updated: 2026-02-23
+> Last updated: 2026-02-24
 
 ## Priority Levels
 
@@ -12,34 +12,47 @@
 
 ---
 
-## P0 — Launch & Validate Demand
+## P0 — Launch & Validate Demand ✅ COMPLETE
 
 **Objective:** Prove people will pay for this. Get to first 20 orders and learn what customers love.
 
-### Funnel & Analytics
+### Funnel & Analytics ✅
 
-- [ ] Add lightweight analytics to track visitor → username entry → checkout → purchase conversion
-- [ ] Track drop-off points (username validation failures, checkout abandonment)
-- [ ] Set up basic dashboard or Stripe reporting to monitor revenue and order volume
+- [x] PostHog integration across all customer-facing pages (index, snapshot, success)
+- [x] 10+ custom funnel events (snapshot_form_submit, username_validated, checkout_started, purchase_completed, etc.)
+- [x] `posthog.identify()` for user stitching (email-based on checkout, username-based on snapshot)
+- [x] Referral attribution via `?ref=` URL parameter tracking
+- [x] Funnel setup guide documented (docs/POSTHOG-FUNNEL-SETUP.md)
 
-### Landing Page Launch Readiness
+### Landing Page Launch Readiness ✅
 
-- [ ] Final copy pass — tighten messaging, ensure CTA is clear
-- [ ] Social proof section — placeholder for testimonials (update as orders come in)
-- [ ] Sample PDF preview — show 2-3 redacted/blurred pages so buyers know what they're getting
-- [ ] Mobile UX audit — ensure checkout flow works cleanly on phones
+- [x] Copy audit — tightened messaging, aligned sample descriptions with actual content
+- [x] OG preview image (1200x630px) for social sharing
+- [x] OG + Twitter Card meta tags
+- [x] 3 sample PDF preview cards with lightbox (show history, songs, stats)
+- [x] Mobile UX audit — touch targets, responsive grid, viewport testing at 375px/390px
+- [x] Free snapshot form with debounced username validation + show count display
+- [x] "What's in the PDF" feature grid below snapshot form
 
-### Post-Purchase Feedback Loop
+### Order Cap + Waitlist ✅
 
-- [ ] Automated follow-up email 3 days after PDF delivery: "What was your favorite section? What fell flat?"
-- [ ] Simple feedback form (Google Form or Tally) linked from the email
-- [ ] Track NPS or satisfaction score per order
+- [x] Order cap (configurable via `ORDER_CAP` env var, default 20)
+- [x] Waitlist overflow — users added as Stripe customers with metadata
+- [x] Waitlist join endpoint with dedup, admin + customer confirmation emails
+- [x] Admin panel: Waitlist tab with count badge, table view, FIFO ordering
+- [x] "Limited first wave" framing on hero badge
 
-### Soft Launch Distribution
+### Distribution ✅
 
-- [ ] Targeted posts: r/phish, Phantasy Tour forums, Phish Twitter/X community
-- [ ] Personal network seeding — get 3-5 friends to buy and share publicly
-- [ ] "Early Access" framing on the landing page to create urgency
+- [x] Distribution copy kit ready (Reddit, Twitter/X, Phantasy Tour, DM templates)
+- [x] Share buttons on success page (copy link + Twitter/X)
+- [x] Shareable snapshot URLs (`?share=true` mode)
+
+### Post-Purchase ✅
+
+- [x] Follow-up email cron (3 days after delivery, via Resend)
+- [x] Admin notification emails with order count, 48h deadline, full_name
+- [x] Admin panel: delivered status, overdue badges
 
 ### Manual Operations
 
@@ -73,7 +86,7 @@
 ### Pricing Experiments
 
 - [ ] A/B test price points: $20 / $25 / $30 — Phish fans spend freely on things they love
-- [ ] Test a "Deluxe" tier placeholder on the landing page to gauge willingness to pay more (even before building it)
+- [ ] Test a "Deluxe" tier placeholder on the landing page to gauge willingness to pay more
 - [ ] Analyze price sensitivity vs. conversion rate
 
 ### Gift Flow Optimization

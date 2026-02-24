@@ -11,9 +11,6 @@ module.exports = async function handler(req, res) {
     if (!username) {
       return res.status(400).json({ error: 'Phishnet username is required.' });
     }
-    if (!share && !email) {
-      return res.status(400).json({ error: 'Email is required.' });
-    }
 
     const apiKey = process.env.PHISHNET_API_KEY;
     const showData = await fetchJson('https://api.phish.net/v5/attendance/username/' + encodeURIComponent(username) + '.json?apikey=' + apiKey);
@@ -61,7 +58,7 @@ module.exports = async function handler(req, res) {
           from: 'MyPhisHistory <support' + '@' + 'myphishistory.com>',
           to: process.env.NOTIFICATION_EMAIL,
           subject: 'Free Snapshot: ' + username + ' (' + totalShows + ' shows)',
-          html: '<div style="font-family:sans-serif;padding:20px;"><h2>New Free Snapshot Lead</h2><p><strong>Username:</strong> ' + username + '</p><p><strong>Email:</strong> ' + email + '</p><p><strong>Shows:</strong> ' + totalShows + '</p><p><strong>Years:</strong> ' + firstYear + '-' + lastYear + '</p><p><strong>Venues:</strong> ' + uniqueVenues + '</p></div>'
+          html: '<div style="font-family:sans-serif;padding:20px;"><h2>New Free Snapshot Lead</h2><p><strong>Username:</strong> ' + username + '</p><p><strong>Shows:</strong> ' + totalShows + '</p><p><strong>Years:</strong> ' + firstYear + '-' + lastYear + '</p><p><strong>Venues:</strong> ' + uniqueVenues + '</p></div>'
         });
       } catch (emailErr) {
         console.error('Snapshot notification email failed:', emailErr.message);
