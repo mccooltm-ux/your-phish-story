@@ -456,7 +456,7 @@
         <div class="sample-img" id="sample-1">
           <img src="/sample-showhistory.webp" alt="What Your Show History Says About You">
         </div>
-        <div class="sample-label">What your show history says about you â personality, patterns, and Phish DNA</div>
+        <div class="sample-label">What your show history says about you Ã¢ÂÂ personality, patterns, and Phish DNA</div>
       </div>
       <div class="sample-card">
         <div class="sample-img" id="sample-2">
@@ -468,56 +468,93 @@
         <div class="sample-img" id="sample-3">
           <img src="/sample-numbers.webp" alt="By the Numbers">
         </div>
-        <div class="sample-label">By the numbers â shows, years, states, hours of live Phish</div>
+        <div class="sample-label">By the numbers Ã¢ÂÂ shows, years, states, hours of live Phish</div>
       </div>
     </div>
   </section>
 
   <!-- WHAT YOU GET -->
-  <section class="features">
-    <h2>What's in MyPhisHistory</h2>
-    <p class="features-subtitle">~25 pages. Personalized to your exact show history. Not a template.</p>
-    <div class="feature-list">
-      <div class="feature-item">
-        <h3>Letter to Your Past Self</h3>
-        <p>Written to the version of you standing outside your first show. What you didn't know yet about the ride ahead.</p>
-      </div>
-      <div class="feature-item">
-        <h3>Stats Dashboard</h3>
-        <p>4 custom charts: shows by year, songs seen most, venue distribution, and set position breakdown.</p>
-      </div>
-      <div class="feature-item">
-        <h3>Rarest Catches</h3>
-        <p>The bustouts, debuts, and statistical anomalies hiding in your show history. Songs you saw that almost nobody else did.</p>
-      </div>
-      <div class="feature-item">
-        <h3>Era Narrative</h3>
-        <p>Where you were during 1.0, the hiatus, the reunion, the evolution. The story of Phish told through your attendance.</p>
-      </div>
-      <div class="feature-item">
-        <h3>Crown Jewel Deep Dives</h3>
-        <p>Your 3-5 most notable shows broken down in detail &mdash; what happened, why it mattered, where it sits in Phish history.</p>
-      </div>
-      <div class="feature-item">
-        <h3>Tier List &amp; Great Debates</h3>
-        <p>We rank your top jams, weigh in on the debates (Tweezers vs. Ghost), and see where your taste actually falls.</p>
-      </div>
-      <div class="feature-item">
-        <h3>Relisten Guide</h3>
-        <p>10 shows from your history worth going back to, with specific jams and timestamps. Your personal highlight reel.</p>
-      </div>
-      <div class="feature-item">
-        <h3>Complete Show List</h3>
-        <p>Every show, every date, every venue &mdash; formatted and designed as a keepsake reference.</p>
-      </div>
-    </div>
-  </section>
+  <section style="padding: 60px 20px; background: #111;">
+<div style="max-width: 800px; margin: 0 auto; text-align: center; margin-bottom: 32px;">
+<h2 style="font-size: 1.5rem; color: #fff; margin-bottom: 8px;">See What You Get</h2>
+<p style="color: #888; font-size: 0.85rem;">A real report. Scroll through a sample below.</p>
+</div>
+<style>
+.report-preview { max-width: 720px; margin: 0 auto; background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 12px; overflow: hidden; }
+.report-scroll { max-height: 600px; overflow-y: auto; padding: 0; scrollbar-width: thin; scrollbar-color: #e85d26 #1a1a1a; }
+.report-scroll::-webkit-scrollbar { width: 6px; }
+.report-scroll::-webkit-scrollbar-track { background: #1a1a1a; }
+.report-scroll::-webkit-scrollbar-thumb { background: #e85d26; border-radius: 3px; }
+.rp-page { padding: 40px 32px; border-bottom: 1px solid #222; }
+.rp-page:last-child { border-bottom: none; }
+.rp-cover { text-align: center; background: linear-gradient(180deg, #1a1008 0%, #0d0d0d 100%); }
+.rp-cover h2 { font-size: 1.1rem; letter-spacing: 6px; text-transform: uppercase; color: #e85d26; margin: 0 0 4px; }
+.rp-cover h3 { font-size: 0.85rem; letter-spacing: 4px; text-transform: uppercase; color: #e85d26; margin: 0 0 24px; }
+.rp-cover .rp-for { font-size: 0.75rem; color: #888; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 28px; }
+.rp-stats { display: flex; justify-content: center; gap: 32px; margin: 24px 0; }
+.rp-stat-num { font-size: 2rem; font-weight: 700; color: #fff; display: block; }
+.rp-stat-label { font-size: 0.65rem; color: #888; letter-spacing: 2px; text-transform: uppercase; }
+.rp-narrative { font-size: 0.82rem; line-height: 1.7; color: #bbb; text-align: left; margin: 20px 0 0; }
+.rp-section-title { font-size: 0.75rem; letter-spacing: 4px; text-transform: uppercase; color: #e85d26; margin: 0 0 16px; border-bottom: 1px solid #2a2a2a; padding-bottom: 8px; }
+.rp-jam { margin-bottom: 16px; }
+.rp-jam-title { font-size: 0.8rem; color: #fff; font-weight: 600; }
+.rp-jam-star { color: #e85d26; }
+.rp-jam-desc { font-size: 0.75rem; color: #999; line-height: 1.5; margin-top: 2px; }
+.rp-era { margin-bottom: 14px; }
+.rp-era-name { font-size: 0.8rem; color: #fff; font-weight: 600; }
+.rp-era-count { color: #e85d26; font-size: 0.75rem; margin-left: 8px; }
+.rp-era-desc { font-size: 0.75rem; color: #999; line-height: 1.5; margin-top: 2px; }
+.rp-fade { position: relative; }
+.rp-fade::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(transparent, #0d0d0d); pointer-events: none; }
+.rp-badge { text-align: center; padding: 16px; background: #111; border-top: 1px solid #222; font-size: 0.7rem; color: #666; letter-spacing: 1px; }
+.rp-no-select { user-select: none; -webkit-user-select: none; }
+</style>
+<div class="report-preview" oncontextmenu="return false">
+<div class="report-scroll">
+<div class="rp-page rp-cover rp-no-select">
+<div class="rp-for">SAMPLE REPORT FOR</div>
+<h2>PHISH</h2>
+<h3>SHOW HISTORY</h3>
+<div class="rp-for">FOR JOHN FISHMAN</div>
+<div class="rp-stats">
+<div><span class="rp-stat-num">117</span><span class="rp-stat-label">Shows</span></div>
+<div><span class="rp-stat-num">30</span><span class="rp-stat-label">Years</span></div>
+<div><span class="rp-stat-num">56</span><span class="rp-stat-label">MSG Shows</span></div>
+<div><span class="rp-stat-num">10</span><span class="rp-stat-label">NYE Drops</span></div>
+</div>
+<p class="rp-narrative">117 shows across 30 years. From Great Woods in the summer of 1995 to Madison Square Garden on New Year’s Eve 2025. Through the glory of 1.0, the darkness of 2.0, the mud at Coventry, the rebirth at Jones Beach, and the ascendance of the Baker’s Dozen. East Coast roots. MSG soul. 117 chapters and counting.</p>
+</div>
+<div class="rp-page rp-no-select">
+<div class="rp-section-title">PERFORMANCES WORTH REVISITING</div>
+<div class="rp-jam"><span class="rp-jam-star">★ </span><span class="rp-jam-title">12/30/2019 — Tweezer</span><div class="rp-jam-desc">36 minutes. Third-longest 3.0 Tweezer. The MSG crowd erupted. Multiple key changes, relentless peaks. Consensus pick for best MSG Tweezer ever.</div></div>
+<div class="rp-jam"><span class="rp-jam-star">★ </span><span class="rp-jam-title">07/25/2017 — Lawn Boy</span><div class="rp-jam-desc">30 minutes. Page brought out the keytar for the first-ever jammed-out Lawn Boy. A song that normally runs under 4 minutes stretched into a full band odyssey.</div></div>
+<div class="rp-jam"><span class="rp-jam-star">★ </span><span class="rp-jam-title">08/22/2015 — Tweezer > Prince Caspian</span><div class="rp-jam-desc">Magnaball Night 2. Sharp, menacing turn into dark swampy funk. One of the most celebrated jam sequences of the 3.0 era.</div></div>
+<div class="rp-jam"><span class="rp-jam-star">★ </span><span class="rp-jam-title">12/31/2023 — Harpua > Gamehendge</span><div class="rp-jam-desc">The NYE gag was Gamehendge. A full narration woven through the midnight countdown. Historic.</div></div>
+<div class="rp-jam"><span class="rp-jam-star">★ </span><span class="rp-jam-title">06/02/2009 — Fluffhead</span><div class="rp-jam-desc">The reunion. First show back after the five-year hiatus. Opening night at Jones Beach. You were there when it came back.</div></div>
+</div>
+<div class="rp-page rp-no-select">
+<div class="rp-section-title">YOUR ERAS</div>
+<div class="rp-era"><span class="rp-era-name">ERA I: THE BEGINNING — 1.0 (1995–2000)</span><span class="rp-era-count">13 shows</span><div class="rp-era-desc">Peak 1.0. Worcester Centrum winters, Tweeter Center summers, Camp Oswego. The improvisational language you learned in these rooms is still the benchmark.</div></div>
+<div class="rp-era"><span class="rp-era-name">ERA II: THE TWILIGHT — 2.0 (2003–2004)</span><span class="rp-era-count">6 shows</span><div class="rp-era-desc">The band was fraying. You were there at the end. Coventry. The mud, the emotions, the feeling that this might actually be over.</div></div>
+<div class="rp-era"><span class="rp-era-name">ERA III: THE REUNION — Early 3.0 (2009–2013)</span><span class="rp-era-count">18 shows</span><div class="rp-era-desc">Jones Beach, June 2, 2009. You were there opening night. Your first MSG December run in 2012 changed everything.</div></div>
+<div class="rp-era"><span class="rp-era-name">ERA IV: THE PEAK — 3.0 Maturity (2014–2017)</span><span class="rp-era-count">35 shows</span><div class="rp-era-desc">The Baker’s Dozen: 13 nights at MSG, no repeat songs, and you were there for 12. You went from serious fan to lifer.</div></div>
+<div class="rp-era"><span class="rp-era-name">ERA V: THE PRESENT — 4.0 (2018–2025)</span><span class="rp-era-count">45 shows</span><div class="rp-era-desc">Your most prolific era. Hampton, every NYE, AC Beach, Forest Hills, Mondegreen. More Phish now than any point in 30 years.</div></div>
+</div>
+<div class="rp-page rp-fade rp-no-select">
+<div class="rp-section-title">CROWN JEWELS & TIER LIST</div>
+<div class="rp-jam"><span class="rp-jam-star">★ </span><span class="rp-jam-title">THE BAKER’S DOZEN — MSG, July–August 2017</span><div class="rp-jam-desc">12 of 13 shows attended. 237 songs, zero repeats. The centerpiece of your Phish career. Everything before it was prologue.</div></div>
+<div class="rp-jam"><span class="rp-jam-star">★ </span><span class="rp-jam-title">COVENTRY — Newport, VT, August 2004</span><div class="rp-jam-desc">Both days attended. The mud was legendary. The band was struggling. And yet — you were there. You earned that weight.</div></div>
+<div class="rp-jam"><span class="rp-jam-star">★ </span><span class="rp-jam-title">HAMPTON COLISEUM — October 2018</span><div class="rp-jam-desc">Three-night run. Night 2 = consensus 3.0 classic. Extended jams that pushed into genuinely new territory.</div></div>
+<div class="rp-jam"><span class="rp-jam-star">★ </span><span class="rp-jam-title">NYE 2019 — MSG, December 31, 2019</span><div class="rp-jam-desc">The last normal show before COVID. A Tweezer that entered the canon. The farewell to normalcy nobody saw coming.</div></div>
+<div style="text-align:center;margin-top:20px;font-size:0.75rem;color:#666;font-style:italic;">Scroll to preview more — or get your own below</div>
+</div>
+</div>
+<div class="rp-badge">SAMPLE REPORT — YOUR VERSION WILL BE PERSONALIZED TO YOUR EXACT SHOW HISTORY</div>
+</div>
+</section>
 
   <!-- TESTIMONIAL -->
-  <section class="testimonial">
-    <blockquote>"I've been a phan for 30 years. This is the first time I've seen it all in one place."</blockquote>
-    <cite>&mdash; Ted McCool, 26 shows</cite>
-  </section>
+  
 
   <div class="divider"><hr></div>
 
@@ -541,7 +578,14 @@
       </form>
       <div id="snapshot-error" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #3a1c1c; color: #ff6b6b; border-radius: 8px; font-size: 0.9rem;"></div>
     </div>
-    <p style="color: #484f58; font-size: 0.85rem; margin-top: 2rem;">Want the full story? <a href="#order" style="color: #e8916e; text-decoration: none;">See what's in the $25 PDF &darr;</a></p>
+    <p style="color: #484f58; font-size: 0.85rem; margin-top: 2rem;">Want the full story? <a href="#order" style="color: #e8916e; text-decoration: none;">See what's in the $25 PDF &darr;</a></p><div style="max-width:600px;margin:24px auto 32px;text-align:left;display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;">
+<div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Cover & Stats</span> — Your career at a glance, including headline numbers, timeline, and patterns</div>
+<div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Geography</span> — Every venue and state you’ve attended, ranked and visualized</div>
+<div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Performances Worth Revisiting</span> — Verified standout jams from your shows with streaming links</div>
+<div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Crown Jewels</span> — Your best shows ranked, with deep dives into the defining nights</div>
+<div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Your Eras</span> — Your personal journey through each phase of the band’s career</div>
+<div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Debates & What You Missed</span> — Assessment of your resume’s strengths and gaps</div>
+</div>
   </section>
   <div style="max-width: 900px; margin: 0 auto; padding: 0 1.5rem;"><hr style="border: none; border-top: 1px solid #1c2333; margin: 1rem 0 0;"></div>
 <section class="order-section" id="order">
