@@ -1,5 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+const ORDER_CAP = parseInt(process.env.ORDER_CAP || '20', 10);
+
 module.exports = async function handler(req, res) {
   // Only allow POST
   if (req.method !== 'POST') {
@@ -12,6 +14,17 @@ module.exports = async function handler(req, res) {
     // Validate required fields
     if (!phishnet_username || !email) {
       return res.status(400).json({ error: 'Phishnet username and email are required.' });
+    }
+
+    // Check order cap — count completed Stripe checkout sessions
+    const completedSessions = await stripe.checkout.sessions.list({ limit: 1, status: 'complete' });
+    const orderCount = completedSessions.total_count || 0;
+
+    if (orderCount >= ORDER_CAP) {
+      return res.status(200).json({
+        waitlist: true,
+        message: `We're at capacity for this wave. Join the waitlist and we'll email you when we open up.`
+      });
     }
 
     // Build metadata for the order (this is what the webhook reads)

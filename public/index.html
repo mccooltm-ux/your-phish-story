@@ -501,13 +501,22 @@
       api_host: 'https://us.i.posthog.com',
       person_profiles: 'identified_only'
     });
+
+    // Capture ref parameter for referral attribution
+    (function() {
+      var ref = new URLSearchParams(window.location.search).get('ref');
+      if (ref) {
+        posthog.capture('referral_landing', { ref_source: ref });
+        posthog.register({ ref_source: ref });
+      }
+    })();
   </script>
 </head>
 <body>
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero-badge">Early Access &mdash; Limited to 10 orders/week</div>
+    <div class="hero-badge">Early Access &mdash; Limited first wave</div>
     <h1>The story of your Phish life, written by someone who was paying attention.</h1>
     <p class="hero-sub">
       Start with a free snapshot of your stats. Upgrade to the full personalized PDF with narrative accounts, era analysis, rare catches, and a letter to the fan you used to be.
@@ -522,19 +531,19 @@
         <div class="sample-img" id="sample-1">
           <img src="/sample-showhistory.webp" alt="What Your Show History Says About You">
         </div>
-        <div class="sample-label">The cover — 117 shows, 30 years, and the narrative of your entire Phish career</div>
+        <div class="sample-label">What Your Show History Says About You — 117 shows, 30 years, one narrative</div>
       </div>
       <div class="sample-card">
         <div class="sample-img" id="sample-2">
-          <img src="/sample-letter.webp" alt="Letter to Past Self">
+          <img src="/sample-letter.webp" alt="Songs You Know by Heart">
         </div>
-        <div class="sample-label">Songs You Know by Heart — your most-heard songs across 117 shows</div>
+        <div class="sample-label">Songs You Know by Heart — your most-heard songs ranked and analyzed</div>
       </div>
       <div class="sample-card">
         <div class="sample-img" id="sample-3">
           <img src="/sample-numbers.webp" alt="By the Numbers">
         </div>
-        <div class="sample-label">Performances Worth Revisiting — verified standout jams with streaming links</div>
+        <div class="sample-label">Performances Worth Revisiting — standout jams from your shows with listening links</div>
       </div>
       <div class="sample-card">
         <div class="sample-img" id="sample-4">
@@ -650,7 +659,7 @@
         <input type="text" id="snapshot-username" placeholder="e.g. jfishman" required style="width: 100%; padding: 0.75rem 1rem; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #e2e8f0; font-size: 1rem; margin-bottom: 1rem; font-family: Georgia, serif;">
         <label style="display: block; color: #c9d1d9; font-size: 0.85rem; margin-bottom: 0.35rem; font-weight: bold;">Your Email</label>
         <input type="email" id="snapshot-email" placeholder="you@example.com" required style="width: 100%; padding: 0.75rem 1rem; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #e2e8f0; font-size: 1rem; margin-bottom: 0.35rem; font-family: Georgia, serif;">
-        <div style="color: #8b949e; font-size: 0.8rem; margin-bottom: 1.25rem;">We'll use this to send you upgrade offers. No spam.</div>
+        <div style="color: #8b949e; font-size: 0.8rem; margin-bottom: 1.25rem;">We'll send your snapshot results here.</div>
         <button type="submit" id="snapshot-btn" style="width: 100%; padding: 0.9rem; background: transparent; border: 2px solid #e8916e; color: #e8916e; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; font-family: Georgia, serif; transition: all 0.2s;">Get My Free Snapshot</button>
       </form>
       <div id="snapshot-error" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #3a1c1c; color: #ff6b6b; border-radius: 8px; font-size: 0.9rem;"></div>
@@ -737,8 +746,8 @@
       <p>48 hours or less. Each document is individually generated, not templated. We're in early access and manually reviewing every order.</p>
     </div>
     <div class="faq-item">
-      <h3>Will there be a printed version?</h3>
-      <p>Coming soon. We're testing the digital version first.</p>
+      <h3>What if I only have a few shows?</h3>
+      <p>Even 5 shows make a great document. We've written stories for everyone from first-timers to 500+ show vets. The narrative adapts to your history.</p>
     </div>
   </section>
 
@@ -911,6 +920,13 @@
 
         const data = await res.json();
 
+        if (data.waitlist) {
+          // Order cap reached — show waitlist UI
+          posthog.capture('waitlist_shown', { username: username, email: email });
+          showWaitlistUI(username, email, fullName);
+          return;
+        }
+
         if (data.url) {
           posthog.capture('checkout_redirected', { username: username, email: email });
           window.location.href = data.url;
@@ -927,6 +943,43 @@
     function showError(msg) {
       formError.textContent = msg;
       formError.classList.add('visible');
+    }
+
+    function showWaitlistUI(username, email, fullName) {
+      var card = document.querySelector('.order-card');
+      card.innerHTML = `
+        <h2 style="font-family:'DM Serif Display',serif;font-size:1.6rem;color:#fff;margin-bottom:8px;font-weight:400;">We're at capacity</h2>
+        <p style="color:var(--text-muted);margin-bottom:24px;line-height:1.6;">Our first wave sold out. Join the waitlist and we'll email you the moment we open up for the next batch.</p>
+        <div id="waitlist-error" class="form-error"></div>
+        <button id="waitlist-btn" class="btn-primary" style="margin-bottom:16px;">Join the Waitlist</button>
+        <p style="font-size:13px;color:#484f58;">We saved your info — you won't need to re-enter anything.</p>
+      `;
+      document.getElementById('waitlist-btn').addEventListener('click', async function() {
+        var btn = this;
+        var errDiv = document.getElementById('waitlist-error');
+        btn.disabled = true;
+        btn.textContent = 'Joining...';
+        errDiv.classList.remove('visible');
+        try {
+          var res = await fetch('/api/join-waitlist', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phishnet_username: username, email: email, full_name: fullName || null })
+          });
+          var data = await res.json();
+          if (data.success) {
+            posthog.capture('waitlist_joined', { username: username, email: email });
+            card.innerHTML = '<h2 style="font-family:\'DM Serif Display\',serif;font-size:1.6rem;color:#fff;margin-bottom:8px;font-weight:400;">You\'re on the list.</h2><p style="color:var(--text-muted);line-height:1.6;">Check your email for confirmation. We\'ll reach out as soon as we\'re ready for the next wave.</p>';
+          } else {
+            throw new Error(data.error || 'Something went wrong.');
+          }
+        } catch(e) {
+          errDiv.textContent = e.message;
+          errDiv.classList.add('visible');
+          btn.disabled = false;
+          btn.textContent = 'Join the Waitlist';
+        }
+      });
     }
 
     // Smooth scroll for CTA

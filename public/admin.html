@@ -272,6 +272,38 @@
       margin-top: 4px;
     }
     .status-overdue { background: #3b0a0a; color: #fb7185; }
+    .tab-bar {
+      display: flex;
+      gap: 0;
+      margin-bottom: 24px;
+      border-bottom: 1px solid #222;
+    }
+    .tab-bar button {
+      background: none;
+      border: none;
+      color: #666;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-family: inherit;
+    }
+    .tab-bar button.active {
+      color: #e85d04;
+      border-bottom-color: #e85d04;
+    }
+    .tab-bar button:hover { color: #aaa; }
+    .waitlist-badge {
+      display: inline-block;
+      background: #332200;
+      color: #f48c06;
+      font-size: 11px;
+      padding: 1px 7px;
+      border-radius: 8px;
+      margin-left: 6px;
+    }
+    .status-notified { background: #0a2e0a; color: #4ade80; }
+    .status-waiting { background: #332200; color: #f48c06; }
   </style>
 </head>
 <body>
@@ -298,12 +330,22 @@
           <div class="stat-label">Pending</div>
         </div>
         <div class="stat">
+          <div class="stat-value" id="stat-waitlist">—</div>
+          <div class="stat-label">Waitlist</div>
+        </div>
+        <div class="stat">
           <div class="stat-value" id="stat-revenue">—</div>
           <div class="stat-label">Revenue</div>
         </div>
       </div>
     </div>
 
+    <div class="tab-bar">
+      <button class="active" onclick="switchTab('orders', this)">Orders</button>
+      <button onclick="switchTab('waitlist', this)">Waitlist <span class="waitlist-badge" id="waitlist-count-badge">0</span></button>
+    </div>
+
+    <div id="orders-tab">
     <div class="filters">
       <button class="active" onclick="setFilter('all', this)">All</button>
       <button onclick="setFilter('pending', this)">Pending</button>
@@ -314,6 +356,13 @@
 
     <div id="orders-container">
       <div class="loading">Loading orders...</div>
+    </div>
+    </div>
+
+    <div id="waitlist-tab" style="display:none;">
+      <div id="waitlist-container">
+        <div class="loading">Loading waitlist...</div>
+      </div>
     </div>
   </div>
 
@@ -387,6 +436,15 @@
         allOrders = data.orders || [];
         updateStats();
         renderOrders();
+        // Also fetch waitlist count for header stat
+        try {
+          const wRes = await fetch('/api/admin/waitlist', { headers: { 'X-Admin-Secret': ADMIN_SECRET } });
+          if (wRes.ok) {
+            const wData = await wRes.json();
+            document.getElementById('stat-waitlist').textContent = wData.count || 0;
+            document.getElementById('waitlist-count-badge').textContent = wData.count || 0;
+          }
+        } catch (_) { /* non-critical */ }
       } catch (err) {
         document.getElementById('orders-container').innerHTML = '<div class="loading" style="color:#f87171;">Failed to load orders</div>';
       }
@@ -602,6 +660,70 @@
         btn.textContent = 'Send PDF';
         btn.disabled = false;
       }
+    }
+
+    // --- Tabs ---
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.tab-bar button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('orders-tab').style.display = tab === 'orders' ? 'block' : 'none';
+      document.getElementById('waitlist-tab').style.display = tab === 'waitlist' ? 'block' : 'none';
+      if (tab === 'waitlist') loadWaitlist();
+    }
+
+    // --- Waitlist ---
+    let waitlistData = [];
+
+    async function loadWaitlist() {
+      document.getElementById('waitlist-container').innerHTML = '<div class="loading">Loading waitlist...</div>';
+      try {
+        const res = await fetch('/api/admin/waitlist', {
+          headers: { 'X-Admin-Secret': ADMIN_SECRET }
+        });
+        if (res.status === 401) {
+          document.getElementById('waitlist-container').innerHTML = '<div class="loading" style="color:#f87171;">Invalid password</div>';
+          return;
+        }
+        const data = await res.json();
+        waitlistData = data.waitlist || [];
+        document.getElementById('stat-waitlist').textContent = waitlistData.length;
+        document.getElementById('waitlist-count-badge').textContent = waitlistData.length;
+        renderWaitlist();
+      } catch (err) {
+        document.getElementById('waitlist-container').innerHTML = '<div class="loading" style="color:#f87171;">Failed to load waitlist</div>';
+      }
+    }
+
+    function renderWaitlist() {
+      if (waitlistData.length === 0) {
+        document.getElementById('waitlist-container').innerHTML = '<div class="empty">No one on the waitlist yet</div>';
+        return;
+      }
+
+      let html = `<table class="order-table">
+        <thead><tr>
+          <th>#</th><th>Joined</th><th>Username</th><th>Name</th><th>Email</th><th>Status</th>
+        </tr></thead><tbody>`;
+
+      waitlistData.forEach((entry, i) => {
+        const joined = entry.joined_at
+          ? new Date(entry.joined_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+          : new Date(entry.created * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+        const statusClass = entry.notified ? 'status-notified' : 'status-waiting';
+        const statusText = entry.notified ? 'Notified' : 'Waiting';
+
+        html += `<tr>
+          <td style="color:#666;">${i + 1}</td>
+          <td style="white-space:nowrap;color:#888;">${joined}</td>
+          <td><strong>${entry.username}</strong></td>
+          <td style="color:#aaa;font-style:italic;">${entry.name || '—'}</td>
+          <td style="color:#888;">${entry.email}</td>
+          <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+        </tr>`;
+      });
+
+      html += '</tbody></table>';
+      document.getElementById('waitlist-container').innerHTML = html;
     }
 
     // --- Toast ---
