@@ -3,6 +3,7 @@
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
+const DISPLAY_TIMEZONE = process.env.DISPLAY_TIMEZONE || 'America/New_York';
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -62,6 +63,7 @@ module.exports = async function handler(req, res) {
         delivered_at: piMeta.delivered_at || null,
         follow_up_sent: piMeta.follow_up_sent || null,
         date: new Date(session.created * 1000).toLocaleDateString('en-US', {
+          timeZone: DISPLAY_TIMEZONE,
           month: 'short',
           day: 'numeric',
           hour: 'numeric',
