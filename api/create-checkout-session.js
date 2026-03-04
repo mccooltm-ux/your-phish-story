@@ -2,6 +2,8 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const ORDER_CAP = parseInt(process.env.ORDER_CAP || '20', 10);
 const DOMAIN = process.env.DOMAIN || 'https://myphishistory.com';
+const LAUNCH_FREE_MODE = process.env.LAUNCH_FREE_MODE === 'true';
+const PAID_AMOUNT_CENTS = 2500;
 
 function isValidEmail(value) {
   return typeof value === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -57,7 +59,8 @@ module.exports = async function handler(req, res) {
     const metadata = {
       phishnet_username: username,
       customer_email: normalizedEmail,
-      is_gift: giftOrder ? 'true' : 'false'
+      is_gift: giftOrder ? 'true' : 'false',
+      launch_free_mode: LAUNCH_FREE_MODE ? 'true' : 'false'
     };
 
     if (normalizedFullName) {
@@ -67,6 +70,8 @@ module.exports = async function handler(req, res) {
     if (giftOrder) {
       metadata.gift_recipient_email = normalizedGiftEmail;
     }
+
+    const amountCents = LAUNCH_FREE_MODE ? 0 : PAID_AMOUNT_CENTS;
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
@@ -85,7 +90,7 @@ module.exports = async function handler(req, res) {
               name: 'MyPhisHistory - Personalized PDF',
               description: `AI-assisted personalized show history document for Phishnet user: ${username}`,
             },
-            unit_amount: 2500, // $25.00 in cents
+            unit_amount: amountCents,
           },
           quantity: 1,
         },
