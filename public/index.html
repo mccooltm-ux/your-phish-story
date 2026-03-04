@@ -84,53 +84,229 @@
       font-weight: 500;
     }
 
-    /* --- SAMPLE PAGES --- */
+    /* --- SAMPLE PREVIEW --- */
     .samples {
-      max-width: 960px;
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 0 24px 64px;
+      padding: 0 24px 72px;
     }
 
-    .samples-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
+    .samples-intro {
+      max-width: 720px;
+      margin: 0 auto 28px;
+      text-align: center;
     }
 
-    .sample-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+    .samples-intro h2 {
+      font-size: 1.5rem;
+      color: #fff;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .samples-intro p {
+      color: #8b949e;
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .pdf-reader {
+      background:
+        radial-gradient(circle at top left, rgba(232, 145, 110, 0.12), transparent 34%),
+        linear-gradient(180deg, #10151c 0%, #0a0f16 100%);
+      border: 1px solid rgba(240, 246, 252, 0.08);
+      border-radius: 24px;
       overflow: hidden;
-      transition: border-color 0.2s;
+      box-shadow:
+        0 24px 80px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.03);
     }
 
-    .sample-card:hover {
-      border-color: var(--accent);
+    .pdf-reader-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(240, 246, 252, 0.06);
+      background: rgba(7, 10, 15, 0.9);
     }
 
-    .sample-img {
-      width: 100%;
-      aspect-ratio: 8.5/11;
-      background: #1a1f27;
+    .pdf-reader-status {
       display: flex;
       align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      font-size: 14px;
-      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      min-width: 0;
     }
 
-    .sample-img img {
+    .pdf-reader-dots {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .pdf-reader-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .pdf-reader-dots span:first-child {
+      background: rgba(248, 81, 73, 0.8);
+    }
+
+    .pdf-reader-dots span:nth-child(2) {
+      background: rgba(241, 196, 15, 0.8);
+    }
+
+    .pdf-reader-dots span:nth-child(3) {
+      background: rgba(46, 160, 67, 0.8);
+    }
+
+    .pdf-reader-title {
+      min-width: 0;
+    }
+
+    .pdf-reader-title strong {
+      display: block;
+      color: #f0f6fc;
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pdf-reader-title span {
+      display: block;
+      color: #8b949e;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .pdf-reader-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pdf-reader-actions a {
+      color: #e8916e;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .pdf-reader-actions a:hover {
+      color: #ffab85;
+    }
+
+    .pdf-reader-stage {
+      padding: 28px;
+      background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 55%),
+        linear-gradient(180deg, #0f151d 0%, #090d13 100%);
+    }
+
+    .pdf-stack {
+      position: relative;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 14px 14px 0;
+    }
+
+    .pdf-stack::before,
+    .pdf-stack::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 22px;
+      background: rgba(239, 243, 247, 0.95);
+      border: 1px solid rgba(15, 23, 33, 0.1);
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.22);
+      transform-origin: center top;
+      z-index: 0;
+    }
+
+    .pdf-stack::before {
+      transform: rotate(-1.25deg) translateY(10px);
+      opacity: 0.65;
+    }
+
+    .pdf-stack::after {
+      transform: rotate(1.15deg) translateY(18px);
+      opacity: 0.42;
+    }
+
+    .pdf-frame {
+      position: relative;
+      z-index: 1;
+      overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid rgba(12, 18, 27, 0.1);
+      background: #f6f3ea;
+      box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.34),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+    }
+
+    .pdf-frame::before {
+      content: "Scroll to flip through the full report";
+      display: block;
+      padding: 10px 16px;
+      background: linear-gradient(180deg, #f7f2e5 0%, #ebe4d3 100%);
+      color: #6d5a38;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(109, 90, 56, 0.15);
+      text-align: center;
+    }
+
+    .pdf-frame iframe {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      height: min(76vh, 1080px);
+      border: 0;
+      display: block;
+      background: #fff;
     }
 
-    .sample-label {
-      padding: 14px 16px;
-      font-size: 14px;
-      color: var(--text-muted);
+    .pdf-reader-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 16px 20px 20px;
+      border-top: 1px solid rgba(240, 246, 252, 0.06);
+      background: rgba(7, 10, 15, 0.82);
+    }
+
+    .pdf-reader-note {
+      color: #8b949e;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      max-width: 620px;
+    }
+
+    .pdf-reader-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(232, 145, 110, 0.12);
+      color: #f0f6fc;
+      font-size: 0.76rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      border: 1px solid rgba(232, 145, 110, 0.18);
     }
 
     /* --- WHAT YOU GET --- */
@@ -442,37 +618,6 @@
       line-height: 1.6;
     }
 
-    /* --- LIGHTBOX --- */
-    .lightbox-overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.92);
-      z-index: 10000;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .lightbox-overlay.active {
-      display: flex;
-    }
-
-    .lightbox-overlay img {
-      max-width: 90vw;
-      max-height: 90vh;
-      object-fit: contain;
-      border-radius: 8px;
-      cursor: default;
-    }
-
-    .sample-card {
-      cursor: pointer;
-    }
-
     /* --- MOBILE FIXES --- */
     .gift-toggle {
       min-height: 44px;
@@ -485,13 +630,37 @@
     }
 
     @media (max-width: 360px) {
-      .samples-grid {
-        grid-template-columns: 1fr;
+      .pdf-reader-stage {
+        padding: 16px;
       }
 
       .gift-toggle {
         flex-wrap: wrap;
         gap: 8px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .samples {
+        padding: 0 16px 56px;
+      }
+
+      .pdf-reader-topbar,
+      .pdf-reader-footer {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .pdf-reader-title strong {
+        white-space: normal;
+      }
+
+      .pdf-stack {
+        padding: 8px 8px 0;
+      }
+
+      .pdf-frame iframe {
+        height: min(68vh, 820px);
       }
     }
   </style>
@@ -524,61 +693,46 @@
     <a href="#snapshot" style="display:inline-block;padding:14px 36px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;transition:background 0.2s;">Try It Free</a>
   </section>
 
-  <!-- SAMPLE PAGES -->
+  <!-- SAMPLE PREVIEW -->
   <section class="samples">
-    <div class="samples-grid">
-      <div class="sample-card">
-        <div class="sample-img" id="sample-1">
-          <img src="/sample-showhistory.webp" alt="What Your Show History Says About You">
+    <div class="samples-intro">
+      <h2>See What You Get</h2>
+      <p>This is the actual full sample PDF. Scroll through it here like a reader preview, or open it full screen if you want the entire document on its own.</p>
+    </div>
+    <div class="pdf-reader">
+      <div class="pdf-reader-topbar">
+        <div class="pdf-reader-status">
+          <div class="pdf-reader-dots" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="pdf-reader-title">
+            <strong>Full sample report: John Fishman</strong>
+            <span>Native preview mode</span>
+          </div>
         </div>
-        <div class="sample-label">What Your Show History Says About You — 117 shows, 30 years, one narrative</div>
+        <div class="pdf-reader-actions">
+          <a href="/fishman_phish_story.pdf" target="_blank" rel="noopener noreferrer">Open full screen</a>
+          <a href="/fishman_phish_story.pdf" download>Download PDF</a>
+        </div>
       </div>
-      <div class="sample-card">
-        <div class="sample-img" id="sample-2">
-          <img src="/sample-letter.webp" alt="Songs You Know by Heart">
+      <div class="pdf-reader-stage">
+        <div class="pdf-stack">
+          <div class="pdf-frame">
+            <iframe
+              src="/fishman_phish_story.pdf#view=FitH"
+              title="MyPhisHistory sample PDF"
+            ></iframe>
+          </div>
         </div>
-        <div class="sample-label">Songs You Know by Heart — your most-heard songs ranked and analyzed</div>
       </div>
-      <div class="sample-card">
-        <div class="sample-img" id="sample-3">
-          <img src="/images/sample-stats.jpg" alt="By the Numbers">
-        </div>
-        <div class="sample-label">By the Numbers — total shows, hours spent, peak years, and venue breakdowns</div>
+      <div class="pdf-reader-footer">
+        <div class="pdf-reader-note">A full sample is embedded on-page so people can browse the real deliverable before they buy. If a browser blocks inline PDF viewing, the full-screen and download links still work.</div>
+        <div class="pdf-reader-pill">Scroll to flip through</div>
       </div>
     </div>
   </section>
-
-  <!-- LIGHTBOX -->
-  <div class="lightbox-overlay" id="lightbox-overlay">
-    <img id="lightbox-img" src="" alt="Sample page enlarged">
-  </div>
-
-  <!-- WHAT YOU GET -->
-  <section style="padding: 60px 20px; background: #111;">
-<div style="max-width: 800px; margin: 0 auto; text-align: center; margin-bottom: 32px;">
-<h2 style="font-size: 1.5rem; color: #fff; margin-bottom: 8px;">See What You Get</h2>
-<p style="color: #888; font-size: 0.85rem;">This is the actual full sample PDF. Scroll through it below.</p>
-</div>
-<div style="max-width: 920px; margin: 0 auto; background: #0d0d0d; border: 1px solid #2a2a2a; border-radius: 12px; overflow: hidden;">
-  <div style="padding: 14px 16px; border-bottom: 1px solid #222; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
-    <div style="color: #c9d1d9; font-size: 0.9rem;">Full sample report: John Fishman</div>
-    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-      <a href="/fishman_phish_story.pdf" target="_blank" rel="noopener noreferrer" style="color: #e8916e; text-decoration: none; font-size: 0.85rem;">Open full screen</a>
-      <a href="/fishman_phish_story.pdf" download style="color: #e8916e; text-decoration: none; font-size: 0.85rem;">Download PDF</a>
-    </div>
-  </div>
-  <div style="height: min(78vh, 1100px); background: #101318;">
-    <iframe
-      src="/fishman_phish_story.pdf#view=FitH"
-      title="MyPhisHistory sample PDF"
-      style="width: 100%; height: 100%; border: 0; display: block;"
-    ></iframe>
-  </div>
-  <div style="padding: 14px 16px; border-top: 1px solid #222; color: #666; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; text-align: center;">
-    Full sample PDF embedded on-page. If your browser blocks PDF embeds, use “Open full screen.”
-  </div>
-</div>
-</section>
 
   <!-- TESTIMONIAL -->
   
@@ -1019,34 +1173,6 @@
   });
 })();
 
-// Lightbox for sample cards
-(function() {
-  var overlay = document.getElementById('lightbox-overlay');
-  var lbImg = document.getElementById('lightbox-img');
-
-  document.querySelectorAll('.sample-card').forEach(function(card) {
-    card.addEventListener('click', function() {
-      var img = card.querySelector('.sample-img img');
-      if (img) {
-        lbImg.src = img.src;
-        lbImg.alt = img.alt;
-        overlay.classList.add('active');
-      }
-    });
-  });
-
-  overlay.addEventListener('click', function(e) {
-    if (e.target !== lbImg) {
-      overlay.classList.remove('active');
-    }
-  });
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && overlay.classList.contains('active')) {
-      overlay.classList.remove('active');
-    }
-  });
-})();
 </script>
 
 </body>
