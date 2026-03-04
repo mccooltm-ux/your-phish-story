@@ -451,6 +451,13 @@
       line-height: 1.5;
     }
 
+    .order-submit-note {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #8b949e;
+      line-height: 1.5;
+    }
+
     /* --- FOOTER --- */
     footer {
       max-width: 720px;
@@ -627,7 +634,7 @@
     <p class="hero-sub">
       Start with a free snapshot of your stats. Upgrade to the full AI-assisted, human-reviewed PDF with narrative accounts, era analysis, rare catches, and a letter to the fan you used to be.
     </p>
-    <a href="#snapshot" style="display:inline-block;padding:14px 36px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;transition:background 0.2s;">Try It Free</a>
+    <a href="#snapshot" id="hero-cta-text" style="display:inline-block;padding:14px 36px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;transition:background 0.2s;">Snapshot</a>
   </section>
 
   <!-- SAMPLE PREVIEW -->
@@ -685,7 +692,7 @@
       </form>
       <div id="snapshot-error" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #3a1c1c; color: #ff6b6b; border-radius: 8px; font-size: 0.9rem;"></div>
     </div>
-    <p style="color: #484f58; font-size: 0.85rem; margin-top: 2rem;">Want the full story? <a href="#order" style="color: #e8916e; text-decoration: none;">See what's in the $25 PDF &darr;</a></p><div style="max-width:600px;margin:24px auto 32px;text-align:left;display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;">
+    <p style="color: #484f58; font-size: 0.85rem; margin-top: 2rem;">Want the full story? <a href="#order" id="snapshot-full-link-text" style="color: #e8916e; text-decoration: none;">See what's in the full PDF &darr;</a></p><div style="max-width:600px;margin:24px auto 32px;text-align:left;display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;">
 <div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Cover & Stats</span> — Your career at a glance, including headline numbers, timeline, and patterns</div>
 <div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Performances Worth Revisiting</span> — Verified standout jams from your shows with streaming links</div>
 <div style="color:#ccc;font-size:0.85rem;line-height:1.4;"><span style="color:#e85d26;font-weight:700;">Crown Jewels</span> — Your best shows ranked, with deep dives into the defining nights</div>
@@ -697,8 +704,9 @@
 <section class="order-section" id="order">
     <div class="order-card">
       <h2>Get Your Full Phish Story</h2>
-      <div class="price">$25</div>
-      <div class="price-note">Digital PDF &mdash; delivered within 48 hours</div>
+      <div class="price" id="order-price" style="display:none;">$25</div>
+      <div class="price-note" id="order-price-note">Free for limited time</div>
+      <div class="price-note" id="order-launch-tag" style="margin-top:-14px;margin-bottom:24px;letter-spacing:0.08em;text-transform:uppercase;">Launch Edition</div>
 
       <div class="form-error" id="form-error"></div>
 
@@ -735,12 +743,13 @@
         </div>
 
         <button type="submit" class="btn-primary" id="submit-btn">
-          Get MyPhisHistory &mdash; $25
+          Get MyPhisHistory &mdash; Launch Edition
         </button>
+        <div class="order-submit-note" id="order-submit-note">Full PDF report will arrive shortly.</div>
       </form>
 
       <div class="order-footer">
-        Secure payment via Stripe. Your PDF is AI-assisted, human-reviewed, and delivered within 48 hours.
+        <span id="order-footer-copy">Launch Edition. Priority cap: 25.</span>
         <br>Questions? <a href="#" onclick="showContactModal();return false;" style="color:var(--accent);text-decoration:underline;cursor:pointer;">Contact us</a>
       </div>
     </div>
@@ -778,6 +787,45 @@
   </footer>
 
   <script>
+    const LAUNCH_FREE_MODE = true;
+    const LAUNCH_PRIORITY_CAP = 25;
+
+    function getSubmitButtonLabel() {
+      return LAUNCH_FREE_MODE ? 'Get MyPhisHistory — Launch Edition' : 'Get MyPhisHistory — $25';
+    }
+
+    function applyLaunchModeUI() {
+      var heroCtaText = document.getElementById('hero-cta-text');
+      var snapshotFullLinkText = document.getElementById('snapshot-full-link-text');
+      var orderPrice = document.getElementById('order-price');
+      var orderPriceNote = document.getElementById('order-price-note');
+      var orderLaunchTag = document.getElementById('order-launch-tag');
+      var submitBtn = document.getElementById('submit-btn');
+      var orderSubmitNote = document.getElementById('order-submit-note');
+      var orderFooterCopy = document.getElementById('order-footer-copy');
+
+      if (LAUNCH_FREE_MODE) {
+        heroCtaText.textContent = 'Snapshot';
+        snapshotFullLinkText.textContent = 'See what\'s in the full PDF ↓';
+        orderPrice.style.display = 'none';
+        orderPriceNote.textContent = 'Free for limited time';
+        orderLaunchTag.style.display = 'block';
+        submitBtn.textContent = getSubmitButtonLabel();
+        orderSubmitNote.textContent = 'Full PDF report will arrive shortly.';
+        orderFooterCopy.textContent = 'Launch Edition. Priority cap: ' + LAUNCH_PRIORITY_CAP + '.';
+      } else {
+        heroCtaText.textContent = 'Try It Free';
+        snapshotFullLinkText.textContent = 'See what\'s in the $25 PDF ↓';
+        orderPrice.style.display = 'block';
+        orderPriceNote.innerHTML = 'Digital PDF &mdash; delivered within 48 hours';
+        orderLaunchTag.style.display = 'none';
+        submitBtn.textContent = getSubmitButtonLabel();
+        orderSubmitNote.textContent = 'Secure payment via Stripe.';
+        orderFooterCopy.textContent = 'Your PDF is AI-assisted, human-reviewed, and delivered within 48 hours.';
+      }
+    }
+
+    applyLaunchModeUI();
 
   function showContactModal() {
     document.getElementById('contact-modal').style.display = 'flex';
@@ -922,7 +970,7 @@
       }
 
       submitBtn.disabled = true;
-      submitBtn.textContent = 'Redirecting to payment...';
+      submitBtn.textContent = LAUNCH_FREE_MODE ? 'Processing your request...' : 'Redirecting to payment...';
       posthog.identify(email, { email: email, phishnet_username: username });
       posthog.capture('checkout_started', { username: username, email: email, is_gift: isGift });
 
@@ -957,7 +1005,7 @@
       } catch (err) {
         showError(err.message || 'Something went wrong. Please try again.');
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Get MyPhisHistory &mdash; $25';
+        submitBtn.textContent = getSubmitButtonLabel();
       }
     });
 
