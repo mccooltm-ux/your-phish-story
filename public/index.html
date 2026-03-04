@@ -131,17 +131,9 @@
       background: #111318;
     }
 
-    .pdf-reader-status {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-
     .pdf-reader-dots {
       display: flex;
       gap: 5px;
-      flex-shrink: 0;
     }
 
     .pdf-reader-dots span {
@@ -161,29 +153,6 @@
 
     .pdf-reader-dots span:nth-child(3) {
       background: rgba(46, 160, 67, 0.8);
-    }
-
-    .pdf-reader-title {
-      min-width: 0;
-    }
-
-    .pdf-reader-title strong {
-      display: block;
-      color: #c9d1d9;
-      font-size: 0.86rem;
-      font-weight: 600;
-      margin-bottom: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .pdf-reader-title span {
-      display: block;
-      color: #8b949e;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
     }
 
     .pdf-reader-actions {
@@ -260,38 +229,6 @@
       text-decoration: none;
       font-size: 0.84rem;
       font-weight: 700;
-    }
-
-    .pdf-reader-footer {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 12px 16px 14px;
-      border-top: 1px solid #222;
-      background: #111318;
-    }
-
-    .pdf-reader-note {
-      color: #8b949e;
-      font-size: 0.74rem;
-      line-height: 1.5;
-      max-width: 560px;
-    }
-
-    .pdf-reader-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: rgba(232, 145, 110, 0.12);
-      color: #e6edf3;
-      font-size: 0.7rem;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      border: 1px solid rgba(232, 145, 110, 0.18);
     }
 
     /* --- WHAT YOU GET --- */
@@ -638,30 +575,13 @@
         font-size: 0.8rem;
       }
 
-      .pdf-reader-topbar,
-      .pdf-reader-footer {
+      .pdf-reader-topbar {
         padding-left: 14px;
         padding-right: 14px;
       }
 
       .pdf-reader-topbar {
         align-items: flex-start;
-      }
-
-      .pdf-reader-status {
-        width: 100%;
-      }
-
-      .pdf-reader-title strong {
-        font-size: 0.8rem;
-      }
-
-      .pdf-reader-title strong {
-        white-space: normal;
-      }
-
-      .pdf-reader-title span {
-        display: none;
       }
 
       .pdf-reader-actions {
@@ -678,11 +598,6 @@
 
       .pdf-mobile-message {
         display: block;
-      }
-
-      .pdf-reader-note,
-      .pdf-reader-pill {
-        display: none;
       }
     }
   </style>
@@ -723,16 +638,10 @@
     </div>
     <div class="pdf-reader">
       <div class="pdf-reader-topbar">
-        <div class="pdf-reader-status">
-          <div class="pdf-reader-dots" aria-hidden="true">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-          <div class="pdf-reader-title">
-            <strong>Full sample report: John Fishman</strong>
-            <span>Sample PDF preview</span>
-          </div>
+        <div class="pdf-reader-dots" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
         </div>
         <div class="pdf-reader-actions">
           <a href="/fishman_phish_story.pdf" target="_blank" rel="noopener noreferrer">Open full screen</a>
@@ -749,10 +658,6 @@
             <a class="pdf-mobile-link" href="/fishman_phish_story.pdf" target="_blank" rel="noopener noreferrer">Open sample PDF</a>
           </div>
         </div>
-      </div>
-      <div class="pdf-reader-footer">
-        <div class="pdf-reader-note">A full sample is embedded on-page so people can browse the real deliverable before they buy. If a browser blocks inline PDF viewing, the full-screen link still works.</div>
-        <div class="pdf-reader-pill">Scroll to flip through</div>
       </div>
     </div>
   </section>
