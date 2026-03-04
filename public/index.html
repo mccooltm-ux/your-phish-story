@@ -86,14 +86,14 @@
 
     /* --- SAMPLE PREVIEW --- */
     .samples {
-      max-width: 1080px;
+      max-width: 920px;
       margin: 0 auto;
-      padding: 0 24px 72px;
+      padding: 0 24px 60px;
     }
 
     .samples-intro {
-      max-width: 720px;
-      margin: 0 auto 28px;
+      max-width: 680px;
+      margin: 0 auto 22px;
       text-align: center;
     }
 
@@ -106,20 +106,18 @@
 
     .samples-intro p {
       color: #8b949e;
-      font-size: 0.92rem;
+      font-size: 0.86rem;
       line-height: 1.6;
     }
 
     .pdf-reader {
-      background:
-        radial-gradient(circle at top left, rgba(232, 145, 110, 0.12), transparent 34%),
-        linear-gradient(180deg, #10151c 0%, #0a0f16 100%);
-      border: 1px solid rgba(240, 246, 252, 0.08);
-      border-radius: 24px;
+      max-width: 840px;
+      margin: 0 auto;
+      background: #0d0d0d;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
       overflow: hidden;
-      box-shadow:
-        0 24px 80px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.03);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
     }
 
     .pdf-reader-topbar {
@@ -127,28 +125,28 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
-      padding: 16px 20px;
-      border-bottom: 1px solid rgba(240, 246, 252, 0.06);
-      background: rgba(7, 10, 15, 0.9);
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #222;
+      background: #111318;
     }
 
     .pdf-reader-status {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       min-width: 0;
     }
 
     .pdf-reader-dots {
       display: flex;
-      gap: 6px;
+      gap: 5px;
       flex-shrink: 0;
     }
 
     .pdf-reader-dots span {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.15);
     }
@@ -171,10 +169,10 @@
 
     .pdf-reader-title strong {
       display: block;
-      color: #f0f6fc;
-      font-size: 0.92rem;
+      color: #c9d1d9;
+      font-size: 0.86rem;
       font-weight: 600;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -183,7 +181,7 @@
     .pdf-reader-title span {
       display: block;
       color: #8b949e;
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
@@ -198,7 +196,7 @@
     .pdf-reader-actions a {
       color: #e8916e;
       text-decoration: none;
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       font-weight: 600;
     }
 
@@ -207,71 +205,32 @@
     }
 
     .pdf-reader-stage {
-      padding: 28px;
-      background:
-        radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 55%),
-        linear-gradient(180deg, #0f151d 0%, #090d13 100%);
-    }
-
-    .pdf-stack {
-      position: relative;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 14px 14px 0;
-    }
-
-    .pdf-stack::before,
-    .pdf-stack::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      border-radius: 22px;
-      background: rgba(239, 243, 247, 0.95);
-      border: 1px solid rgba(15, 23, 33, 0.1);
-      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.22);
-      transform-origin: center top;
-      z-index: 0;
-    }
-
-    .pdf-stack::before {
-      transform: rotate(-1.25deg) translateY(10px);
-      opacity: 0.65;
-    }
-
-    .pdf-stack::after {
-      transform: rotate(1.15deg) translateY(18px);
-      opacity: 0.42;
+      padding: 0;
+      background: #101318;
     }
 
     .pdf-frame {
-      position: relative;
-      z-index: 1;
       overflow: hidden;
-      border-radius: 20px;
-      border: 1px solid rgba(12, 18, 27, 0.1);
-      background: #f6f3ea;
-      box-shadow:
-        0 30px 60px rgba(0, 0, 0, 0.34),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+      background: #101318;
     }
 
     .pdf-frame::before {
       content: "Scroll to flip through the full report";
       display: block;
-      padding: 10px 16px;
-      background: linear-gradient(180deg, #f7f2e5 0%, #ebe4d3 100%);
-      color: #6d5a38;
-      font-size: 0.72rem;
-      font-weight: 700;
+      padding: 10px 14px;
+      background: #161b22;
+      color: #8b949e;
+      font-size: 0.68rem;
+      font-weight: 600;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      border-bottom: 1px solid rgba(109, 90, 56, 0.15);
+      border-bottom: 1px solid #222;
       text-align: center;
     }
 
     .pdf-frame iframe {
       width: 100%;
-      height: min(76vh, 1080px);
+      height: min(64vh, 900px);
       border: 0;
       display: block;
       background: #fff;
@@ -282,28 +241,28 @@
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 14px;
-      padding: 16px 20px 20px;
-      border-top: 1px solid rgba(240, 246, 252, 0.06);
-      background: rgba(7, 10, 15, 0.82);
+      gap: 12px;
+      padding: 12px 16px 14px;
+      border-top: 1px solid #222;
+      background: #111318;
     }
 
     .pdf-reader-note {
       color: #8b949e;
-      font-size: 0.8rem;
+      font-size: 0.74rem;
       line-height: 1.5;
-      max-width: 620px;
+      max-width: 560px;
     }
 
     .pdf-reader-pill {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 999px;
       background: rgba(232, 145, 110, 0.12);
-      color: #f0f6fc;
-      font-size: 0.76rem;
+      color: #e6edf3;
+      font-size: 0.7rem;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       border: 1px solid rgba(232, 145, 110, 0.18);
@@ -630,10 +589,6 @@
     }
 
     @media (max-width: 360px) {
-      .pdf-reader-stage {
-        padding: 16px;
-      }
-
       .gift-toggle {
         flex-wrap: wrap;
         gap: 8px;
@@ -642,7 +597,7 @@
 
     @media (max-width: 720px) {
       .samples {
-        padding: 0 16px 56px;
+        padding: 0 16px 48px;
       }
 
       .pdf-reader-topbar,
@@ -655,12 +610,8 @@
         white-space: normal;
       }
 
-      .pdf-stack {
-        padding: 8px 8px 0;
-      }
-
       .pdf-frame iframe {
-        height: min(68vh, 820px);
+        height: min(56vh, 680px);
       }
     }
   </style>
@@ -709,7 +660,7 @@
           </div>
           <div class="pdf-reader-title">
             <strong>Full sample report: John Fishman</strong>
-            <span>Native preview mode</span>
+            <span>Sample PDF preview</span>
           </div>
         </div>
         <div class="pdf-reader-actions">
@@ -718,13 +669,11 @@
         </div>
       </div>
       <div class="pdf-reader-stage">
-        <div class="pdf-stack">
-          <div class="pdf-frame">
-            <iframe
-              src="/fishman_phish_story.pdf#view=FitH"
-              title="MyPhisHistory sample PDF"
-            ></iframe>
-          </div>
+        <div class="pdf-frame">
+          <iframe
+            src="/fishman_phish_story.pdf#view=FitH"
+            title="MyPhisHistory sample PDF"
+          ></iframe>
         </div>
       </div>
       <div class="pdf-reader-footer">
