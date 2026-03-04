@@ -431,6 +431,7 @@
       margin-top: 12px;
       font-size: 13px;
       color: #8b949e;
+      font-weight: 400;
       line-height: 1.5;
     }
 
@@ -716,7 +717,7 @@
         <button type="submit" class="btn-primary" id="submit-btn">
           Get MyPhisHistory &mdash; Launch Edition
         </button>
-        <div class="order-submit-note" id="order-submit-note">Full PDF report will arrive shortly.</div>
+        <div class="order-submit-note" id="order-submit-note">Each report is individually researched and created using your Phish.net show history. Delivery within 48 hours.</div>
       </form>
 
       <div class="order-footer">
@@ -782,7 +783,10 @@
         orderPriceNote.textContent = 'Free for limited time';
         orderLaunchTag.style.display = 'block';
         submitBtn.textContent = getSubmitButtonLabel();
-        orderSubmitNote.textContent = 'Full PDF report will arrive shortly.';
+        orderSubmitNote.textContent = 'Each report is individually researched and created using your Phish.net show history. Delivery within 48 hours.';
+        orderSubmitNote.style.color = '#2ea043';
+        orderSubmitNote.style.fontSize = '15px';
+        orderSubmitNote.style.fontWeight = '600';
         orderFooterCopy.textContent = 'Launch Edition. Priority cap: ' + LAUNCH_PRIORITY_CAP + '.';
       } else {
         heroCtaText.textContent = 'Try It Free';
@@ -792,6 +796,9 @@
         orderLaunchTag.style.display = 'none';
         submitBtn.textContent = getSubmitButtonLabel();
         orderSubmitNote.textContent = 'Secure payment via Stripe.';
+        orderSubmitNote.style.color = '#8b949e';
+        orderSubmitNote.style.fontSize = '13px';
+        orderSubmitNote.style.fontWeight = '400';
         orderFooterCopy.textContent = 'Your PDF is AI-assisted, human-reviewed, and delivered within 48 hours.';
       }
     }
