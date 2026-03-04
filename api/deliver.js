@@ -15,13 +15,14 @@
 //   "message": custom body message
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const DELIVERY_SECRET = process.env.DELIVERY_SECRET || 'myphishistory-deliver-2024';
+const DELIVERY_SECRET = process.env.DELIVERY_SECRET || '';
+const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
 
 module.exports = async function handler(req, res) {
   // CORS headers for flexibility
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Admin-Secret');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -31,11 +32,17 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  if (!ADMIN_SECRET && !DELIVERY_SECRET) {
+    return res.status(500).json({ error: 'Server misconfigured: no delivery auth secret is set' });
+  }
+
   // Parse body
   const { to, username, pdf_url, pdf_base64, secret, subject, message } = req.body || {};
+  const adminHeader = req.headers['x-admin-secret'];
 
-  // Auth check — simple shared secret to prevent abuse
-  if (secret !== DELIVERY_SECRET) {
+  // Auth check — prefer the admin secret from same-origin admin UI, allow the
+  // legacy delivery secret only for external automations that still use it.
+  if (adminHeader !== ADMIN_SECRET && (!DELIVERY_SECRET || secret !== DELIVERY_SECRET)) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 

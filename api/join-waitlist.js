@@ -1,10 +1,14 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'mccooltm@gmail.com';
+const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || '';
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  if (!NOTIFICATION_EMAIL) {
+    return res.status(500).json({ error: 'Server misconfigured: NOTIFICATION_EMAIL is not set' });
   }
 
   try {

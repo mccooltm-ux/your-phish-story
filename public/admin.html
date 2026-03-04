@@ -482,12 +482,21 @@
         const overdueBadge = isOverdue ? ' <span class="status-badge status-overdue">Overdue</span>' : '';
         const deliveredAt = order.delivered_at ? new Date(order.delivered_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '—';
         const actions = [];
+        const refundArgs = [order.payment_id, order.username].map((value) => JSON.stringify(value || '')).join(', ');
 
         if (order.status === 'pending') {
-          actions.push(`<button class="btn-sm btn-send" onclick="showDeliverModal('${order.payment_id}', '${order.username}', '${order.email}', ${order.is_gift}, '${order.gift_email || ''}', '${order.full_name || ''}')">Deliver PDF</button>`);
-          actions.push(`<button class="btn-sm btn-refund" onclick="showRefundModal('${order.payment_id}', '${order.username}')">Refund</button>`);
+          const deliverArgs = [
+            order.payment_id,
+            order.username,
+            order.email,
+            order.is_gift,
+            order.gift_email || '',
+            order.full_name || ''
+          ].map((value) => JSON.stringify(value)).join(', ');
+          actions.push(`<button class="btn-sm btn-send" onclick='showDeliverModal(${deliverArgs})'>Deliver PDF</button>`);
+          actions.push(`<button class="btn-sm btn-refund" onclick='showRefundModal(${refundArgs})'>Refund</button>`);
         } else if (order.status === 'delivered') {
-          actions.push(`<button class="btn-sm btn-refund" onclick="showRefundModal('${order.payment_id}', '${order.username}')">Refund</button>`);
+          actions.push(`<button class="btn-sm btn-refund" onclick='showRefundModal(${refundArgs})'>Refund</button>`);
         }
 
         html += `<tr>
@@ -629,9 +638,11 @@
       try {
         const res = await fetch('/api/deliver', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Secret': ADMIN_SECRET
+          },
           body: JSON.stringify({
-            secret: 'myphishistory-deliver-2024',
             to: deliverEmail,
             username: deliverUsername,
             pdf_base64: deliverFileBase64,

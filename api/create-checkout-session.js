@@ -1,6 +1,19 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const ORDER_CAP = parseInt(process.env.ORDER_CAP || '20', 10);
+const DOMAIN = process.env.DOMAIN || 'https://myphishistory.com';
+
+function isValidEmail(value) {
+  return typeof value === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
+}
+
+function normalizeUsername(value) {
+  const username = typeof value === 'string' ? value.trim() : '';
+  if (!/^[A-Za-z0-9._-]{2,40}$/.test(username)) {
+    return '';
+  }
+  return username;
+}
 
 module.exports = async function handler(req, res) {
   // Only allow POST
@@ -9,11 +22,24 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { phishnet_username, email, is_gift, gift_email, full_name } = req.body;
+    const { phishnet_username, email, is_gift, gift_email, full_name } = req.body || {};
+    const username = normalizeUsername(phishnet_username);
+    const normalizedEmail = typeof email === 'string' ? email.trim() : '';
+    const normalizedGiftEmail = typeof gift_email === 'string' ? gift_email.trim() : '';
+    const normalizedFullName = typeof full_name === 'string' ? full_name.trim() : '';
+    const giftOrder = Boolean(is_gift);
 
     // Validate required fields
-    if (!phishnet_username || !email) {
-      return res.status(400).json({ error: 'Phishnet username and email are required.' });
+    if (!username) {
+      return res.status(400).json({ error: 'Enter a valid Phishnet username.' });
+    }
+
+    if (!isValidEmail(normalizedEmail)) {
+      return res.status(400).json({ error: 'Enter a valid email address.' });
+    }
+
+    if (giftOrder && !isValidEmail(normalizedGiftEmail)) {
+      return res.status(400).json({ error: 'Enter a valid recipient email for gift delivery.' });
     }
 
     // Check order cap — count completed Stripe checkout sessions
@@ -29,40 +55,43 @@ module.exports = async function handler(req, res) {
 
     // Build metadata for the order (this is what the webhook reads)
     const metadata = {
-      phishnet_username: phishnet_username,
-      customer_email: email,
-      is_gift: is_gift ? 'true' : 'false',
+      phishnet_username: username,
+      customer_email: normalizedEmail,
+      is_gift: giftOrder ? 'true' : 'false'
     };
 
-    if (full_name) {
-      metadata.full_name = full_name;
+    if (normalizedFullName) {
+      metadata.full_name = normalizedFullName;
     }
 
-    if (is_gift && gift_email) {
-      metadata.gift_recipient_email = gift_email;
+    if (giftOrder) {
+      metadata.gift_recipient_email = normalizedGiftEmail;
     }
 
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
-      customer_email: email,
-      metadata: metadata,
+      customer_email: normalizedEmail,
+      metadata,
+      payment_intent_data: {
+        metadata
+      },
       line_items: [
         {
           price_data: {
             currency: 'usd',
             product_data: {
               name: 'MyPhisHistory - Personalized PDF',
-              description: `Personalized show history document for Phishnet user: ${phishnet_username}`,
+              description: `AI-assisted personalized show history document for Phishnet user: ${username}`,
             },
             unit_amount: 2500, // $25.00 in cents
           },
           quantity: 1,
         },
       ],
-      success_url: `${process.env.DOMAIN || 'https://myphishistory.com'}/success.html`,
-      cancel_url: `${process.env.DOMAIN || 'https://myphishistory.com'}/#order`,
+      success_url: `${DOMAIN}/success.html`,
+      cancel_url: `${DOMAIN}/#order`,
     });
 
     return res.status(200).json({ url: session.url });

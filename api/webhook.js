@@ -3,12 +3,16 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 // Using Resend for email - simplest API, free tier = 100 emails/day
 // Sign up at resend.com, get API key, set as RESEND_API_KEY env var
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'mccooltm@gmail.com';
+const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || '';
 const PHISHNET_API_KEY = process.env.PHISHNET_API_KEY || '';
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  if (!NOTIFICATION_EMAIL) {
+    return res.status(500).json({ error: 'Server misconfigured: NOTIFICATION_EMAIL is not set' });
   }
 
   const sig = req.headers['stripe-signature'];
@@ -28,7 +32,26 @@ module.exports = async function handler(req, res) {
   // Handle the checkout.session.completed event
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const metadata = session.metadata;
+    const sessionMetadata = session.metadata || {};
+    const paymentIntentId = typeof session.payment_intent === 'string' ? session.payment_intent : null;
+    let paymentIntent = null;
+
+    if (paymentIntentId) {
+      try {
+        paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      } catch (stripeErr) {
+        console.error('Failed to retrieve payment intent:', stripeErr.message);
+      }
+    }
+
+    const metadata = {
+      ...(paymentIntent?.metadata || {}),
+      ...sessionMetadata
+    };
+
+    if (paymentIntent?.metadata?.order_notified_at) {
+      return res.status(200).json({ received: true, duplicate: true });
+    }
 
     // Get order count for badge
     let orderCount = '?';
@@ -47,7 +70,7 @@ module.exports = async function handler(req, res) {
       is_gift: metadata.is_gift === 'true',
       gift_recipient_email: metadata.gift_recipient_email || null,
       amount_paid: `$${(session.amount_total / 100).toFixed(2)}`,
-      payment_id: session.payment_intent,
+      payment_id: paymentIntentId || 'UNKNOWN',
       order_number: orderCount,
       delivery_deadline: deliveryDeadline.toLocaleString('en-US', {
         timeZone: 'America/New_York',
@@ -64,6 +87,15 @@ module.exports = async function handler(req, res) {
     // Send notification email to Ted
     try {
       await sendNotificationEmail(orderDetails);
+      if (paymentIntentId) {
+        await stripe.paymentIntents.update(paymentIntentId, {
+          metadata: {
+            ...metadata,
+            fulfillment_status: paymentIntent?.metadata?.fulfillment_status || 'pending',
+            order_notified_at: new Date().toISOString()
+          }
+        });
+      }
       console.log('Order notification sent:', orderDetails.phishnet_username);
     } catch (emailErr) {
       console.error('Failed to send notification email:', emailErr.message);

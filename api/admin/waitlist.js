@@ -1,9 +1,13 @@
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'myphishistory-admin-2024';
+const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  if (!ADMIN_SECRET) {
+    return res.status(500).json({ error: 'Server misconfigured: ADMIN_SECRET is not set' });
   }
 
   const secret = req.headers['x-admin-secret'];

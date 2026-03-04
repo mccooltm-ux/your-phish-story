@@ -2,11 +2,15 @@
 // Updates payment intent metadata for tracking, uses Stripe refund API
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'myphishistory-admin-2024';
+const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  if (!ADMIN_SECRET) {
+    return res.status(500).json({ error: 'Server misconfigured: ADMIN_SECRET is not set' });
   }
 
   // Auth check
@@ -22,10 +26,14 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const paymentIntent = await stripe.paymentIntents.retrieve(payment_id);
+    const existingMetadata = paymentIntent.metadata || {};
+
     if (action === 'delivered') {
       // Update payment intent metadata to mark as delivered
       await stripe.paymentIntents.update(payment_id, {
         metadata: {
+          ...existingMetadata,
           fulfillment_status: 'delivered',
           delivered_at: new Date().toISOString()
         }
@@ -41,6 +49,7 @@ module.exports = async function handler(req, res) {
       // Update metadata
       await stripe.paymentIntents.update(payment_id, {
         metadata: {
+          ...existingMetadata,
           fulfillment_status: 'refunded',
           refunded_at: new Date().toISOString(),
           refund_id: refund.id

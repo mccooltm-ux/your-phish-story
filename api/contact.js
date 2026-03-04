@@ -1,8 +1,13 @@
 const { Resend } = require('resend');
+const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || '';
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  if (!NOTIFICATION_EMAIL) {
+    return res.status(500).json({ error: 'Server misconfigured: NOTIFICATION_EMAIL is not set' });
   }
 
   try {
@@ -16,7 +21,7 @@ module.exports = async function handler(req, res) {
 
     await resend.emails.send({
       from: 'MyPhisHistory <support@myphishistory.com>',
-      to: process.env.NOTIFICATION_EMAIL || 'mccooltm@gmail.com',
+      to: NOTIFICATION_EMAIL,
       subject: `Contact Form: ${name || 'Anonymous'}`,
       replyTo: email,
       html: `

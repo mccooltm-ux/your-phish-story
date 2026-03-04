@@ -2,11 +2,15 @@
 // Uses Stripe as the database — no separate DB needed
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'myphishistory-admin-2024';
+const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  if (!ADMIN_SECRET) {
+    return res.status(500).json({ error: 'Server misconfigured: ADMIN_SECRET is not set' });
   }
 
   // Auth check
@@ -28,6 +32,10 @@ module.exports = async function handler(req, res) {
       const meta = session.metadata || {};
       const pi = session.payment_intent;
       const piMeta = (pi && pi.metadata) || {};
+      const mergedMeta = {
+        ...piMeta,
+        ...meta
+      };
       const charge = (pi && pi.latest_charge && typeof pi.latest_charge === 'object') ? pi.latest_charge : null;
 
       // Determine fulfillment status:
@@ -44,11 +52,11 @@ module.exports = async function handler(req, res) {
       return {
         session_id: session.id,
         payment_id: pi ? pi.id : null,
-        username: meta.phishnet_username || 'UNKNOWN',
-        email: meta.customer_email || session.customer_email || '',
-        is_gift: meta.is_gift === 'true',
-        gift_email: meta.gift_recipient_email || null,
-        full_name: meta.full_name || null,
+        username: mergedMeta.phishnet_username || 'UNKNOWN',
+        email: mergedMeta.customer_email || session.customer_email || '',
+        is_gift: mergedMeta.is_gift === 'true',
+        gift_email: mergedMeta.gift_recipient_email || null,
+        full_name: mergedMeta.full_name || null,
         amount: (session.amount_total || 0) / 100,
         status: fulfillmentStatus,
         delivered_at: piMeta.delivered_at || null,
