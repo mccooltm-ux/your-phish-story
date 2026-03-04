@@ -611,7 +611,7 @@
     <p class="hero-sub">
       Start with a free snapshot of your stats. Upgrade to the full AI-assisted, human-reviewed PDF with narrative accounts, era analysis, rare catches, and a letter to the fan you used to be.
     </p>
-    <a href="#snapshot" id="hero-cta-text" style="display:inline-block;padding:14px 36px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;transition:background 0.2s;">Snapshot</a>
+    <a href="#snapshot" id="hero-cta-text" style="display:none;padding:14px 36px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;transition:background 0.2s;">Snapshot</a>
   </section>
 
   <!-- SAMPLE PREVIEW -->
@@ -778,6 +778,7 @@
 
       if (LAUNCH_FREE_MODE) {
         heroCtaText.textContent = 'Snapshot';
+        heroCtaText.style.display = 'none';
         snapshotFullLinkText.textContent = 'See what\'s in the full PDF ↓';
         orderPrice.style.display = 'none';
         orderPriceNote.textContent = 'Free for limited time';
@@ -790,6 +791,7 @@
         orderFooterCopy.textContent = 'Launch Edition. Priority cap: ' + LAUNCH_PRIORITY_CAP + '.';
       } else {
         heroCtaText.textContent = 'Try It Free';
+        heroCtaText.style.display = 'inline-block';
         snapshotFullLinkText.textContent = 'See what\'s in the $25 PDF ↓';
         orderPrice.style.display = 'block';
         orderPriceNote.innerHTML = 'Digital PDF &mdash; delivered within 48 hours';
