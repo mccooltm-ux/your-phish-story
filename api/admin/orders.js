@@ -3,7 +3,7 @@
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
-const DISPLAY_TIMEZONE = process.env.DISPLAY_TIMEZONE || 'America/New_York';
+const DISPLAY_TIMEZONE = process.env.DISPLAY_TIMEZONE || 'America/Chicago';
 
 module.exports = async function handler(req, res) {
   if (req.method !== 'GET') {
