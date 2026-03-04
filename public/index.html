@@ -236,6 +236,32 @@
       background: #fff;
     }
 
+    .pdf-mobile-message {
+      display: none;
+      padding: 26px 18px 28px;
+      text-align: center;
+      background: linear-gradient(180deg, #121822 0%, #0d1117 100%);
+    }
+
+    .pdf-mobile-message p {
+      color: #8b949e;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin: 0 0 14px;
+    }
+
+    .pdf-mobile-link {
+      display: inline-block;
+      padding: 12px 18px;
+      border-radius: 10px;
+      background: rgba(232, 145, 110, 0.14);
+      border: 1px solid rgba(232, 145, 110, 0.2);
+      color: #e8916e;
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
     .pdf-reader-footer {
       display: flex;
       flex-wrap: wrap;
@@ -600,18 +626,63 @@
         padding: 0 16px 48px;
       }
 
+      .samples-intro {
+        margin-bottom: 18px;
+      }
+
+      .samples-intro h2 {
+        font-size: 1.28rem;
+      }
+
+      .samples-intro p {
+        font-size: 0.8rem;
+      }
+
       .pdf-reader-topbar,
       .pdf-reader-footer {
         padding-left: 14px;
         padding-right: 14px;
       }
 
+      .pdf-reader-topbar {
+        align-items: flex-start;
+      }
+
+      .pdf-reader-status {
+        width: 100%;
+      }
+
+      .pdf-reader-title strong {
+        font-size: 0.8rem;
+      }
+
       .pdf-reader-title strong {
         white-space: normal;
       }
 
+      .pdf-reader-title span {
+        display: none;
+      }
+
+      .pdf-reader-actions {
+        width: 100%;
+      }
+
+      .pdf-reader-actions a {
+        font-size: 0.9rem;
+      }
+
       .pdf-frame iframe {
-        height: min(56vh, 680px);
+        display: none;
+      }
+
+      .pdf-mobile-message {
+        display: block;
+      }
+
+      .pdf-reader-note,
+      .pdf-reader-pill {
+        display: none;
       }
     }
   </style>
@@ -665,7 +736,6 @@
         </div>
         <div class="pdf-reader-actions">
           <a href="/fishman_phish_story.pdf" target="_blank" rel="noopener noreferrer">Open full screen</a>
-          <a href="/fishman_phish_story.pdf" download>Download PDF</a>
         </div>
       </div>
       <div class="pdf-reader-stage">
@@ -674,10 +744,14 @@
             src="/fishman_phish_story.pdf#view=FitH"
             title="MyPhisHistory sample PDF"
           ></iframe>
+          <div class="pdf-mobile-message">
+            <p>Inline PDF previews are clunky on iPhone. Open the sample full screen for the cleanest, easiest read.</p>
+            <a class="pdf-mobile-link" href="/fishman_phish_story.pdf" target="_blank" rel="noopener noreferrer">Open sample PDF</a>
+          </div>
         </div>
       </div>
       <div class="pdf-reader-footer">
-        <div class="pdf-reader-note">A full sample is embedded on-page so people can browse the real deliverable before they buy. If a browser blocks inline PDF viewing, the full-screen and download links still work.</div>
+        <div class="pdf-reader-note">A full sample is embedded on-page so people can browse the real deliverable before they buy. If a browser blocks inline PDF viewing, the full-screen link still works.</div>
         <div class="pdf-reader-pill">Scroll to flip through</div>
       </div>
     </div>
