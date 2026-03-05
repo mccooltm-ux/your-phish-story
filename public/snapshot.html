@@ -17,7 +17,7 @@ body { font-family: 'Inter', sans-serif; background: #0d1117; color: #c9d1d9; mi
 @keyframes spin { to { transform: rotate(360deg); } }
 .error-screen { display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; text-align: center; padding: 2rem; }
 .error-screen h2 { color: #ff6b6b; font-size: 1.5rem; margin-bottom: 1rem; }
-.error-screen p { color: #8b949e; max-width: 400px; margin-bottom: 2rem; }
+.error-screen p { color: #8b949e; max-width: 420px; margin-bottom: 2rem; line-height: 1.6; }
 .error-screen a { color: #e8916e; text-decoration: none; border: 1px solid #e8916e; padding: 0.75rem 2rem; border-radius: 8px; }
 .results { display: none; }
 .hero-bar { background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%); border-bottom: 1px solid #1c2333; padding: 2rem; text-align: center; }
@@ -25,41 +25,55 @@ body { font-family: 'Inter', sans-serif; background: #0d1117; color: #c9d1d9; mi
 .hero-bar h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; color: #e2e8f0; margin-bottom: 0.25rem; }
 .hero-bar h1 span { color: #e8916e; }
 .hero-bar .subtitle { color: #8b949e; font-size: 1rem; }
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.25rem; max-width: 800px; margin: 2.5rem auto; padding: 0 1.5rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.25rem; max-width: 860px; margin: 2.5rem auto; padding: 0 1.5rem; }
 .stat-card { background: #161b22; border: 1px solid #1c2333; border-radius: 12px; padding: 1.5rem; text-align: center; }
-.stat-card .number { font-size: 2.5rem; font-weight: bold; color: #e8916e; line-height: 1; }
-.stat-card .label { font-size: 0.85rem; color: #8b949e; margin-top: 0.5rem; }
-.detail-section { max-width: 800px; margin: 0 auto 2.5rem; padding: 0 1.5rem; }
-.detail-section h3 { font-family: 'DM Serif Display', serif; color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #1c2333; }
+.stat-card .number { font-size: 2.5rem; font-weight: 700; color: #e8916e; line-height: 1; }
+.stat-card .label { font-size: 0.85rem; color: #8b949e; margin-top: 0.5rem; letter-spacing: 0.03em; text-transform: uppercase; }
+.detail-section { max-width: 860px; margin: 0 auto 2.5rem; padding: 0 1.5rem; }
+.detail-section h3 { font-family: 'DM Serif Display', serif; color: #e2e8f0; font-size: 1.2rem; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #1c2333; }
 .show-card { background: #161b22; border: 1px solid #1c2333; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
 .show-card .show-label { font-size: 0.75rem; text-transform: uppercase; color: #e8916e; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
-.show-card .show-date { font-size: 1.25rem; color: #e2e8f0; font-weight: bold; }
+.show-card .show-date { font-size: 1.2rem; color: #e2e8f0; font-weight: 700; }
 .show-card .show-venue { color: #8b949e; font-size: 0.95rem; margin-top: 0.15rem; }
 .venue-list { list-style: none; }
-.venue-list li { background: #161b22; border: 1px solid #1c2333; border-radius: 8px; padding: 0.75rem 1.25rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; }
+.venue-list li { background: #161b22; border: 1px solid #1c2333; border-radius: 8px; padding: 0.75rem 1.25rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .venue-list .venue-name { color: #c9d1d9; }
-.venue-list .venue-count { background: rgba(232,145,110,0.15); color: #e8916e; padding: 0.2rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: bold; }
-.year-chart { display: flex; align-items: flex-end; gap: 4px; height: 120px; background: #161b22; border: 1px solid #1c2333; border-radius: 12px; padding: 1.25rem 1rem 2.5rem; position: relative; overflow: hidden; }
-.year-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
-.year-bar { width: 100%; max-width: 28px; background: #e8916e; border-radius: 4px 4px 0 0; min-height: 4px; }
-.year-label { font-size: 0.6rem; color: #8b949e; position: absolute; bottom: 0.5rem; transform: rotate(-45deg); }
-.bar-count { font-size: 0.65rem; color: #e8916e; margin-bottom: 2px; }
-.upsell { max-width: 800px; margin: 1rem auto 3rem; padding: 0 1.5rem; }
-.upsell-card { background: linear-gradient(135deg, #1a1f2e 0%, #161b22 100%); border: 2px solid #e8916e; border-radius: 16px; padding: 2.5rem; text-align: center; }
-.upsell-card h2 { font-family: 'DM Serif Display', serif; color: #e2e8f0; font-size: 1.5rem; margin-bottom: 0.75rem; }
-.upsell-card p { color: #8b949e; max-width: 500px; margin: 0 auto 1.5rem; line-height: 1.6; }
-.upsell-card .price { font-size: 2rem; color: #e8916e; font-weight: bold; margin-bottom: 0.25rem; }
-.upsell-card .price-note { color: #8b949e; font-size: 0.85rem; margin-bottom: 1.5rem; }
-.upsell-card .features { text-align: left; max-width: 420px; margin: 0 auto 2rem; }
-.upsell-card .features li { color: #c9d1d9; padding: 0.35rem 0; list-style: none; }
-.upsell-card .features li::before { content: "\2713  "; color: #e8916e; font-weight: bold; }
-.cta-btn { display: inline-block; background: #e8916e; color: #0d1117; font-size: 1.1rem; font-weight: bold; padding: 1rem 2.5rem; border-radius: 8px; text-decoration: none; }
+.venue-list .venue-count { background: rgba(232,145,110,0.15); color: #e8916e; padding: 0.2rem 0.75rem; border-radius: 12px; font-size: 0.85rem; font-weight: 700; white-space: nowrap; }
+.year-chart-shell { background: #0f1827; border: 1px solid #1f2b3d; border-radius: 12px; padding: 1rem; }
+.year-chart-scroll { overflow-x: auto; padding-bottom: 0.5rem; }
+.year-chart { display: flex; align-items: flex-end; gap: 8px; min-height: 210px; min-width: 100%; }
+.year-bar-wrap { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; width: 40px; min-width: 40px; height: 190px; }
+.bar-count { font-size: 0.72rem; color: #d4af37; margin-bottom: 6px; min-height: 16px; font-weight: 600; }
+.year-bar { width: 100%; background: #d4af37; border-radius: 5px 5px 0 0; min-height: 3px; border: 1px solid rgba(212, 175, 55, 0.35); }
+.year-bar-gap { background: rgba(255, 255, 255, 0.05); border: 1px dashed #4b5563; }
+.year-label { font-size: 0.7rem; color: #8b949e; margin-top: 7px; }
+.year-gap-tag { font-size: 0.62rem; color: #7d8590; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+.simple-line { background: #161b22; border: 1px solid #1c2333; border-radius: 10px; padding: 1rem 1.2rem; color: #c9d1d9; line-height: 1.6; }
+.simple-line strong { color: #e2e8f0; }
+.era-list { display: flex; flex-direction: column; gap: 0.65rem; }
+.era-row { background: #161b22; border: 1px solid #1c2333; border-radius: 10px; padding: 0.85rem 1rem; display: flex; justify-content: space-between; align-items: center; }
+.era-label { color: #c9d1d9; font-weight: 600; }
+.era-count { color: #d4af37; font-weight: 700; }
+.tagline-card { max-width: 860px; margin: 0 auto 2rem; padding: 0 1.5rem; }
+.tagline-inner { background: linear-gradient(135deg, #1a1f2e 0%, #111827 100%); border: 1px solid #253044; border-radius: 12px; padding: 1rem 1.25rem; text-align: center; color: #e2e8f0; font-size: 1.05rem; font-weight: 600; }
+.cta-section { max-width: 860px; margin: 1rem auto 3rem; padding: 0 1.5rem; }
+.cta-card { background: linear-gradient(135deg, #1a1f2e 0%, #161b22 100%); border: 2px solid #e8916e; border-radius: 16px; padding: 2rem; text-align: center; }
+.cta-card h2 { font-family: 'DM Serif Display', serif; color: #e2e8f0; font-size: 1.6rem; margin-bottom: 0.75rem; }
+.cta-card p { color: #8b949e; max-width: 620px; margin: 0 auto 0.9rem; line-height: 1.65; }
+.cta-card .cta-price { color: #e8916e; font-weight: 700; font-size: 1.1rem; margin-bottom: 1.3rem; }
+.cta-btn { display: inline-block; background: #e8916e; color: #0d1117; font-size: 1.05rem; font-weight: 700; padding: 0.9rem 2.2rem; border-radius: 8px; text-decoration: none; }
 .cta-btn:hover { background: #d4805f; }
 .footer { text-align: center; padding: 2rem; color: #484f58; font-size: 0.85rem; border-top: 1px solid #1c2333; }
 .share-btn { background: transparent; color: #e8916e; border: 1px solid #e8916e; padding: 0.5rem 1.25rem; border-radius: 20px; font-size: 0.85rem; cursor: pointer; margin-top: 1rem; transition: background 0.2s; }
 .share-btn:hover { background: rgba(232,145,110,0.15); }
 .share-toast { display: none; position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: #e8916e; color: #0d1117; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; z-index: 1000; }
-@media (max-width: 600px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .hero-bar h1 { font-size: 1.5rem; } .upsell-card { padding: 1.5rem; } }
+@media (max-width: 700px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); margin-top: 1.8rem; }
+  .hero-bar h1 { font-size: 1.5rem; }
+  .detail-section, .cta-section, .tagline-card { padding: 0 1rem; }
+  .year-chart { min-height: 190px; }
+  .year-bar-wrap { height: 170px; width: 34px; min-width: 34px; }
+}
 </style>
 <script>
   !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
@@ -67,88 +81,320 @@ body { font-family: 'Inter', sans-serif; background: #0d1117; color: #c9d1d9; mi
 </script>
 </head>
 <body>
-<div class="loading-screen" id="loading"><div class="spinner"></div><h2>Pulling your show history...</h2><p style="color:#8b949e;">Talking to Phish.net. This takes a few seconds.</p></div><div class="error-screen" id="error"><h2 id="error-title">Something went wrong</h2><p id="error-msg">We couldn't pull your show history. Check your username and try again.</p><a href="/">Back to MyPhisHistory</a></div><div class="results" id="results"><div class="hero-bar"><div class="badge">Free Snapshot</div><h1><span id="display-username"></span>'s Phish Story</h1><p class="subtitle"><span id="display-years"></span> years of Phish. Here are the numbers.</p></div><div class="stats-grid"><div class="stat-card"><div class="number" id="stat-shows">--</div><div class="label">Shows</div></div><div class="stat-card"><div class="number" id="stat-years">--</div><div class="label">Years</div></div><div class="stat-card"><div class="number" id="stat-venues">--</div><div class="label">Venues</div></div><div class="stat-card"><div class="number" id="stat-songs">--</div><div class="label">Est. Songs</div></div></div><div class="detail-section"><h3>Your Bookends</h3><div class="show-card"><div class="show-label">First Show</div><div class="show-date" id="first-show-date">--</div><div class="show-venue" id="first-show-venue">--</div></div><div class="show-card"><div class="show-label">Most Recent</div><div class="show-date" id="last-show-date">--</div><div class="show-venue" id="last-show-venue">--</div></div></div><div class="detail-section"><h3>Top Venues</h3><ul class="venue-list" id="venue-list"></ul></div><div class="detail-section"><h3>Shows by Year</h3><div class="year-chart" id="year-chart"></div></div><div class="upsell"><div class="upsell-card"><h2>This is just the snapshot.</h2><p>Your full Phish story is ~25 pages of narrative, analysis, and deep dives you won't find anywhere else.</p><div class="price">$25</div><div class="price-note">One-time purchase &mdash; delivered within 48 hours</div><ul class="features"><li>A letter to the fan you used to be</li><li>Era-by-era narrative of your Phish life</li><li>Crown jewel jams with phish.in listening links</li><li>"What your show history says about you" profile</li><li>Complete stats, charts, and data visualizations</li><li>Rarest catches and statistical anomalies</li></ul><a href="/#order" class="cta-btn" id="upsell-link">Get Your Full Phish Story</a></div></div><div class="footer">MyPhisHistory &middot; A passion project, not affiliated with Phish or Phish.net</div></div>
+<div class="loading-screen" id="loading">
+  <div class="spinner"></div>
+  <h2>Pulling your show history...</h2>
+  <p style="color:#8b949e;">Talking to Phish.net. This takes a few seconds.</p>
+</div>
+
+<div class="error-screen" id="error">
+  <h2 id="error-title">Something went wrong</h2>
+  <p id="error-msg">We couldn't pull your show history. Check your username and try again.</p>
+  <a href="/">Back to MyPhisHistory</a>
+</div>
+
+<div class="results" id="results">
+  <div class="hero-bar">
+    <div class="badge">Free Snapshot</div>
+    <h1><span id="display-username"></span>'s Phish Story</h1>
+    <p class="subtitle"><span id="display-years"></span> years of Phish. Here are the numbers.</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="number" id="stat-shows">--</div><div class="label">Shows</div></div>
+    <div class="stat-card"><div class="number" id="stat-years">--</div><div class="label">Years</div></div>
+    <div class="stat-card"><div class="number" id="stat-venues">--</div><div class="label">Venues</div></div>
+    <div class="stat-card"><div class="number" id="stat-songs">--</div><div class="label">Est. Songs</div></div>
+  </div>
+
+  <div class="detail-section">
+    <h3>Your Bookends</h3>
+    <div class="show-card">
+      <div class="show-label">First Show</div>
+      <div class="show-date" id="first-show-date">--</div>
+      <div class="show-venue" id="first-show-venue">--</div>
+    </div>
+    <div class="show-card">
+      <div class="show-label">Most Recent</div>
+      <div class="show-date" id="last-show-date">--</div>
+      <div class="show-venue" id="last-show-venue">--</div>
+    </div>
+  </div>
+
+  <div class="detail-section">
+    <h3>Top Venues</h3>
+    <ul class="venue-list" id="venue-list"></ul>
+  </div>
+
+  <div class="detail-section">
+    <h3>Shows by Year</h3>
+    <div class="year-chart-shell">
+      <div class="year-chart-scroll">
+        <div class="year-chart" id="year-chart"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-section">
+    <h3>Top 5 Most-Heard Songs</h3>
+    <ul class="venue-list" id="song-list"></ul>
+  </div>
+
+  <div class="detail-section">
+    <h3>Era Breakdown</h3>
+    <div class="era-list" id="era-list"></div>
+  </div>
+
+  <div class="detail-section">
+    <h3>Longest Drought</h3>
+    <div class="simple-line" id="drought-line">--</div>
+  </div>
+
+  <div class="detail-section">
+    <h3>States Visited</h3>
+    <div class="simple-line" id="states-line">--</div>
+  </div>
+
+  <div class="tagline-card">
+    <div class="tagline-inner" id="tagline-line">--</div>
+  </div>
+
+  <div class="cta-section">
+    <div class="cta-card">
+      <h2>Want the full story?</h2>
+      <p>Era narratives, tier list, crown jewels, curated performances, editorial deep dives.</p>
+      <div class="cta-price">Your Phish Story — $25, delivered within 48 hours.</div>
+      <a href="https://myphishistory.com" class="cta-btn" id="upsell-link">Visit MyPhisHistory</a>
+    </div>
+  </div>
+
+  <div class="footer">MyPhisHistory &middot; A passion project, not affiliated with Phish or Phish.net</div>
+</div>
+
 <script>
-const params=new URLSearchParams(window.location.search);
-const username=params.get("username");
-const isShare=params.get("share")==="true";
+const KNOWN_GAP_YEARS = new Set([2001, 2002, 2005, 2006, 2007, 2008, 2020]);
+const params = new URLSearchParams(window.location.search);
+const username = params.get('username');
+const isShare = params.get('share') === 'true';
 
-if(!username){showError("Missing Info","We need your Phishnet username to generate your snapshot.")}else{generateSnapshot()}
-
-async function generateSnapshot(){
-  try{
-    const body={username};
-    if(isShare){body.share=true}
-    const res=await fetch("/api/generate-snapshot",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
-    const data=await res.json();
-    if(!res.ok||!data.success){showError("No Shows Found",data.error||"Check your Phishnet username and try again.");return}
-    renderSnapshot(data.snapshot);
-  }catch(err){showError("Connection Error","Could not reach our servers. Please try again in a moment.")}
+if (!username) {
+  showError('Missing Info', 'We need your Phishnet username to generate your snapshot.');
+} else {
+  generateSnapshot();
 }
 
-function showError(title,msg){document.getElementById("loading").style.display="none";document.getElementById("error").style.display="flex";document.getElementById("error-title").textContent=title;document.getElementById("error-msg").textContent=msg}
+async function generateSnapshot() {
+  try {
+    const body = { username };
+    if (isShare) body.share = true;
+    const res = await fetch('/api/generate-snapshot', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      showError('No Shows Found', data.error || 'Check your Phishnet username and try again.');
+      return;
+    }
+    renderSnapshot(data.snapshot);
+  } catch (err) {
+    showError('Connection Error', 'Could not reach our servers. Please try again in a moment.');
+  }
+}
 
-function formatDate(dateStr){const d=new Date(dateStr+"T12:00:00");return d.toLocaleDateString("en-US",{month:"long",day:"numeric",year:"numeric"})}
+function showError(title, msg) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('error').style.display = 'flex';
+  document.getElementById('error-title').textContent = title;
+  document.getElementById('error-msg').textContent = msg;
+}
 
-function renderSnapshot(s){
-  document.getElementById("loading").style.display="none";
-  document.getElementById("results").style.display="block";
-  document.getElementById("display-username").textContent=s.username;
-  document.getElementById("display-years").textContent=s.yearsActive;
-  document.getElementById("stat-shows").textContent=s.totalShows;
-  document.getElementById("stat-years").textContent=s.yearsActive;
-  document.getElementById("stat-venues").textContent=s.uniqueVenues;
-  document.getElementById("stat-songs").textContent="~"+s.estimatedSongs;
-  document.getElementById("first-show-date").textContent=formatDate(s.firstShow.date);
-  const firstLoc=[s.firstShow.venue,s.firstShow.city,s.firstShow.state].filter(Boolean).join(", ");
-  document.getElementById("first-show-venue").textContent=firstLoc||"Unknown venue";
-  document.getElementById("last-show-date").textContent=formatDate(s.lastShow.date);
-  const lastLoc=[s.lastShow.venue,s.lastShow.city,s.lastShow.state].filter(Boolean).join(", ");
-  document.getElementById("last-show-venue").textContent=lastLoc||"Unknown venue";
+function formatDate(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
 
-  const venueList=document.getElementById("venue-list");
-  s.topVenues.forEach(v=>{const li=document.createElement("li");li.innerHTML='<span class="venue-name">'+escHtml(v.name)+'</span><span class="venue-count">'+v.count+'x</span>';venueList.appendChild(li)});
+function formatShortDate(dateStr) {
+  const d = new Date(dateStr + 'T12:00:00');
+  return d.toLocaleDateString('en-US');
+}
 
-  const chart=document.getElementById("year-chart");
-  const yearEntries=Object.entries(s.showsByYear).sort((a,b)=>parseInt(a[0])-parseInt(b[0]));
-  const maxShows=Math.max(...yearEntries.map(e=>e[1]));
-  yearEntries.forEach(([year,count])=>{const wrap=document.createElement("div");wrap.className="year-bar-wrap";const heightPct=(count/maxShows)*100;wrap.innerHTML='<div class="bar-count">'+count+'</div><div class="year-bar" style="height:'+heightPct+'%"></div><div class="year-label">'+year.slice(2)+'</div>';chart.appendChild(wrap)});
+function renderSnapshot(s) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
 
-  // Share button
-  const heroBar=document.querySelector(".hero-bar");
-  const shareBtn=document.createElement("button");
-  shareBtn.className="share-btn";
-  shareBtn.textContent="Share Your Stats";
-  shareBtn.addEventListener("click",function(){
-    const shareUrl=window.location.origin+"/snapshot.html?username="+encodeURIComponent(s.username)+"&share=true";
-    navigator.clipboard.writeText(shareUrl).then(function(){
-      var toast=document.getElementById("share-toast");
-      toast.textContent="Link copied to clipboard!";toast.style.display="block";
-      setTimeout(function(){toast.style.display="none"},2500);
-    }).catch(function(){prompt("Copy this link:",shareUrl)});
+  document.getElementById('display-username').textContent = s.username;
+  document.getElementById('display-years').textContent = s.yearsActive;
+  document.getElementById('stat-shows').textContent = s.totalShows;
+  document.getElementById('stat-years').textContent = s.yearsActive;
+  document.getElementById('stat-venues').textContent = s.uniqueVenues;
+  document.getElementById('stat-songs').textContent = '~' + s.estimatedSongs;
+
+  document.getElementById('first-show-date').textContent = formatDate(s.firstShow.date);
+  document.getElementById('first-show-venue').textContent = [s.firstShow.venue, s.firstShow.city, s.firstShow.state].filter(Boolean).join(', ') || 'Unknown venue';
+  document.getElementById('last-show-date').textContent = formatDate(s.lastShow.date);
+  document.getElementById('last-show-venue').textContent = [s.lastShow.venue, s.lastShow.city, s.lastShow.state].filter(Boolean).join(', ') || 'Unknown venue';
+
+  renderVenueList(s.topVenues);
+  renderYearChart(s.showsByYearRange || s.showsByYear || {});
+  renderTopSongs(s.topSongs || []);
+  renderEraBreakdown(s.eraBreakdown || []);
+  renderLongestDrought(s.longestDrought);
+  renderStatesLine(s.statesByFrequency || []);
+  renderTagline(s.tagline || (s.totalShows + ' shows. ' + s.yearsActive + ' years. Your Phish story.'));
+  setupShare(s);
+  setupCta(s);
+
+  posthog.capture('snapshot_viewed', {
+    username: s.username,
+    total_shows: s.totalShows,
+    years_active: s.yearsActive,
+    is_share: isShare
+  });
+}
+
+function renderVenueList(topVenues) {
+  const venueList = document.getElementById('venue-list');
+  venueList.innerHTML = '';
+  topVenues.forEach((v) => {
+    const li = document.createElement('li');
+    li.innerHTML = '<span class="venue-name">' + escHtml(v.name) + '</span><span class="venue-count">' + v.count + 'x</span>';
+    venueList.appendChild(li);
+  });
+}
+
+function renderYearChart(showsByYear) {
+  const chart = document.getElementById('year-chart');
+  chart.innerHTML = '';
+  const yearEntries = Object.entries(showsByYear).sort((a, b) => parseInt(a[0], 10) - parseInt(b[0], 10));
+  if (!yearEntries.length) return;
+
+  const maxShows = Math.max(...yearEntries.map((e) => e[1]), 1);
+  yearEntries.forEach(([year, count]) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'year-bar-wrap';
+
+    const barCount = document.createElement('div');
+    barCount.className = 'bar-count';
+    barCount.textContent = String(count);
+
+    const bar = document.createElement('div');
+    bar.className = 'year-bar';
+    if (count === 0) {
+      bar.classList.add('year-bar-gap');
+    }
+    const heightPct = count === 0 ? 8 : Math.max((count / maxShows) * 100, 10);
+    bar.style.height = heightPct + '%';
+
+    const yearLabel = document.createElement('div');
+    yearLabel.className = 'year-label';
+    yearLabel.textContent = year;
+
+    wrap.appendChild(barCount);
+    wrap.appendChild(bar);
+    wrap.appendChild(yearLabel);
+
+    if (count === 0) {
+      const gap = document.createElement('div');
+      gap.className = 'year-gap-tag';
+      gap.textContent = KNOWN_GAP_YEARS.has(parseInt(year, 10)) ? 'gap' : '0';
+      wrap.appendChild(gap);
+    }
+
+    chart.appendChild(wrap);
+  });
+}
+
+function renderTopSongs(topSongs) {
+  const list = document.getElementById('song-list');
+  list.innerHTML = '';
+  if (!topSongs.length) {
+    const li = document.createElement('li');
+    li.innerHTML = '<span class="venue-name">Could not load setlist song frequencies right now.</span>';
+    list.appendChild(li);
+    return;
+  }
+
+  topSongs.slice(0, 5).forEach((song, index) => {
+    const li = document.createElement('li');
+    li.innerHTML = '<span class="venue-name">' + (index + 1) + '. ' + escHtml(song.name) + '</span><span class="venue-count">' + song.count + 'x</span>';
+    list.appendChild(li);
+  });
+}
+
+function renderEraBreakdown(eras) {
+  const list = document.getElementById('era-list');
+  list.innerHTML = '';
+  eras.forEach((era) => {
+    const row = document.createElement('div');
+    row.className = 'era-row';
+    row.innerHTML = '<span class="era-label">' + era.label + '</span><span class="era-count">' + era.count + ' shows</span>';
+    list.appendChild(row);
+  });
+}
+
+function renderLongestDrought(drought) {
+  const line = document.getElementById('drought-line');
+  if (!drought) {
+    line.textContent = 'Longest gap between shows: n/a';
+    return;
+  }
+  line.innerHTML = '<strong>Longest gap between shows:</strong> ' + drought.days + ' days (' + formatShortDate(drought.start) + ' \u2013 ' + formatShortDate(drought.end) + ').';
+}
+
+function renderStatesLine(statesByFrequency) {
+  const line = document.getElementById('states-line');
+  if (!statesByFrequency.length) {
+    line.textContent = '0 states: n/a';
+    return;
+  }
+  const names = statesByFrequency.map((entry) => entry.name);
+  line.innerHTML = '<strong>' + names.length + ' states:</strong> ' + escHtml(names.join(', '));
+}
+
+function renderTagline(tagline) {
+  document.getElementById('tagline-line').textContent = tagline;
+}
+
+function setupShare(s) {
+  const heroBar = document.querySelector('.hero-bar');
+  const shareBtn = document.createElement('button');
+  shareBtn.className = 'share-btn';
+  shareBtn.textContent = 'Share Your Stats';
+  shareBtn.addEventListener('click', function () {
+    const shareUrl = window.location.origin + '/snapshot.html?username=' + encodeURIComponent(s.username) + '&share=true';
+    navigator.clipboard.writeText(shareUrl).then(function () {
+      const toast = document.getElementById('share-toast');
+      toast.textContent = 'Link copied to clipboard!';
+      toast.style.display = 'block';
+      setTimeout(function () { toast.style.display = 'none'; }, 2500);
+    }).catch(function () {
+      prompt('Copy this link:', shareUrl);
+    });
   });
   heroBar.appendChild(shareBtn);
 
-  // Toast element (created dynamically)
-  var toast=document.createElement("div");toast.id="share-toast";toast.className="share-toast";document.body.appendChild(toast);
-
-  // Upsell CTA
-  const upsellLink=document.getElementById("upsell-link");
-  if(isShare){
-    upsellLink.textContent="Get Your Own Snapshot";
-    upsellLink.href="/#snapshot";
-  }else{
-    upsellLink.href="/#order?username="+encodeURIComponent(s.username);
+  if (!document.getElementById('share-toast')) {
+    const toast = document.createElement('div');
+    toast.id = 'share-toast';
+    toast.className = 'share-toast';
+    document.body.appendChild(toast);
   }
-  upsellLink.addEventListener("click",function(){
-    posthog.capture("upsell_clicked",{username:s.username,total_shows:s.totalShows,is_share:isShare});
-  });
-
-  // PostHog: snapshot_viewed
-  posthog.capture("snapshot_viewed",{username:s.username,total_shows:s.totalShows,years_active:s.yearsActive,is_share:isShare});
 }
 
-function escHtml(str){const d=document.createElement("div");d.textContent=str;return d.innerHTML}
+function setupCta(s) {
+  const upsellLink = document.getElementById('upsell-link');
+  upsellLink.addEventListener('click', function () {
+    posthog.capture('upsell_clicked', { username: s.username, total_shows: s.totalShows, is_share: isShare });
+  });
+}
+
+function escHtml(str) {
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
 </script>
 </body>
 </html>
