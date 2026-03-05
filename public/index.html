@@ -682,54 +682,50 @@
 
 <section class="order-section" id="order">
     <div class="order-card">
-      <h2>Get Your Full Phish Story</h2>
-      <div class="price" id="order-price" style="display:none;">$25</div>
-      <div class="price-note" id="order-price-note">Free for limited time</div>
-      <div class="price-note" id="order-launch-tag" style="margin-top:-14px;margin-bottom:24px;letter-spacing:0.08em;text-transform:uppercase;">Launch Edition</div>
+      <h2>Join the Waitlist</h2>
+      <div class="price-note" style="margin-bottom:22px;">The full deep dive - era narratives, tier list, crown jewels, curated performances, editorial writeups.</div>
 
-      <div class="form-error" id="form-error"></div>
+      <div id="waitlist-stats" style="display:none;background:#111722;border:1px solid #1f2a3c;border-radius:12px;padding:14px 12px;margin-bottom:18px;">
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;">
+          <div style="text-align:center;"><div id="waitlist-total" style="color:#e8916e;font-size:1.35rem;font-weight:700;line-height:1;">0</div><div style="font-size:0.75rem;color:#8b949e;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">fans on waitlist</div></div>
+          <div style="text-align:center;"><div id="waitlist-shows" style="color:#e8916e;font-size:1.35rem;font-weight:700;line-height:1;">0</div><div style="font-size:0.75rem;color:#8b949e;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">combined shows</div></div>
+          <div style="text-align:center;"><div id="waitlist-states" style="color:#e8916e;font-size:1.35rem;font-weight:700;line-height:1;">0</div><div style="font-size:0.75rem;color:#8b949e;margin-top:4px;text-transform:uppercase;letter-spacing:0.05em;">states represented</div></div>
+        </div>
+      </div>
 
-      <form id="order-form" onsubmit="return false;">
+      <div class="form-error" id="waitlist-error"></div>
+      <div id="waitlist-success" style="display:none;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.4);color:#86efac;padding:10px 14px;border-radius:8px;font-size:14px;margin-bottom:16px;">You're on the waitlist.</div>
+
+      <form id="waitlist-form" onsubmit="return false;">
         <div class="form-group">
-          <label for="phishnet-username">Phishnet Username</label>
-          <input type="text" id="phishnet-username" name="phishnet_username" placeholder="e.g. jfishman" required autocomplete="off" />
-          <div class="username-status" id="username-status"></div>
+          <label for="waitlist-username">Phish.net Username</label>
+          <input type="text" id="waitlist-username" name="username" placeholder="e.g. jfishman" required autocomplete="off" />
         </div>
 
         <div class="form-group">
-          <label for="email">Your Email</label>
-          <input type="email" id="email" name="email" placeholder="you@example.com" required />
-          <div class="input-hint">We'll deliver your PDF here</div>
+          <label for="waitlist-email">Email</label>
+          <input type="email" id="waitlist-email" name="email" placeholder="you@example.com" required />
+          <div class="input-hint">We'll notify you when it launches</div>
         </div>
 
-        <div class="form-group">
-          <label for="full-name">Your Full Name <span style="color:#666;font-weight:400;font-size:13px;">(optional)</span></label>
-          <input type="text" id="full-name" placeholder="e.g. John Fishman">
-          <div class="input-hint" style="color:#e85d04;">Will appear on your PDF</div>
-        </div>
-
-        <label class="gift-toggle">
-          <input type="checkbox" id="gift-check" />
-          This is a gift for someone else
+        <label class="gift-toggle" style="margin-bottom:16px;">
+          <input type="checkbox" id="show-on-public" />
+          Show my username on the public waitlist
         </label>
 
-        <div class="gift-fields" id="gift-fields">
-          <div class="form-group">
-            <label for="gift-email">Recipient's Email</label>
-            <input type="email" id="gift-email" name="gift_email" placeholder="friend@example.com" />
-            <div class="input-hint">We'll send the PDF to this address</div>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-primary" id="submit-btn">
-          Free for Limited Time
+        <button type="submit" class="btn-primary" id="waitlist-submit-btn">
+          Join the Waitlist
         </button>
-        <div class="order-submit-note" id="order-submit-note">Each report is individually researched and created using your Phish.net show history. Delivery within 48 hours.</div>
+        <div class="order-submit-note">No charge. We'll email you when Your Phish Story goes live.</div>
       </form>
 
+      <div id="public-waitlist-wrap" style="display:none;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);">
+        <div style="font-family:'DM Serif Display',serif;color:#e2e8f0;font-size:1.15rem;margin-bottom:8px;">The Waitlist — fans waiting for their full Phish Story</div>
+        <div id="public-waitlist-list" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+      </div>
+
       <div class="order-footer">
-        <span id="order-footer-copy">Launch Edition. Priority cap: 25.</span>
-        <br>Questions? <a href="#" onclick="showContactModal();return false;" style="color:var(--accent);text-decoration:underline;cursor:pointer;">Contact us</a>
+        Questions? <a href="#" onclick="showContactModal();return false;" style="color:var(--accent);text-decoration:underline;cursor:pointer;">Contact us</a>
       </div>
     </div>
   </section>
@@ -766,56 +762,6 @@
   </footer>
 
   <script>
-    const LAUNCH_FREE_MODE = true;
-    const LAUNCH_PRIORITY_CAP = 25;
-
-    function getSubmitButtonLabel() {
-      return LAUNCH_FREE_MODE ? 'Free for Limited Time' : 'Get MyPhisHistory — $25';
-    }
-
-    function applyLaunchModeUI() {
-      var heroCtaText = document.getElementById('hero-cta-text');
-      var heroSubCopy = document.getElementById('hero-sub-copy');
-      var snapshotFullLinkText = document.getElementById('snapshot-full-link-text');
-      var orderPrice = document.getElementById('order-price');
-      var orderPriceNote = document.getElementById('order-price-note');
-      var orderLaunchTag = document.getElementById('order-launch-tag');
-      var submitBtn = document.getElementById('submit-btn');
-      var orderSubmitNote = document.getElementById('order-submit-note');
-      var orderFooterCopy = document.getElementById('order-footer-copy');
-
-      if (LAUNCH_FREE_MODE) {
-        heroSubCopy.textContent = 'Free launch: get your snapshot instantly, then claim your full report.';
-        heroCtaText.textContent = 'Snapshot';
-        heroCtaText.style.display = 'none';
-        snapshotFullLinkText.textContent = 'See the sample PDF ↓';
-        orderPrice.style.display = 'none';
-        orderPriceNote.textContent = 'Free for limited time';
-        orderLaunchTag.style.display = 'block';
-        submitBtn.textContent = getSubmitButtonLabel();
-        orderSubmitNote.textContent = 'Each report is individually researched and created using your Phish.net show history. Delivery within 48 hours.';
-        orderSubmitNote.style.color = '#2ea043';
-        orderSubmitNote.style.fontSize = '15px';
-        orderSubmitNote.style.fontWeight = '600';
-        orderFooterCopy.textContent = 'Launch Edition. Priority cap: ' + LAUNCH_PRIORITY_CAP + '.';
-      } else {
-        heroSubCopy.textContent = 'Start with a free snapshot. Upgrade for the full AI-assisted, human-reviewed PDF.';
-        heroCtaText.textContent = 'Try It Free';
-        heroCtaText.style.display = 'inline-block';
-        snapshotFullLinkText.textContent = 'See what\'s in the full PDF ↓';
-        orderPrice.style.display = 'block';
-        orderPriceNote.innerHTML = 'Digital PDF &mdash; delivered within 48 hours';
-        orderLaunchTag.style.display = 'none';
-        submitBtn.textContent = getSubmitButtonLabel();
-        orderSubmitNote.textContent = 'Secure payment via Stripe.';
-        orderSubmitNote.style.color = '#8b949e';
-        orderSubmitNote.style.fontSize = '13px';
-        orderSubmitNote.style.fontWeight = '400';
-        orderFooterCopy.textContent = 'Your PDF is AI-assisted, human-reviewed, and delivered within 48 hours.';
-      }
-    }
-
-    applyLaunchModeUI();
 
   function showContactModal() {
     document.getElementById('contact-modal').style.display = 'flex';
@@ -874,181 +820,108 @@
     }
   }
 
-    // --- Phishnet username validation ---
-    let usernameTimeout = null;
-    let usernameValid = false;
+    const waitlistForm = document.getElementById('waitlist-form');
+    const waitlistError = document.getElementById('waitlist-error');
+    const waitlistSuccess = document.getElementById('waitlist-success');
+    const waitlistSubmitBtn = document.getElementById('waitlist-submit-btn');
 
-    const usernameInput = document.getElementById('phishnet-username');
-    const usernameStatus = document.getElementById('username-status');
-
-    usernameInput.addEventListener('input', function () {
-      const val = this.value.trim();
-      usernameValid = false;
-      clearTimeout(usernameTimeout);
-
-      if (!val) {
-        usernameStatus.textContent = '';
-        usernameStatus.className = 'username-status';
-        return;
-      }
-
-      usernameStatus.textContent = 'Checking username...';
-      usernameStatus.className = 'username-status checking';
-
-      usernameTimeout = setTimeout(() => validateUsername(val), 600);
-    });
-
-    async function validateUsername(username) {
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 3000);
-        const res = await fetch(`/api/validate-username?username=${encodeURIComponent(username)}`, { signal: controller.signal });
-        clearTimeout(timeout);
-        const data = await res.json();
-        if (data && data.data && data.data.length > 0) {
-          usernameValid = true;
-          usernameStatus.textContent = `Found ${data.data.length} shows`;
-          usernameStatus.className = 'username-status valid';
-          posthog.capture('username_validated', { username: username, show_count: data.data.length });
-        } else {
-          usernameValid = false;
-          usernameStatus.textContent = 'No shows found for this username. Check spelling or add shows on phish.net.';
-          usernameStatus.className = 'username-status invalid';
-          posthog.capture('username_failed', { username: username });
-        }
-      } catch (err) {
-        usernameValid = true;
-        usernameStatus.textContent = "Phish.net's API is temporarily unavailable. No worries \u2014 we can still process your order and build your PDF once it's back up.";
-        usernameStatus.className = 'username-status checking';
-      }
-    }
-
-    // --- Gift toggle ---
-    const giftCheck = document.getElementById('gift-check');
-    const giftFields = document.getElementById('gift-fields');
-    giftCheck.addEventListener('change', function () {
-      giftFields.classList.toggle('visible', this.checked);
-    });
-
-    // --- Form submission ---
-    const form = document.getElementById('order-form');
-    const submitBtn = document.getElementById('submit-btn');
-    const formError = document.getElementById('form-error');
-
-    form.addEventListener('submit', async function (e) {
+    waitlistForm.addEventListener('submit', async function (e) {
       e.preventDefault();
-      formError.classList.remove('visible');
+      waitlistError.classList.remove('visible');
+      waitlistSuccess.style.display = 'none';
 
-      const username = usernameInput.value.trim();
-      const email = document.getElementById('email').value.trim();
-      const fullName = document.getElementById('full-name').value.trim();
-      const isGift = giftCheck.checked;
-      const giftEmail = document.getElementById('gift-email').value.trim();
+      const username = document.getElementById('waitlist-username').value.trim();
+      const email = document.getElementById('waitlist-email').value.trim();
+      const showOnPublic = document.getElementById('show-on-public').checked;
 
-      // Validate
       if (!username) {
-        showError('Please enter your Phishnet username.');
+        showWaitlistError('Please enter your Phish.net username.');
         return;
       }
       if (!email) {
-        showError('Please enter your email address.');
-        return;
-      }
-      if (isGift && !giftEmail) {
-        showError('Please enter the recipient\'s email for gift delivery.');
+        showWaitlistError('Please enter your email.');
         return;
       }
 
-      submitBtn.disabled = true;
-      submitBtn.textContent = LAUNCH_FREE_MODE ? 'Processing your request...' : 'Redirecting to payment...';
-      posthog.identify(email, { email: email, phishnet_username: username });
-      posthog.capture('checkout_started', { username: username, email: email, is_gift: isGift });
+      waitlistSubmitBtn.disabled = true;
+      waitlistSubmitBtn.textContent = 'Joining...';
 
       try {
-        const res = await fetch('/api/create-checkout-session', {
+        const res = await fetch('/api/waitlist/join', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            phishnet_username: username,
-            email: email,
-            is_gift: isGift,
-            gift_email: isGift ? giftEmail : null,
-            full_name: fullName || null
+            username,
+            email,
+            show_on_public: showOnPublic
           })
         });
 
         const data = await res.json();
-
-        if (data.waitlist) {
-          // Order cap reached — show waitlist UI
-          posthog.capture('waitlist_shown', { username: username, email: email });
-          showWaitlistUI(username, email, fullName);
-          return;
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Failed to join waitlist.');
         }
 
-        if (data.url) {
-          posthog.capture('checkout_redirected', { username: username, email: email });
-          window.location.href = data.url;
-        } else {
-          throw new Error(data.error || 'Something went wrong. Please try again.');
-        }
+        waitlistSuccess.style.display = 'block';
+        waitlistSuccess.textContent = data.updated ? "You're already on the waitlist — your info is updated." : "You're on the waitlist.";
+        posthog.capture('waitlist_joined', { username: username, email: email, show_on_public: showOnPublic });
+        await loadWaitlistStats();
       } catch (err) {
-        showError(err.message || 'Something went wrong. Please try again.');
-        submitBtn.disabled = false;
-        submitBtn.textContent = getSubmitButtonLabel();
+        showWaitlistError(err.message || 'Failed to join waitlist.');
+      } finally {
+        waitlistSubmitBtn.disabled = false;
+        waitlistSubmitBtn.textContent = 'Join the Waitlist';
       }
     });
 
-    function showError(msg) {
-      formError.textContent = msg;
-      formError.classList.add('visible');
+    function showWaitlistError(msg) {
+      waitlistError.textContent = msg;
+      waitlistError.classList.add('visible');
     }
 
-    function showWaitlistUI(username, email, fullName) {
-      var card = document.querySelector('.order-card');
-      card.innerHTML = `
-        <h2 style="font-family:'DM Serif Display',serif;font-size:1.6rem;color:#fff;margin-bottom:8px;font-weight:400;">We're at capacity</h2>
-        <p style="color:var(--text-muted);margin-bottom:24px;line-height:1.6;">Our first wave sold out. Join the waitlist and we'll email you the moment we open up for the next batch.</p>
-        <div id="waitlist-error" class="form-error"></div>
-        <button id="waitlist-btn" class="btn-primary" style="margin-bottom:16px;">Join the Waitlist</button>
-        <p style="font-size:13px;color:#484f58;">We saved your info — you won't need to re-enter anything.</p>
-      `;
-      document.getElementById('waitlist-btn').addEventListener('click', async function() {
-        var btn = this;
-        var errDiv = document.getElementById('waitlist-error');
-        btn.disabled = true;
-        btn.textContent = 'Joining...';
-        errDiv.classList.remove('visible');
-        try {
-          var res = await fetch('/api/join-waitlist', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phishnet_username: username, email: email, full_name: fullName || null })
-          });
-          var data = await res.json();
-          if (data.success) {
-            posthog.capture('waitlist_joined', { username: username, email: email });
-            card.innerHTML = '<h2 style="font-family:\'DM Serif Display\',serif;font-size:1.6rem;color:#fff;margin-bottom:8px;font-weight:400;">You\'re on the list.</h2><p style="color:var(--text-muted);line-height:1.6;">Check your email for confirmation. We\'ll reach out as soon as we\'re ready for the next wave.</p>';
-          } else {
-            throw new Error(data.error || 'Something went wrong.');
-          }
-        } catch(e) {
-          errDiv.textContent = e.message;
-          errDiv.classList.add('visible');
-          btn.disabled = false;
-          btn.textContent = 'Join the Waitlist';
+    async function loadWaitlistStats() {
+      try {
+        const res = await fetch('/api/waitlist/stats');
+        const data = await res.json();
+        if (!res.ok) throw new Error('Failed to load waitlist stats.');
+
+        const statsWrap = document.getElementById('waitlist-stats');
+        const publicWrap = document.getElementById('public-waitlist-wrap');
+        const publicList = document.getElementById('public-waitlist-list');
+
+        if (data.total_count > 0) {
+          statsWrap.style.display = 'block';
+          document.getElementById('waitlist-total').textContent = data.total_count;
+          document.getElementById('waitlist-shows').textContent = data.combined_shows;
+          document.getElementById('waitlist-states').textContent = data.states_represented;
+        } else {
+          statsWrap.style.display = 'none';
         }
-      });
+
+        if (Array.isArray(data.public_usernames) && data.public_usernames.length > 0) {
+          publicList.innerHTML = '';
+          data.public_usernames.forEach(function (username) {
+            const chip = document.createElement('span');
+            chip.style.display = 'inline-block';
+            chip.style.padding = '6px 10px';
+            chip.style.border = '1px solid rgba(232,145,110,0.25)';
+            chip.style.borderRadius = '999px';
+            chip.style.background = 'rgba(232,145,110,0.1)';
+            chip.style.color = '#e8916e';
+            chip.style.fontSize = '0.82rem';
+            chip.textContent = username;
+            publicList.appendChild(chip);
+          });
+          publicWrap.style.display = 'block';
+        } else {
+          publicWrap.style.display = 'none';
+        }
+      } catch (_) {
+        // Non-fatal; keep signup functional even if stats fail to load.
+      }
     }
 
-    // Smooth scroll for CTA
-    var orderAnchor = document.querySelector('a[href="#order"]');
-    if (orderAnchor) {
-      orderAnchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.getElementById('order').scrollIntoView({ behavior: 'smooth' });
-      });
-    }
+    loadWaitlistStats();
   </script>
 
   <!-- Contact Modal -->
