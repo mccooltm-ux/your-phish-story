@@ -196,6 +196,63 @@
       font-weight: 700;
     }
 
+    /* --- PRODUCT FEATURES --- */
+    .product-features {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 24px 52px;
+    }
+
+    .product-features h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.95rem;
+      color: #fff;
+      text-align: center;
+      font-weight: 400;
+      margin-bottom: 20px;
+    }
+
+    .feature-groups {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .feature-group {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .feature-group h3 {
+      color: #c5973f;
+      font-size: 1.03rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: 0.01em;
+    }
+
+    .feature-line {
+      color: #a8b1bb;
+      font-size: 0.87rem;
+      line-height: 1.45;
+      padding: 7px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .feature-line:first-of-type {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .feature-footer {
+      margin-top: 16px;
+      text-align: center;
+      color: #8b949e;
+      font-size: 0.9rem;
+    }
+
     /* --- WHAT YOU GET --- */
     .features {
       max-width: 720px;
@@ -563,6 +620,19 @@
         font-size: 0.76rem;
       }
 
+      .product-features {
+        padding: 0 16px 42px;
+      }
+
+      .product-features h2 {
+        font-size: 1.55rem;
+        margin-bottom: 14px;
+      }
+
+      .feature-groups {
+        grid-template-columns: 1fr;
+      }
+
       .pdf-reader-topbar {
         padding-left: 14px;
         padding-right: 14px;
@@ -643,6 +713,35 @@
   </section>
 
   <div class="divider"><hr></div>
+
+  <section class="product-features">
+    <h2>What's in Your Phish Story</h2>
+    <div class="feature-groups">
+      <div class="feature-group">
+        <h3>Your Numbers</h3>
+        <div class="feature-line">Timeline chart of shows by year</div>
+        <div class="feature-line">Month and day-of-week attendance patterns</div>
+        <div class="feature-line">Venue rankings with show counts</div>
+        <div class="feature-line">Geographic breakdown by state</div>
+        <div class="feature-line">Estimated most-heard songs</div>
+      </div>
+      <div class="feature-group">
+        <h3>Your Story</h3>
+        <div class="feature-line">Personalized cover page with career stats</div>
+        <div class="feature-line">Era-by-era narrative of your Phish journey</div>
+        <div class="feature-line">Deep dives into your defining nights</div>
+        <div class="feature-line">Honest assessment of resume strengths and gaps</div>
+      </div>
+      <div class="feature-group">
+        <h3>Your Rankings</h3>
+        <div class="feature-line">Show and venue tier rankings</div>
+        <div class="feature-line">Verified notable performances with direct streaming links</div>
+        <div class="feature-line">Legendary shows and experiences you missed</div>
+        <div class="feature-line">Complete chronological show list</div>
+      </div>
+    </div>
+    <div class="feature-footer">Personalized. 14 pages. Delivered to your inbox within 48 hours.</div>
+  </section>
 
   <!-- Free Snapshot Section -->
   <section id="snapshot" style="padding: 0 1.5rem 1.5rem; text-align: center; max-width: 980px; margin: 0 auto;">
