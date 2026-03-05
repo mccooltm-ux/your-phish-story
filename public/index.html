@@ -45,7 +45,7 @@
     .hero {
       max-width: 720px;
       margin: 0 auto;
-      padding: 80px 24px 48px;
+      padding: 64px 24px 24px;
       text-align: center;
     }
 
@@ -58,25 +58,25 @@
       border: 1px solid rgba(232, 114, 58, 0.3);
       padding: 6px 16px;
       border-radius: 100px;
-      margin-bottom: 32px;
+      margin-bottom: 20px;
       letter-spacing: 0.02em;
     }
 
     h1 {
       font-family: 'DM Serif Display', serif;
-      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-size: clamp(2rem, 4.6vw, 3rem);
       line-height: 1.15;
-      margin-bottom: 24px;
+      margin-bottom: 14px;
       color: #fff;
       font-weight: 400;
     }
 
     .hero-sub {
-      font-size: 18px;
+      font-size: 16px;
       color: var(--text-muted);
-      max-width: 560px;
-      margin: 0 auto 40px;
-      line-height: 1.7;
+      max-width: 520px;
+      margin: 0 auto 14px;
+      line-height: 1.55;
     }
 
     .hero-sub strong {
@@ -88,12 +88,12 @@
     .samples {
       max-width: 920px;
       margin: 0 auto;
-      padding: 0 24px 60px;
+      padding: 0 24px 52px;
     }
 
     .samples-intro {
       max-width: 680px;
-      margin: 0 auto 22px;
+      margin: 0 auto 16px;
       text-align: center;
     }
 
@@ -102,7 +102,7 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 14px;
+      margin-bottom: 10px;
     }
 
     .sample-quicklist span {
@@ -120,14 +120,14 @@
     .samples-intro h2 {
       font-size: 1.5rem;
       color: #fff;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       font-weight: 600;
     }
 
     .samples-intro p {
       color: #8b949e;
-      font-size: 0.86rem;
-      line-height: 1.6;
+      font-size: 0.82rem;
+      line-height: 1.5;
     }
 
     .pdf-reader {
@@ -563,12 +563,27 @@
     }
 
     @media (max-width: 720px) {
+      .hero {
+        padding-top: 52px;
+        padding-bottom: 16px;
+      }
+
+      h1 {
+        margin-bottom: 10px;
+      }
+
+      .hero-sub {
+        font-size: 14px;
+        max-width: 460px;
+        margin-bottom: 10px;
+      }
+
       .samples {
-        padding: 0 16px 48px;
+        padding: 0 16px 42px;
       }
 
       .samples-intro {
-        margin-bottom: 18px;
+        margin-bottom: 12px;
       }
 
       .samples-intro h2 {
@@ -576,7 +591,7 @@
       }
 
       .samples-intro p {
-        font-size: 0.8rem;
+        font-size: 0.76rem;
       }
 
       .sample-quicklist {
@@ -639,19 +654,19 @@
     <div class="hero-badge">Early Access &mdash; Limited first wave</div>
     <h1>The story of your Phish life, written by someone who was paying attention.</h1>
     <p class="hero-sub" id="hero-sub-copy">
-      Start with a free snapshot of your stats and claim the Launch Edition full report while it is free.
+      Free launch: get your snapshot instantly, then claim your full report.
     </p>
     <a href="#snapshot" id="hero-cta-text" style="display:none;padding:14px 36px;background:var(--accent);color:#fff;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;transition:background 0.2s;">Snapshot</a>
   </section>
 
   <!-- Free Snapshot Section -->
-  <section id="snapshot" style="padding: 3rem 1.5rem 2rem; text-align: center; max-width: 860px; margin: 0 auto;">
-    <h2 style="font-family: Georgia, serif; font-size: 1.85rem; color: #e2e8f0; margin-bottom: 0.4rem;">See your numbers first &mdash; free.</h2>
-    <p style="color: #8b949e; font-size: 0.98rem; max-width: 520px; margin: 0 auto 1.5rem;">Enter your Phishnet username and get an instant snapshot from your show history.</p>
+  <section id="snapshot" style="padding: 2.1rem 1.5rem 1.25rem; text-align: center; max-width: 860px; margin: 0 auto;">
+    <h2 style="font-family: Georgia, serif; font-size: 1.85rem; color: #e2e8f0; margin-bottom: 0.35rem;">See Your Numbers First &mdash; Free.</h2>
+    <p style="color: #8b949e; font-size: 0.92rem; max-width: 500px; margin: 0 auto 1rem;">Enter your Phishnet username for an instant snapshot.</p>
     <div style="background: #161b22; border: 1px solid #1c2333; border-radius: 14px; padding: 1.6rem; max-width: 460px; margin: 0 auto;">
       <div style="display: inline-block; background: rgba(232,145,110,0.15); color: #e8916e; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; font-weight: bold; margin-bottom: 1.25rem;">FREE</div>
       <h3 style="color: #e2e8f0; font-size: 1.25rem; margin-bottom: 0.25rem;">The Snapshot</h3>
-      <p style="color: #8b949e; font-size: 0.88rem; margin-bottom: 1.2rem;">Total shows, years active, top venues, and your timeline.</p>
+      <p style="color: #8b949e; font-size: 0.86rem; margin-bottom: 1rem;">Shows, years, top venues, and timeline.</p>
       <form id="snapshot-form" style="text-align: left;">
         <label style="display: block; color: #c9d1d9; font-size: 0.85rem; margin-bottom: 0.35rem; font-weight: bold;">Phishnet Username</label>
         <input type="text" id="snapshot-username" placeholder="e.g. jfishman" required style="width: 100%; padding: 0.75rem 1rem; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #e2e8f0; font-size: 1rem; margin-bottom: 0.35rem; font-family: Georgia, serif;">
@@ -660,7 +675,7 @@
       </form>
       <div id="snapshot-error" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #3a1c1c; color: #ff6b6b; border-radius: 8px; font-size: 0.9rem;"></div>
     </div>
-    <p style="color: #6e7681; font-size: 0.82rem; margin-top: 1.4rem;">Want the full story? <a href="#sample-preview" id="snapshot-full-link-text" style="color: #e8916e; text-decoration: none;">See the full sample PDF &darr;</a></p>
+    <p style="color: #6e7681; font-size: 0.8rem; margin-top: 1rem;">Want the full story? <a href="#sample-preview" id="snapshot-full-link-text" style="color: #e8916e; text-decoration: none;">See the sample PDF &darr;</a></p>
   </section>
 
   <!-- SAMPLE PREVIEW -->
@@ -674,7 +689,7 @@
         <span>What You Missed</span>
       </div>
       <h2>Coming Soon - See What You Will Get</h2>
-      <p>This is the actual full sample PDF. Scroll through it here like a reader preview, or open it full screen if you want the entire document on its own.</p>
+      <p>Full sample PDF preview.</p>
     </div>
     <div class="pdf-reader">
       <div class="pdf-reader-topbar">
@@ -810,10 +825,10 @@
       var orderFooterCopy = document.getElementById('order-footer-copy');
 
       if (LAUNCH_FREE_MODE) {
-        heroSubCopy.textContent = 'Start with a free snapshot of your stats and claim the Launch Edition full report while it is free.';
+        heroSubCopy.textContent = 'Free launch: get your snapshot instantly, then claim your full report.';
         heroCtaText.textContent = 'Snapshot';
         heroCtaText.style.display = 'none';
-        snapshotFullLinkText.textContent = 'See what\'s in the full PDF ↓';
+        snapshotFullLinkText.textContent = 'See the sample PDF ↓';
         orderPrice.style.display = 'none';
         orderPriceNote.textContent = 'Free for limited time';
         orderLaunchTag.style.display = 'block';
@@ -824,10 +839,10 @@
         orderSubmitNote.style.fontWeight = '600';
         orderFooterCopy.textContent = 'Launch Edition. Priority cap: ' + LAUNCH_PRIORITY_CAP + '.';
       } else {
-        heroSubCopy.textContent = 'Start with a free snapshot of your stats. Upgrade to the full AI-assisted, human-reviewed PDF with narrative accounts, era analysis, rare catches, and a letter to the fan you used to be.';
+        heroSubCopy.textContent = 'Start with a free snapshot. Upgrade for the full AI-assisted, human-reviewed PDF.';
         heroCtaText.textContent = 'Try It Free';
         heroCtaText.style.display = 'inline-block';
-        snapshotFullLinkText.textContent = 'See what\'s in the $25 PDF ↓';
+        snapshotFullLinkText.textContent = 'See what\'s in the full PDF ↓';
         orderPrice.style.display = 'block';
         orderPriceNote.innerHTML = 'Digital PDF &mdash; delivered within 48 hours';
         orderLaunchTag.style.display = 'none';
