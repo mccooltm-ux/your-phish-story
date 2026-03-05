@@ -700,6 +700,7 @@
         <div class="form-group">
           <label for="waitlist-username">Phish.net Username</label>
           <input type="text" id="waitlist-username" name="username" placeholder="e.g. jfishman" required autocomplete="off" />
+          <div class="username-status" id="waitlist-username-status"></div>
         </div>
 
         <div class="form-group">
@@ -824,6 +825,51 @@
     const waitlistError = document.getElementById('waitlist-error');
     const waitlistSuccess = document.getElementById('waitlist-success');
     const waitlistSubmitBtn = document.getElementById('waitlist-submit-btn');
+    const waitlistUsernameInput = document.getElementById('waitlist-username');
+    const waitlistUsernameStatus = document.getElementById('waitlist-username-status');
+    let waitlistUsernameValid = false;
+    let waitlistUsernameTimeout = null;
+
+    waitlistUsernameInput.addEventListener('input', function () {
+      const val = this.value.trim();
+      waitlistUsernameValid = false;
+      clearTimeout(waitlistUsernameTimeout);
+
+      if (!val) {
+        waitlistUsernameStatus.textContent = '';
+        waitlistUsernameStatus.className = 'username-status';
+        return;
+      }
+
+      waitlistUsernameStatus.textContent = 'Checking username...';
+      waitlistUsernameStatus.className = 'username-status checking';
+      waitlistUsernameTimeout = setTimeout(function () {
+        validateWaitlistUsername(val);
+      }, 600);
+    });
+
+    async function validateWaitlistUsername(username) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(function () { controller.abort(); }, 3000);
+        const res = await fetch('/api/validate-username?username=' + encodeURIComponent(username), { signal: controller.signal });
+        clearTimeout(timeout);
+        const data = await res.json();
+        if (data && data.data && data.data.length > 0) {
+          waitlistUsernameValid = true;
+          waitlistUsernameStatus.textContent = 'Found ' + data.data.length + ' shows';
+          waitlistUsernameStatus.className = 'username-status valid';
+        } else {
+          waitlistUsernameValid = false;
+          waitlistUsernameStatus.textContent = 'No shows found for this username. Check spelling or add shows on phish.net.';
+          waitlistUsernameStatus.className = 'username-status invalid';
+        }
+      } catch (_) {
+        waitlistUsernameValid = true;
+        waitlistUsernameStatus.textContent = '';
+        waitlistUsernameStatus.className = 'username-status';
+      }
+    }
 
     waitlistForm.addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -836,6 +882,10 @@
 
       if (!username) {
         showWaitlistError('Please enter your Phish.net username.');
+        return;
+      }
+      if (!waitlistUsernameValid) {
+        showWaitlistError('Please wait for username validation to complete.');
         return;
       }
       if (!email) {
