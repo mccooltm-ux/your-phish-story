@@ -1,5 +1,7 @@
 const https = require('https');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || '';
 
 function isValidEmail(value) {
   return typeof value === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -61,6 +63,39 @@ async function findCustomerByEmail(email) {
   return waitlistCustomer || result.data[0];
 }
 
+async function sendWaitlistAlert(details) {
+  if (!RESEND_API_KEY || !NOTIFICATION_EMAIL) return;
+
+  const response = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${RESEND_API_KEY}`
+    },
+    body: JSON.stringify({
+      from: 'MyPhisHistory <support@myphishistory.com>',
+      to: NOTIFICATION_EMAIL,
+      subject: `New waitlist signup: ${details.username}`,
+      reply_to: details.email,
+      html: `
+        <div style="font-family:Inter,system-ui,-apple-system,sans-serif;background:#0d1117;color:#e6edf3;padding:20px;">
+          <h2 style="margin:0 0 12px 0;font-size:18px;color:#e8916e;">New Waitlist Signup</h2>
+          <p style="margin:0 0 6px 0;"><strong>Username:</strong> ${details.username}</p>
+          <p style="margin:0 0 6px 0;"><strong>Email:</strong> ${details.email}</p>
+          <p style="margin:0 0 6px 0;"><strong>Shows:</strong> ${details.showCount}</p>
+          <p style="margin:0 0 6px 0;"><strong>States:</strong> ${details.states.join(', ') || '—'}</p>
+          <p style="margin:0;"><strong>Public waitlist opt-in:</strong> ${details.showOnPublic ? 'Yes' : 'No'}</p>
+        </div>
+      `
+    })
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || 'Failed to send waitlist alert');
+  }
+}
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -106,6 +141,18 @@ module.exports = async function handler(req, res) {
       email: normalizedEmail,
       metadata
     });
+
+    try {
+      await sendWaitlistAlert({
+        username: normalizedUsername,
+        email: normalizedEmail,
+        showCount: attendance.showCount,
+        states: attendance.states,
+        showOnPublic
+      });
+    } catch (emailErr) {
+      console.error('Waitlist alert email failed:', emailErr.message);
+    }
 
     return res.status(200).json({ success: true, updated: false });
   } catch (err) {
