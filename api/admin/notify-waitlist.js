@@ -129,12 +129,21 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const selectedIds = Array.isArray(req.body?.customer_ids)
+      ? req.body.customer_ids.map((id) => String(id || '').trim()).filter(Boolean)
+      : null;
+    const selectedSet = selectedIds && selectedIds.length ? new Set(selectedIds) : null;
+
     const customers = await fetchAllWaitlistCustomers();
     let sent = 0;
     let skipped = 0;
     let errors = 0;
 
     for (const customer of customers) {
+      if (selectedSet && !selectedSet.has(customer.id)) {
+        continue;
+      }
+
       const metadata = customer.metadata || {};
       const alreadyNotified =
         metadata.waitlist_notified === 'true' ||

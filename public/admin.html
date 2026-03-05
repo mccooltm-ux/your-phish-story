@@ -315,6 +315,19 @@
       font-size: 13px;
       color: #888;
     }
+    .waitlist-select-all {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #aaa;
+      user-select: none;
+    }
+    .waitlist-select-all input {
+      accent-color: #e85d04;
+      width: 16px;
+      height: 16px;
+    }
     .btn-launch {
       padding: 8px 14px;
       border-radius: 8px;
@@ -389,6 +402,10 @@
 
     <div id="waitlist-tab" style="display:none;">
       <div class="waitlist-actions">
+        <label class="waitlist-select-all">
+          <input type="checkbox" id="waitlist-select-all" onchange="toggleSelectAllWaitlist(this.checked)">
+          Send to all waiting
+        </label>
         <button id="notify-waitlist-btn" class="btn-launch" onclick="handleNotifyWaitlistClick()" disabled>Send Launch Email to Waitlist</button>
         <div id="notify-waitlist-note" class="waitlist-note"></div>
       </div>
@@ -717,7 +734,9 @@
     // --- Waitlist ---
     let waitlistData = [];
     let waitlistNotifyArmed = false;
-    let waitlistNotifyLocked = false;
+    let waitlistNotifySending = false;
+    let selectedWaitlistIds = new Set();
+    let sendToAllWaiting = false;
 
     async function loadWaitlist() {
       document.getElementById('waitlist-container').innerHTML = '<div class="loading">Loading waitlist...</div>';
@@ -731,6 +750,9 @@
         }
         const data = await res.json();
         waitlistData = data.waitlist || [];
+        const eligibleIds = new Set(waitlistData.filter(entry => !entry.notified).map(entry => entry.id));
+        selectedWaitlistIds = new Set([...selectedWaitlistIds].filter(id => eligibleIds.has(id)));
+        if (eligibleIds.size === 0) sendToAllWaiting = false;
         document.getElementById('stat-waitlist').textContent = waitlistData.length;
         document.getElementById('waitlist-count-badge').textContent = waitlistData.length;
         updateNotifyWaitlistButton();
@@ -744,14 +766,56 @@
       return waitlistData.filter(entry => !entry.notified).length;
     }
 
+    function getTargetWaitlistIds() {
+      const pending = waitlistData.filter(entry => !entry.notified).map(entry => entry.id);
+      if (sendToAllWaiting) return pending;
+      return pending.filter(id => selectedWaitlistIds.has(id));
+    }
+
+    function toggleSelectAllWaitlist(checked) {
+      sendToAllWaiting = Boolean(checked);
+      if (sendToAllWaiting) {
+        selectedWaitlistIds.clear();
+      }
+      waitlistNotifyArmed = false;
+      renderWaitlist();
+      updateNotifyWaitlistButton();
+    }
+
+    function toggleWaitlistSelection(customerId, checked) {
+      if (sendToAllWaiting) return;
+      if (checked) {
+        selectedWaitlistIds.add(customerId);
+      } else {
+        selectedWaitlistIds.delete(customerId);
+      }
+      waitlistNotifyArmed = false;
+      updateNotifyWaitlistButton();
+    }
+
     function updateNotifyWaitlistButton() {
       const btn = document.getElementById('notify-waitlist-btn');
       const note = document.getElementById('notify-waitlist-note');
+      const selectAll = document.getElementById('waitlist-select-all');
       if (!btn || !note) return;
 
       const pending = getPendingNotifyCount();
+      const targetIds = getTargetWaitlistIds();
+      const targetCount = targetIds.length;
 
-      if (waitlistNotifyLocked || pending === 0) {
+      if (selectAll) {
+        selectAll.checked = sendToAllWaiting;
+        selectAll.disabled = waitlistNotifySending || pending === 0;
+      }
+
+      if (waitlistNotifySending) {
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+        note.textContent = 'Sending launch email...';
+        return;
+      }
+
+      if (pending === 0) {
         btn.disabled = true;
         btn.textContent = 'Send Launch Email to Waitlist';
         note.textContent = 'All waitlist members have been notified';
@@ -759,21 +823,29 @@
         return;
       }
 
+      if (targetCount === 0) {
+        btn.disabled = true;
+        btn.textContent = 'Send Launch Email to Waitlist';
+        note.textContent = 'Select users or enable "Send to all waiting"';
+        waitlistNotifyArmed = false;
+        return;
+      }
+
       btn.disabled = false;
       if (waitlistNotifyArmed) {
-        btn.textContent = `Are you sure? This will email ${pending} people.`;
+        btn.textContent = `Are you sure? This will email ${targetCount} people.`;
         note.textContent = 'Click again to confirm';
       } else {
         btn.textContent = 'Send Launch Email to Waitlist';
-        note.textContent = `${pending} waiting for launch email`;
+        note.textContent = `${targetCount} selected (${pending} waiting total)`;
       }
     }
 
     async function handleNotifyWaitlistClick() {
-      if (waitlistNotifyLocked) return;
+      if (waitlistNotifySending) return;
 
-      const pending = getPendingNotifyCount();
-      if (pending === 0) {
+      const targetIds = getTargetWaitlistIds();
+      if (targetIds.length === 0) {
         updateNotifyWaitlistButton();
         return;
       }
@@ -784,27 +856,33 @@
         return;
       }
 
-      const btn = document.getElementById('notify-waitlist-btn');
-      btn.disabled = true;
-      btn.textContent = 'Sending...';
+      waitlistNotifySending = true;
+      updateNotifyWaitlistButton();
 
       try {
         const res = await fetch('/api/admin/notify-waitlist', {
           method: 'POST',
-          headers: { 'X-Admin-Secret': ADMIN_SECRET }
+          headers: {
+            'X-Admin-Secret': ADMIN_SECRET,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ customer_ids: targetIds })
         });
         const data = await res.json();
         if (!res.ok) {
           throw new Error(data.error || 'Failed to send launch email');
         }
 
-        waitlistNotifyLocked = true;
+        selectedWaitlistIds.clear();
+        sendToAllWaiting = false;
         waitlistNotifyArmed = false;
         showToast(`Sent to ${data.sent} people, ${data.skipped} skipped, ${data.errors} errors`, data.errors > 0 ? 'error' : 'success');
         await loadWaitlist();
       } catch (err) {
         waitlistNotifyArmed = false;
         showToast(err.message || 'Failed to send launch email', 'error');
+      } finally {
+        waitlistNotifySending = false;
         updateNotifyWaitlistButton();
       }
     }
@@ -817,7 +895,7 @@
 
       let html = `<table class="order-table">
         <thead><tr>
-          <th>#</th><th>Joined</th><th>Username</th><th>Name</th><th>Email</th><th>Status</th>
+          <th></th><th>#</th><th>Joined</th><th>Username</th><th>Name</th><th>Email</th><th>Status</th>
         </tr></thead><tbody>`;
 
       waitlistData.forEach((entry, i) => {
@@ -826,8 +904,19 @@
           : new Date(entry.created * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
         const statusClass = entry.notified ? 'status-notified' : 'status-waiting';
         const statusText = entry.notified ? 'Notified' : 'Waiting';
+        const canSelect = !entry.notified;
+        const isChecked = sendToAllWaiting ? canSelect : selectedWaitlistIds.has(entry.id);
 
         html += `<tr>
+          <td style="width:36px;">
+            <input
+              type="checkbox"
+              ${canSelect ? '' : 'disabled'}
+              ${isChecked ? 'checked' : ''}
+              onchange='toggleWaitlistSelection(${JSON.stringify(entry.id)}, this.checked)'
+              style="accent-color:#e85d04;width:16px;height:16px;cursor:${canSelect ? 'pointer' : 'not-allowed'};"
+            />
+          </td>
           <td style="color:#666;">${i + 1}</td>
           <td style="white-space:nowrap;color:#888;">${joined}</td>
           <td><strong>${entry.username}</strong></td>
