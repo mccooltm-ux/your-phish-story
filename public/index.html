@@ -73,79 +73,127 @@
 
     /* --- SAMPLE PREVIEW --- */
     .samples {
-      max-width: 980px;
+      max-width: 920px;
       margin: 0 auto;
       padding: 0 24px 52px;
     }
 
     .samples-intro {
-      max-width: 760px;
-      margin: 0 auto 20px;
+      max-width: 680px;
+      margin: 0 auto 16px;
       text-align: center;
     }
 
     .samples-intro h2 {
-      font-family: 'DM Serif Display', serif;
-      font-size: 1.9rem;
-      color: #fff;
-      margin-bottom: 10px;
-      font-weight: 400;
+      font-size: 1.5rem;
+      color: #8b949e;
+      margin-bottom: 6px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-transform: lowercase;
     }
 
     .samples-intro p {
       color: #8b949e;
-      font-size: 0.93rem;
-      line-height: 1.6;
+      font-size: 0.82rem;
+      line-height: 1.5;
     }
 
-    .sample-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-    }
-
-    .sample-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+    .pdf-reader {
+      max-width: 840px;
+      margin: 0 auto;
+      background: #0d0d0d;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
       overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
     }
 
-    .sample-thumb {
-      width: 100%;
-      aspect-ratio: 8.5 / 11;
-      object-fit: cover;
-      display: block;
-      border-bottom: 1px solid var(--border);
+    .pdf-reader-topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #222;
+      background: #111318;
     }
 
-    .sample-caption {
-      padding: 10px 12px;
-      color: #8b949e;
-      font-size: 0.8rem;
-      line-height: 1.45;
+    .pdf-reader-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
     }
 
-    .sample-caption strong {
-      color: #e6edf3;
+    .pdf-reader-actions a {
+      color: #e8916e;
+      text-decoration: none;
+      font-size: 0.78rem;
       font-weight: 600;
     }
 
-    .sample-link {
-      margin-top: 14px;
+    .pdf-reader-actions a:hover {
+      color: #ffab85;
+    }
+
+    .pdf-reader-stage {
+      padding: 0;
+      background: #101318;
+    }
+
+    .pdf-frame {
+      overflow: hidden;
+      background: #101318;
+    }
+
+    .pdf-frame::before {
+      content: "Scroll to flip through the full report";
+      display: block;
+      padding: 10px 14px;
+      background: #161b22;
+      color: #8b949e;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-bottom: 1px solid #222;
       text-align: center;
     }
 
-    .sample-link a {
+    .pdf-frame iframe {
+      width: 100%;
+      height: min(64vh, 900px);
+      border: 0;
+      display: block;
+      background: #fff;
+    }
+
+    .pdf-mobile-message {
+      display: none;
+      padding: 26px 18px 28px;
+      text-align: center;
+      background: linear-gradient(180deg, #121822 0%, #0d1117 100%);
+    }
+
+    .pdf-mobile-message p {
+      color: #8b949e;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin: 0 0 14px;
+    }
+
+    .pdf-mobile-link {
       display: inline-block;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 12px 18px;
+      border-radius: 10px;
       background: rgba(232, 145, 110, 0.14);
       border: 1px solid rgba(232, 145, 110, 0.2);
       color: #e8916e;
       text-decoration: none;
       font-size: 0.84rem;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     /* --- WHAT YOU GET --- */
@@ -504,15 +552,40 @@
       }
 
       .samples-intro {
-        margin-bottom: 14px;
+        margin-bottom: 12px;
       }
 
       .samples-intro h2 {
-        font-size: 1.55rem;
+        font-size: 1.28rem;
       }
 
       .samples-intro p {
-        font-size: 0.84rem;
+        font-size: 0.76rem;
+      }
+
+      .pdf-reader-topbar {
+        padding-left: 14px;
+        padding-right: 14px;
+      }
+
+      .pdf-reader-topbar {
+        align-items: flex-start;
+      }
+
+      .pdf-reader-actions {
+        width: 100%;
+      }
+
+      .pdf-reader-actions a {
+        font-size: 0.9rem;
+      }
+
+      .pdf-frame iframe {
+        display: none;
+      }
+
+      .pdf-mobile-message {
+        display: block;
       }
     }
   </style>
@@ -555,7 +628,7 @@
         <button type="submit" id="snapshot-btn" style="width: 100%; padding: 1.08rem 1.2rem; background: #e8916e; border: 2px solid #e8916e; color: #0d1117; font-size: 1.12rem; font-weight: bold; border-radius: 8px; cursor: pointer; font-family: Georgia, serif; transition: all 0.2s;">Get My Free Snapshot</button>
       </form>
       <div id="snapshot-error" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #3a1c1c; color: #ff6b6b; border-radius: 8px; font-size: 0.9rem;"></div>
-      <p style="color: #6e7681; font-size: 0.84rem; margin-top: 1rem;">Want the full story? <a href="#sample-preview" id="snapshot-full-link-text" style="color: #e8916e; text-decoration: none;">See the sample preview &darr;</a></p>
+      <p style="color: #6e7681; font-size: 0.84rem; margin-top: 1rem;">Want the full story? <a href="#sample-preview" id="snapshot-full-link-text" style="color: #e8916e; text-decoration: none;">See the sample PDF &darr;</a></p>
     </div>
   </section>
 
@@ -564,30 +637,26 @@
   <!-- SAMPLE PREVIEW -->
   <section class="samples" id="sample-preview">
     <div class="samples-intro">
-      <h2>Want the full story?</h2>
-      <p>Era narratives, tier list, crown jewels, curated performances, editorial deep dives.</p>
-      <p style="margin-top:8px;">Full report launch is coming soon.</p>
+      <h2>coming soon...</h2>
     </div>
-    <div class="sample-grid">
-      <div class="sample-card">
-        <img class="sample-thumb" src="/sample-showhistory.webp" alt="Sample cover and summary page">
-        <div class="sample-caption"><strong>Cover & Stats</strong> — your story at a glance.</div>
+    <div class="pdf-reader">
+      <div class="pdf-reader-topbar">
+        <div class="pdf-reader-actions">
+          <a href="/fishman_phish_story.pdf" target="_blank" rel="noopener noreferrer">Open full screen</a>
+        </div>
       </div>
-      <div class="sample-card">
-        <img class="sample-thumb" src="/sample-letter.webp" alt="Sample narrative page">
-        <div class="sample-caption"><strong>Narrative Letter</strong> — emotional retrospective by era.</div>
+      <div class="pdf-reader-stage">
+        <div class="pdf-frame">
+          <iframe
+            src="/fishman_phish_story.pdf#view=FitH"
+            title="MyPhisHistory sample PDF"
+          ></iframe>
+          <div class="pdf-mobile-message">
+            <p>Inline PDF previews are clunky on iPhone. Open the sample full screen for the cleanest, easiest read.</p>
+            <a class="pdf-mobile-link" href="/fishman_phish_story.pdf" target="_blank" rel="noopener noreferrer">Open sample PDF</a>
+          </div>
+        </div>
       </div>
-      <div class="sample-card">
-        <img class="sample-thumb" src="/sample-numbers.webp" alt="Sample numbers page">
-        <div class="sample-caption"><strong>By The Numbers</strong> — your patterns and milestones.</div>
-      </div>
-      <div class="sample-card">
-        <img class="sample-thumb" src="/images/sample-stats.jpg" alt="Sample chart page">
-        <div class="sample-caption"><strong>Curated Deep Dives</strong> — standout performances and context.</div>
-      </div>
-    </div>
-    <div class="sample-link">
-      <a href="/fishman_phish_story.pdf" target="_blank" rel="noopener noreferrer">Open full sample PDF</a>
     </div>
   </section>
 
