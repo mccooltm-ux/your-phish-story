@@ -97,6 +97,26 @@
       text-align: center;
     }
 
+    .sample-quicklist {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .sample-quicklist span {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(232, 145, 110, 0.25);
+      background: rgba(232, 145, 110, 0.1);
+      color: #d9a48e;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
     .samples-intro h2 {
       font-size: 1.5rem;
       color: #fff;
@@ -559,6 +579,16 @@
         font-size: 0.8rem;
       }
 
+      .sample-quicklist {
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+
+      .sample-quicklist span {
+        font-size: 0.66rem;
+        padding: 5px 8px;
+      }
+
       .pdf-reader-topbar {
         padding-left: 14px;
         padding-right: 14px;
@@ -617,6 +647,13 @@
   <!-- SAMPLE PREVIEW -->
   <section class="samples">
     <div class="samples-intro">
+      <div class="sample-quicklist">
+        <span>Cover & Stats</span>
+        <span>Crown Jewels</span>
+        <span>Your Eras</span>
+        <span>Performances</span>
+        <span>What You Missed</span>
+      </div>
       <h2>Coming Soon - See What You Will Get</h2>
       <p>This is the actual full sample PDF. Scroll through it here like a reader preview, or open it full screen if you want the entire document on its own.</p>
     </div>
