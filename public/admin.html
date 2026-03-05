@@ -304,6 +304,34 @@
     }
     .status-notified { background: #0a2e0a; color: #4ade80; }
     .status-waiting { background: #332200; color: #f48c06; }
+    .waitlist-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .waitlist-note {
+      font-size: 13px;
+      color: #888;
+    }
+    .btn-launch {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      border: 1px solid #e85d04;
+      background: #1a1a1a;
+      color: #e85d04;
+      cursor: pointer;
+    }
+    .btn-launch:hover {
+      background: #1a1000;
+    }
+    .btn-launch:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #141414;
+    }
   </style>
 </head>
 <body>
@@ -360,6 +388,10 @@
     </div>
 
     <div id="waitlist-tab" style="display:none;">
+      <div class="waitlist-actions">
+        <button id="notify-waitlist-btn" class="btn-launch" onclick="handleNotifyWaitlistClick()" disabled>Send Launch Email to Waitlist</button>
+        <div id="notify-waitlist-note" class="waitlist-note"></div>
+      </div>
       <div id="waitlist-container">
         <div class="loading">Loading waitlist...</div>
       </div>
@@ -684,6 +716,8 @@
 
     // --- Waitlist ---
     let waitlistData = [];
+    let waitlistNotifyArmed = false;
+    let waitlistNotifyLocked = false;
 
     async function loadWaitlist() {
       document.getElementById('waitlist-container').innerHTML = '<div class="loading">Loading waitlist...</div>';
@@ -699,9 +733,79 @@
         waitlistData = data.waitlist || [];
         document.getElementById('stat-waitlist').textContent = waitlistData.length;
         document.getElementById('waitlist-count-badge').textContent = waitlistData.length;
+        updateNotifyWaitlistButton();
         renderWaitlist();
       } catch (err) {
         document.getElementById('waitlist-container').innerHTML = '<div class="loading" style="color:#f87171;">Failed to load waitlist</div>';
+      }
+    }
+
+    function getPendingNotifyCount() {
+      return waitlistData.filter(entry => !entry.notified).length;
+    }
+
+    function updateNotifyWaitlistButton() {
+      const btn = document.getElementById('notify-waitlist-btn');
+      const note = document.getElementById('notify-waitlist-note');
+      if (!btn || !note) return;
+
+      const pending = getPendingNotifyCount();
+
+      if (waitlistNotifyLocked || pending === 0) {
+        btn.disabled = true;
+        btn.textContent = 'Send Launch Email to Waitlist';
+        note.textContent = 'All waitlist members have been notified';
+        waitlistNotifyArmed = false;
+        return;
+      }
+
+      btn.disabled = false;
+      if (waitlistNotifyArmed) {
+        btn.textContent = `Are you sure? This will email ${pending} people.`;
+        note.textContent = 'Click again to confirm';
+      } else {
+        btn.textContent = 'Send Launch Email to Waitlist';
+        note.textContent = `${pending} waiting for launch email`;
+      }
+    }
+
+    async function handleNotifyWaitlistClick() {
+      if (waitlistNotifyLocked) return;
+
+      const pending = getPendingNotifyCount();
+      if (pending === 0) {
+        updateNotifyWaitlistButton();
+        return;
+      }
+
+      if (!waitlistNotifyArmed) {
+        waitlistNotifyArmed = true;
+        updateNotifyWaitlistButton();
+        return;
+      }
+
+      const btn = document.getElementById('notify-waitlist-btn');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      try {
+        const res = await fetch('/api/admin/notify-waitlist', {
+          method: 'POST',
+          headers: { 'X-Admin-Secret': ADMIN_SECRET }
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to send launch email');
+        }
+
+        waitlistNotifyLocked = true;
+        waitlistNotifyArmed = false;
+        showToast(`Sent to ${data.sent} people, ${data.skipped} skipped, ${data.errors} errors`, data.errors > 0 ? 'error' : 'success');
+        await loadWaitlist();
+      } catch (err) {
+        waitlistNotifyArmed = false;
+        showToast(err.message || 'Failed to send launch email', 'error');
+        updateNotifyWaitlistButton();
       }
     }
 

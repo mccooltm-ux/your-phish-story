@@ -27,8 +27,9 @@ module.exports = async function handler(req, res) {
       email: c.email,
       name: c.name || null,
       username: c.metadata.phishnet_username || 'UNKNOWN',
-      joined_at: c.metadata.joined_at || null,
-      notified: c.metadata.notified === 'true',
+      joined_at: c.metadata.waitlist_joined_at || c.metadata.joined_at || null,
+      notified: c.metadata.waitlist_notified === 'true' || c.metadata.notified === 'true',
+      notified_at: c.metadata.waitlist_notified_at || c.metadata.notified_at || null,
       created: c.created
     }));
 
