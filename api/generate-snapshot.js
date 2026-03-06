@@ -4,7 +4,7 @@ const ERA_RANGES = [
   { label: '1.0', start: '1983-01-01', end: '2000-12-31' },
   { label: '2.0', start: '2003-01-01', end: '2004-12-31' },
   { label: '3.0', start: '2009-01-01', end: '2017-12-31' },
-  { label: '4.0', start: '2018-01-01', end: null }
+  { label: '4.0', start: '2021-01-01', end: null }
 ];
 
 module.exports = async function handler(req, res) {
@@ -30,7 +30,10 @@ module.exports = async function handler(req, res) {
       return res.status(404).json({ error: 'No shows found for this username. Check spelling or add shows on phish.net.' });
     }
 
-    const shows = showData.data;
+    const shows = normalizeAttendanceShows(showData.data);
+    if (!shows.length) {
+      return res.status(404).json({ error: 'No Phish stats-eligible shows found for this username.' });
+    }
     const totalShows = shows.length;
     const years = [...new Set(shows.map(s => new Date(s.showdate).getFullYear()))].sort((a, b) => a - b);
     const firstYear = years[0];
@@ -59,12 +62,13 @@ module.exports = async function handler(req, res) {
 
     const states = [...new Set(shows.map(s => s.state || s.country || 'Unknown').filter(Boolean))];
     const peakYear = Object.entries(showsByYear).sort((a, b) => b[1] - a[1])[0];
-    const estimatedSongs = Math.min(Math.round(totalShows * 13.5), 900);
     const showsByYearRange = buildShowsByYearRange(showsByYear, firstYear, lastYear);
     const eraBreakdown = buildEraBreakdown(shows);
     const longestDrought = computeLongestDrought(sorted);
     const statesByFrequency = buildStatesByFrequency(shows);
-    const topSongs = await buildTopSongsSafe(shows, apiKey);
+    const songStats = await getExactSongStatsWithCache(username, shows, apiKey);
+    const topSongs = songStats.topSongs;
+    const songsHeard = songStats.songsHeard;
     const tagline = buildTagline({
       totalShows,
       topVenue: topVenues[0] || null,
@@ -91,7 +95,7 @@ module.exports = async function handler(req, res) {
         lastShow: { date: lastShow.showdate, venue: lastShow.venue || lastShow.venuename || 'Unknown', city: lastShow.city || '', state: lastShow.state || '' },
         uniqueVenues, topVenues, showsByYear, showsByYearRange, states,
         peakYear: peakYear ? { year: parseInt(peakYear[0]), count: peakYear[1] } : null,
-        estimatedSongs,
+        estimatedSongs: songsHeard,
         topSongs,
         eraBreakdown,
         longestDrought,
@@ -145,6 +149,81 @@ async function trackSnapshotLead(username, totalShows) {
   });
 }
 
+async function getSnapshotCustomer(username) {
+  const stripeKey = process.env.STRIPE_SECRET_KEY || '';
+  const safeUsername = String(username || '').replace(/"/g, '').trim();
+  if (!stripeKey || !safeUsername) return null;
+
+  const stripe = require('stripe')(stripeKey);
+  const query = `metadata["snapshot"]:"true" AND metadata["phishnet_username"]:"${safeUsername}"`;
+  const search = await stripe.customers.search({ query, limit: 1 });
+  return search.data && search.data[0] ? { stripe, customer: search.data[0], username: safeUsername } : { stripe, customer: null, username: safeUsername };
+}
+
+async function getExactSongStatsWithCache(username, shows, apiKey) {
+  const totalShows = Array.isArray(shows) ? shows.length : 0;
+  const cache = await readSongStatsCache(username, totalShows);
+  if (cache) return cache;
+
+  const exact = await buildExactSongStats(shows, apiKey);
+  await writeSongStatsCache(username, totalShows, exact);
+  return exact;
+}
+
+async function readSongStatsCache(username, totalShows) {
+  try {
+    const snapshot = await getSnapshotCustomer(username);
+    if (!snapshot || !snapshot.customer || !snapshot.customer.metadata) return null;
+
+    const metadata = snapshot.customer.metadata;
+    const version = metadata.snapshot_song_cache_version || '';
+    const cachedShows = parseInt(metadata.snapshot_song_cache_show_count || '', 10);
+    const rawTotal = metadata.snapshot_song_cache_total_heard || '';
+    const encodedTop = metadata.snapshot_song_cache_top5 || '';
+    if (version !== 'v1') return null;
+    if (!Number.isFinite(cachedShows) || cachedShows !== totalShows) return null;
+    if (!rawTotal || !encodedTop) return null;
+
+    const songsHeard = parseInt(rawTotal, 10);
+    const topSongs = decodeTopSongs(encodedTop);
+    if (!Number.isFinite(songsHeard) || !Array.isArray(topSongs) || !topSongs.length) return null;
+    return { songsHeard, topSongs };
+  } catch (_) {
+    return null;
+  }
+}
+
+async function writeSongStatsCache(username, totalShows, stats) {
+  try {
+    const encodedTop = encodeTopSongs(stats.topSongs || []);
+    if (!encodedTop) return;
+    const snapshot = await getSnapshotCustomer(username);
+    if (!snapshot || !snapshot.stripe || !snapshot.username) return;
+
+    const now = new Date().toISOString();
+    const metadata = {
+      snapshot: 'true',
+      phishnet_username: snapshot.username,
+      snapshot_song_cache_version: 'v1',
+      snapshot_song_cache_at: now,
+      snapshot_song_cache_show_count: String(totalShows),
+      snapshot_song_cache_total_heard: String(stats.songsHeard || 0),
+      snapshot_song_cache_top5: encodedTop
+    };
+
+    if (snapshot.customer) {
+      await snapshot.stripe.customers.update(snapshot.customer.id, {
+        metadata: { ...(snapshot.customer.metadata || {}), ...metadata }
+      });
+      return;
+    }
+
+    await snapshot.stripe.customers.create({ metadata });
+  } catch (_) {
+    // Cache writes should never break snapshots.
+  }
+}
+
 function fetchJson(url) {
   return new Promise((resolve, reject) => {
     const req = https.get(url, (resp) => {
@@ -160,6 +239,66 @@ function fetchJson(url) {
       req.destroy(new Error('Upstream request timeout'));
     });
   });
+}
+
+function normalizeAttendanceShows(shows) {
+  if (!Array.isArray(shows)) return [];
+  return shows.filter((show) => isValidShowDate(show?.showdate) && isPhishMainBand(show) && !isExcludedFromStats(show));
+}
+
+function isValidShowDate(value) {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+function isTruthyFlag(value) {
+  if (value === true || value === 1) return true;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    return normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'y';
+  }
+  return false;
+}
+
+function isExcludedFromStats(show) {
+  const keys = [
+    'exclude_from_stats',
+    'excludeFromStats',
+    'exclude_stats',
+    'exclude'
+  ];
+
+  for (const key of keys) {
+    if (key in (show || {}) && isTruthyFlag(show[key])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function isPhishMainBand(show) {
+  if (!show || typeof show !== 'object') return false;
+
+  const possibleNames = [
+    show.artist,
+    show.artist_name,
+    show.artistname,
+    show.band,
+    show.band_name
+  ].filter((value) => typeof value === 'string' && value.trim().length > 0);
+
+  if (possibleNames.length) {
+    return possibleNames.some((value) => value.trim().toLowerCase() === 'phish');
+  }
+
+  const artistIdRaw = show.artistid ?? show.artist_id ?? show.band_id ?? show.bandid;
+  if (artistIdRaw !== undefined && artistIdRaw !== null && String(artistIdRaw).trim() !== '') {
+    const numeric = Number(artistIdRaw);
+    // Phish.net artist id for Phish is expected to be 1.
+    if (Number.isFinite(numeric)) return numeric === 1;
+  }
+
+  // Attendance endpoint is usually Phish-only when artist fields are absent.
+  return true;
 }
 
 function buildShowsByYearRange(showsByYear, firstYear, lastYear) {
@@ -221,22 +360,26 @@ function buildStatesByFrequency(shows) {
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
-async function buildTopSongs(shows, apiKey) {
+async function buildExactSongStats(shows, apiKey) {
   const uniqueDates = [...new Set(shows.map((s) => s.showdate).filter(Boolean))];
   const counts = new Map();
   const displayNames = new Map();
-  const concurrency = 6;
+  let songsHeard = 0;
+  const concurrency = 8;
+  let failedDates = 0;
 
   for (let i = 0; i < uniqueDates.length; i += concurrency) {
     const batch = uniqueDates.slice(i, i + concurrency);
-    const batchResults = await Promise.all(
-      batch.map(async (showDate) => {
-        const songs = await fetchSongsForShowDate(showDate, apiKey);
-        return songs;
-      })
-    );
+    const batchResults = await Promise.all(batch.map(async (showDate) => fetchSongsForShowDate(showDate, apiKey)));
 
-    for (const songs of batchResults) {
+    for (const result of batchResults) {
+      if (!result.ok) {
+        failedDates += 1;
+        continue;
+      }
+
+      const songs = result.songs;
+      songsHeard += songs.size;
       for (const rawSong of songs) {
         const key = normalizeSong(rawSong);
         if (!key) continue;
@@ -248,96 +391,69 @@ async function buildTopSongs(shows, apiKey) {
     }
   }
 
-  return [...counts.entries()]
-    .map(([key, count]) => ({ name: displayNames.get(key) || key, count }))
+  if (failedDates > 0) {
+    throw new Error('Setlist fetch incomplete for ' + failedDates + ' show dates');
+  }
+
+  const topSongs = [...counts.entries()]
+    .map(([key, count]) => ({ name: displayNames.get(key) || key, count, estimated: false }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+    .slice(0, 5);
+
+  return {
+    songsHeard,
+    topSongs
+  };
+}
+
+function encodeTopSongs(topSongs) {
+  if (!Array.isArray(topSongs) || !topSongs.length) return '';
+  return topSongs
+    .slice(0, 5)
+    .map((song) => {
+      const cleanName = String(song.name || '').replace(/[|~]/g, '').trim();
+      const count = Math.max(0, parseInt(song.count || '0', 10));
+      if (!cleanName || !Number.isFinite(count)) return '';
+      return cleanName + '~' + count;
+    })
+    .filter(Boolean)
+    .join('|');
+}
+
+function decodeTopSongs(value) {
+  if (!value || typeof value !== 'string') return [];
+  return value
+    .split('|')
+    .map((entry) => {
+      const [name, countRaw] = entry.split('~');
+      const count = parseInt(countRaw || '', 10);
+      if (!name || !Number.isFinite(count)) return null;
+      return { name, count, estimated: false };
+    })
+    .filter(Boolean)
     .slice(0, 5);
 }
 
-async function buildTopSongsSafe(shows, apiKey) {
-  // Keep song computation fast and resilient for heavy users.
-  // Primary pass: evenly sampled dates across full history.
-  const spreadSample = sampleShowsForSongScan(shows, 120, 'spread');
-  const usesEstimate = spreadSample.length < shows.length;
-  try {
-    let primary = await Promise.race([
-      buildTopSongs(spreadSample, apiKey),
-      new Promise((resolve) => setTimeout(() => resolve([]), 6500))
-    ]);
-    if (usesEstimate && Array.isArray(primary) && primary.length) {
-      primary = upscaleTopSongCounts(primary, shows.length, spreadSample.length);
-    }
-    if (Array.isArray(primary) && primary.length) return primary;
-  } catch (_) { /* continue to fallback */ }
-
-  // Fallback: recent activity sample (often yields enough setlist signal quickly).
-  const recentSample = sampleShowsForSongScan(shows, 48, 'recent');
-  try {
-    let fallback = await Promise.race([
-      buildTopSongs(recentSample, apiKey),
-      new Promise((resolve) => setTimeout(() => resolve([]), 3500))
-    ]);
-    if (recentSample.length < shows.length && Array.isArray(fallback) && fallback.length) {
-      fallback = upscaleTopSongCounts(fallback, shows.length, recentSample.length);
-    }
-    if (Array.isArray(fallback) && fallback.length) return fallback;
-  } catch (_) { /* ignored */ }
-
-  return [];
-}
-
-function sampleShowsForSongScan(shows, maxCount, mode) {
-  if (!Array.isArray(shows) || !shows.length) return [];
-  if (shows.length <= maxCount) return shows;
-
-  const sorted = [...shows].sort((a, b) => String(a.showdate).localeCompare(String(b.showdate)));
-
-  if (mode === 'recent') {
-    return sorted.slice(-maxCount);
-  }
-
-  const picks = [];
-  const used = new Set();
-  const lastIndex = sorted.length - 1;
-
-  for (let i = 0; i < maxCount; i += 1) {
-    const idx = Math.round((i * lastIndex) / (maxCount - 1));
-    if (!used.has(idx)) {
-      used.add(idx);
-      picks.push(sorted[idx]);
-    }
-  }
-
-  return picks;
-}
-
-function upscaleTopSongCounts(topSongs, totalShows, sampledShows) {
-  if (!sampledShows || sampledShows >= totalShows) {
-    return topSongs.map((song) => ({ ...song, estimated: false }));
-  }
-
-  const scale = totalShows / sampledShows;
-  return topSongs
-    .filter((song) => song.count >= 3)
-    .map((song) => ({
-      ...song,
-      count: Math.max(1, Math.round(song.count * scale)),
-      estimated: true
-    }));
-}
-
 async function fetchSongsForShowDate(showDate, apiKey) {
-  try {
-    const payload = await fetchJson(
-      'https://api.phish.net/v5/setlists/showdate/' + encodeURIComponent(showDate) + '.json?apikey=' + apiKey
-    );
-
-    const songs = new Set();
-    extractSongsFromPayload(payload, songs);
-    return songs;
-  } catch (err) {
-    return new Set();
+  const url = 'https://api.phish.net/v5/setlists/showdate/' + encodeURIComponent(showDate) + '.json?apikey=' + apiKey;
+  const attempts = 3;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      const payload = await fetchJson(url);
+      const songs = new Set();
+      extractSongsFromPayload(payload, songs);
+      return { ok: true, songs };
+    } catch (err) {
+      if (attempt === attempts) {
+        return { ok: false, songs: new Set() };
+      }
+      await delay(200 * attempt);
+    }
   }
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function extractSongsFromPayload(node, collector) {

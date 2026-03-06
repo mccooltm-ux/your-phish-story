@@ -97,7 +97,7 @@ body { font-family: 'Inter', sans-serif; background: #0d1117; color: #c9d1d9; mi
     <div class="stat-card"><div class="number" id="stat-shows">--</div><div class="label">Shows</div></div>
     <div class="stat-card"><div class="number" id="stat-years">--</div><div class="label">Years</div></div>
     <div class="stat-card"><div class="number" id="stat-venues">--</div><div class="label">Venues</div></div>
-    <div class="stat-card"><div class="number" id="stat-songs">--</div><div class="label">Est. Songs</div></div>
+    <div class="stat-card"><div class="number" id="stat-songs">--</div><div class="label">Songs Heard</div></div>
   </div>
 
   <div class="detail-section">
@@ -218,7 +218,7 @@ function renderSnapshot(s) {
   document.getElementById('stat-shows').textContent = s.totalShows;
   document.getElementById('stat-years').textContent = s.yearsActive;
   document.getElementById('stat-venues').textContent = s.uniqueVenues;
-  document.getElementById('stat-songs').textContent = '~' + s.estimatedSongs;
+  document.getElementById('stat-songs').textContent = s.estimatedSongs;
 
   document.getElementById('first-show-date').textContent = formatDate(s.firstShow.date);
   document.getElementById('first-show-venue').textContent = [s.firstShow.venue, s.firstShow.city, s.firstShow.state].filter(Boolean).join(', ') || 'Unknown venue';
@@ -306,8 +306,7 @@ function renderTopSongs(topSongs) {
 
   topSongs.slice(0, 5).forEach((song, index) => {
     const li = document.createElement('li');
-    const prefix = song.estimated ? '~' : '';
-    li.innerHTML = '<span class="venue-name">' + (index + 1) + '. ' + escHtml(song.name) + '</span><span class="venue-count">' + prefix + song.count + 'x</span>';
+    li.innerHTML = '<span class="venue-name">' + (index + 1) + '. ' + escHtml(song.name) + '</span><span class="venue-count">' + song.count + 'x</span>';
     list.appendChild(li);
   });
 }

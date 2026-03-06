@@ -36,9 +36,9 @@ async function fetchAttendanceStats(username) {
 
   const url = 'https://api.phish.net/v5/attendance/username/' + encodeURIComponent(username) + '.json?apikey=' + apiKey;
   const payload = await fetchJson(url);
-  const shows = Array.isArray(payload?.data) ? payload.data : [];
+  const shows = normalizeAttendanceShows(Array.isArray(payload?.data) ? payload.data : []);
   if (shows.length === 0) {
-    throw new Error('No shows found for this username.');
+    throw new Error('No Phish stats-eligible shows found for this username.');
   }
 
   const stateCounts = {};
@@ -50,6 +50,64 @@ async function fetchAttendanceStats(username) {
 
   const states = Object.keys(stateCounts).sort((a, b) => stateCounts[b] - stateCounts[a] || a.localeCompare(b));
   return { showCount: shows.length, states };
+}
+
+function normalizeAttendanceShows(shows) {
+  if (!Array.isArray(shows)) return [];
+  return shows.filter((show) => isValidShowDate(show?.showdate) && isPhishMainBand(show) && !isExcludedFromStats(show));
+}
+
+function isValidShowDate(value) {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+function isTruthyFlag(value) {
+  if (value === true || value === 1) return true;
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase();
+    return normalized === 'true' || normalized === '1' || normalized === 'yes' || normalized === 'y';
+  }
+  return false;
+}
+
+function isExcludedFromStats(show) {
+  const keys = [
+    'exclude_from_stats',
+    'excludeFromStats',
+    'exclude_stats',
+    'exclude'
+  ];
+
+  for (const key of keys) {
+    if (key in (show || {}) && isTruthyFlag(show[key])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function isPhishMainBand(show) {
+  if (!show || typeof show !== 'object') return false;
+
+  const possibleNames = [
+    show.artist,
+    show.artist_name,
+    show.artistname,
+    show.band,
+    show.band_name
+  ].filter((value) => typeof value === 'string' && value.trim().length > 0);
+
+  if (possibleNames.length) {
+    return possibleNames.some((value) => value.trim().toLowerCase() === 'phish');
+  }
+
+  const artistIdRaw = show.artistid ?? show.artist_id ?? show.band_id ?? show.bandid;
+  if (artistIdRaw !== undefined && artistIdRaw !== null && String(artistIdRaw).trim() !== '') {
+    const numeric = Number(artistIdRaw);
+    if (Number.isFinite(numeric)) return numeric === 1;
+  }
+
+  return true;
 }
 
 async function findCustomerByEmail(email) {
