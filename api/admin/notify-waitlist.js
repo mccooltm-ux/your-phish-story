@@ -158,6 +158,7 @@ async function sendEmail({ to, username, campaign }) {
   const html = isFeedback
     ? buildForumFeedbackEmailHtml(username)
     : buildLaunchEmailHtml(username);
+  const attachments = isFeedback ? [await getFeedbackPdfAttachment()] : [];
 
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -170,7 +171,8 @@ async function sendEmail({ to, username, campaign }) {
       to,
       subject,
       reply_to: 'mccooltm@gmail.com',
-      html
+      html,
+      attachments
     })
   });
 
@@ -178,6 +180,28 @@ async function sendEmail({ to, username, campaign }) {
     const text = await response.text();
     throw new Error(text || `Resend failed (${response.status})`);
   }
+}
+
+let feedbackPdfAttachmentCache = null;
+
+async function getFeedbackPdfAttachment() {
+  if (feedbackPdfAttachmentCache) {
+    return feedbackPdfAttachmentCache;
+  }
+
+  const pdfUrl = 'https://myphishistory.com/fishman_phish_story.pdf';
+  const response = await fetch(pdfUrl);
+  if (!response.ok) {
+    throw new Error('Could not load sample PDF attachment');
+  }
+
+  const arrayBuffer = await response.arrayBuffer();
+  const base64 = Buffer.from(arrayBuffer).toString('base64');
+  feedbackPdfAttachmentCache = {
+    filename: 'myphishistory_sample_report.pdf',
+    content: base64
+  };
+  return feedbackPdfAttachmentCache;
 }
 
 module.exports = async function handler(req, res) {
