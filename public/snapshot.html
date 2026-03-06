@@ -169,12 +169,10 @@ if (!username) {
 
 async function generateSnapshot() {
   try {
-    const body = { username };
-    if (isShare) body.share = true;
-    const res = await fetch('/api/generate-snapshot', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+    const params = new URLSearchParams({ username });
+    if (isShare) params.set('share', 'true');
+    const res = await fetch('/api/generate-snapshot?' + params.toString(), {
+      method: 'GET'
     });
     const contentType = res.headers.get('content-type') || '';
     let data;

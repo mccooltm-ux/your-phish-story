@@ -8,12 +8,13 @@ const ERA_RANGES = [
 ];
 
 module.exports = async function handler(req, res) {
-  if (req.method !== 'POST') {
+  if (req.method !== 'POST' && req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { username, email, share } = req.body;
+    const payload = req.method === 'GET' ? req.query : (req.body || {});
+    const { username, email, share } = payload;
 
     if (!username) {
       return res.status(400).json({ error: 'Phishnet username is required.' });
