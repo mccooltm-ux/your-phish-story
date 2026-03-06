@@ -233,7 +233,6 @@ function renderSnapshot(s) {
   renderStatesLine(s.statesByFrequency || []);
   renderTagline(s.tagline || (s.totalShows + ' shows. ' + s.yearsActive + ' years. Your Phish story.'));
   setupShare(s);
-  setupCta(s);
 
   posthog.capture('snapshot_viewed', {
     username: s.username,
@@ -370,13 +369,6 @@ function setupShare(s) {
     toast.className = 'share-toast';
     document.body.appendChild(toast);
   }
-}
-
-function setupCta(s) {
-  const upsellLink = document.getElementById('upsell-link');
-  upsellLink.addEventListener('click', function () {
-    posthog.capture('upsell_clicked', { username: s.username, total_shows: s.totalShows, is_share: isShare });
-  });
 }
 
 function escHtml(str) {
