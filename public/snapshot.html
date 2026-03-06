@@ -306,7 +306,8 @@ function renderTopSongs(topSongs) {
 
   topSongs.slice(0, 5).forEach((song, index) => {
     const li = document.createElement('li');
-    li.innerHTML = '<span class="venue-name">' + (index + 1) + '. ' + escHtml(song.name) + '</span><span class="venue-count">' + song.count + 'x</span>';
+    const prefix = song.estimated ? '~' : '';
+    li.innerHTML = '<span class="venue-name">' + (index + 1) + '. ' + escHtml(song.name) + '</span><span class="venue-count">' + prefix + song.count + 'x</span>';
     list.appendChild(li);
   });
 }

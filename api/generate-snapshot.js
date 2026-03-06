@@ -256,23 +256,30 @@ async function buildTopSongs(shows, apiKey) {
 
 async function buildTopSongsSafe(shows, apiKey) {
   // Keep song computation fast and resilient for heavy users.
-  // Primary pass: evenly sampled dates across history.
-  const spreadSample = sampleShowsForSongScan(shows, 48, 'spread');
+  // Primary pass: evenly sampled dates across full history.
+  const spreadSample = sampleShowsForSongScan(shows, 120, 'spread');
+  const usesEstimate = spreadSample.length < shows.length;
   try {
-    const primary = await Promise.race([
+    let primary = await Promise.race([
       buildTopSongs(spreadSample, apiKey),
-      new Promise((resolve) => setTimeout(() => resolve([]), 4200))
+      new Promise((resolve) => setTimeout(() => resolve([]), 6500))
     ]);
+    if (usesEstimate && Array.isArray(primary) && primary.length) {
+      primary = upscaleTopSongCounts(primary, shows.length, spreadSample.length);
+    }
     if (Array.isArray(primary) && primary.length) return primary;
   } catch (_) { /* continue to fallback */ }
 
   // Fallback: recent activity sample (often yields enough setlist signal quickly).
-  const recentSample = sampleShowsForSongScan(shows, 24, 'recent');
+  const recentSample = sampleShowsForSongScan(shows, 48, 'recent');
   try {
-    const fallback = await Promise.race([
+    let fallback = await Promise.race([
       buildTopSongs(recentSample, apiKey),
-      new Promise((resolve) => setTimeout(() => resolve([]), 2500))
+      new Promise((resolve) => setTimeout(() => resolve([]), 3500))
     ]);
+    if (recentSample.length < shows.length && Array.isArray(fallback) && fallback.length) {
+      fallback = upscaleTopSongCounts(fallback, shows.length, recentSample.length);
+    }
     if (Array.isArray(fallback) && fallback.length) return fallback;
   } catch (_) { /* ignored */ }
 
@@ -302,6 +309,21 @@ function sampleShowsForSongScan(shows, maxCount, mode) {
   }
 
   return picks;
+}
+
+function upscaleTopSongCounts(topSongs, totalShows, sampledShows) {
+  if (!sampledShows || sampledShows >= totalShows) {
+    return topSongs.map((song) => ({ ...song, estimated: false }));
+  }
+
+  const scale = totalShows / sampledShows;
+  return topSongs
+    .filter((song) => song.count >= 3)
+    .map((song) => ({
+      ...song,
+      count: Math.max(1, Math.round(song.count * scale)),
+      estimated: true
+    }));
 }
 
 async function fetchSongsForShowDate(showDate, apiKey) {
