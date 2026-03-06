@@ -2,6 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
+const PHISHNET_FEEDBACK_THREAD_URL = 'https://forum.phish.net/forum/show/1380220703#page=1';
 
 async function fetchAllWaitlistCustomers() {
   const customers = [];
@@ -120,7 +121,7 @@ function buildForumFeedbackEmailHtml(username) {
             <td style="padding:32px;">
               <p style="color:#f5f5f5;font-size:18px;font-weight:600;margin:0 0 16px 0;">Hey ${safeUsername},</p>
               <p style="color:#ccc;font-size:15px;line-height:1.6;margin:0 0 16px 0;">
-                Quick favor: if you’ve tried the snapshot, could you post honest feedback on the phish.net forum?
+                Quick favor: if you’ve tried the snapshot, could you post honest feedback on this phish.net thread?
               </p>
               <p style="color:#ccc;font-size:15px;line-height:1.6;margin:0 0 24px 0;">
                 What looks right, what looks off, and what would make this more useful for fans.
@@ -128,8 +129,8 @@ function buildForumFeedbackEmailHtml(username) {
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center" style="padding:0 0 24px 0;">
-                    <a href="https://forum.phish.net/" style="display:inline-block;background-color:#e85d04;color:#ffffff;font-size:16px;font-weight:600;text-decoration:none;padding:14px 40px;border-radius:8px;">
-                      Post Feedback on phish.net
+                    <a href="${PHISHNET_FEEDBACK_THREAD_URL}" style="display:inline-block;background-color:#e85d04;color:#ffffff;font-size:16px;font-weight:600;text-decoration:none;padding:14px 40px;border-radius:8px;">
+                      Post Feedback in Thread
                     </a>
                   </td>
                 </tr>
@@ -153,7 +154,7 @@ function buildForumFeedbackEmailHtml(username) {
 async function sendEmail({ to, username, campaign }) {
   const isFeedback = campaign === 'forum_feedback';
   const subject = isFeedback
-    ? 'Quick favor: honest feedback on phish.net forum?'
+    ? 'Quick favor: honest feedback on this phish.net thread?'
     : 'Your Phish Story is ready';
   const html = isFeedback
     ? buildForumFeedbackEmailHtml(username)
