@@ -1,5 +1,4 @@
 const https = require('https');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const ERA_RANGES = [
   { label: '1.0', start: '1983-01-01', end: '2000-12-31' },
@@ -114,7 +113,9 @@ module.exports = async function handler(req, res) {
 };
 
 async function trackSnapshotLead(username, totalShows) {
-  if (!process.env.STRIPE_SECRET_KEY) return;
+  const stripeKey = process.env.STRIPE_SECRET_KEY || '';
+  if (!stripeKey) return;
+  const stripe = require('stripe')(stripeKey);
   const safeUsername = String(username || '').replace(/"/g, '').trim();
   if (!safeUsername) return;
 
