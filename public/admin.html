@@ -428,9 +428,11 @@
         <div class="waitlist-buttons">
           <button id="notify-waitlist-btn" class="btn-launch" onclick="handleNotifyWaitlistClick()" disabled>Send Launch Email to Waitlist</button>
           <button id="notify-feedback-btn" class="btn-launch" onclick="handleNotifyFeedbackClick()" disabled>Send Forum Feedback Request</button>
+          <button id="send-custom-report-btn" class="btn-launch" onclick="handleSendCustomReportClick()" disabled>Send Custom Report (PDF)</button>
         </div>
         <div id="notify-waitlist-note" class="waitlist-note"></div>
       </div>
+      <input type="file" id="custom-report-file" accept=".pdf,application/pdf" style="display:none;">
       <div id="waitlist-container">
         <div class="loading">Loading waitlist...</div>
       </div>
@@ -774,6 +776,7 @@
     let waitlistNotifySending = false;
     let waitlistFeedbackArmed = false;
     let waitlistFeedbackSending = false;
+    let customReportSending = false;
     let selectedWaitlistIds = new Set();
     let sendToAllWaiting = false;
 
@@ -889,6 +892,7 @@
     function updateNotifyWaitlistButton() {
       const btn = document.getElementById('notify-waitlist-btn');
       const feedbackBtn = document.getElementById('notify-feedback-btn');
+      const customBtn = document.getElementById('send-custom-report-btn');
       const note = document.getElementById('notify-waitlist-note');
       const selectAll = document.getElementById('waitlist-select-all');
       if (!btn || !note) return;
@@ -899,20 +903,28 @@
 
       if (selectAll) {
         selectAll.checked = sendToAllWaiting;
-        selectAll.disabled = waitlistNotifySending || waitlistFeedbackSending || pending === 0;
+        selectAll.disabled = waitlistNotifySending || waitlistFeedbackSending || customReportSending || pending === 0;
       }
 
-      if (waitlistNotifySending || waitlistFeedbackSending) {
+      if (waitlistNotifySending || waitlistFeedbackSending || customReportSending) {
         btn.disabled = true;
         if (feedbackBtn) feedbackBtn.disabled = true;
+        if (customBtn) customBtn.disabled = true;
         if (waitlistNotifySending) {
           btn.textContent = 'Sending...';
           if (feedbackBtn) feedbackBtn.textContent = 'Send Forum Feedback Request';
+          if (customBtn) customBtn.textContent = 'Send Custom Report (PDF)';
           note.textContent = 'Sending launch email...';
-        } else {
+        } else if (waitlistFeedbackSending) {
           btn.textContent = 'Send Launch Email to Waitlist';
           if (feedbackBtn) feedbackBtn.textContent = 'Sending...';
+          if (customBtn) customBtn.textContent = 'Send Custom Report (PDF)';
           note.textContent = 'Sending feedback request...';
+        } else {
+          btn.textContent = 'Send Launch Email to Waitlist';
+          if (feedbackBtn) feedbackBtn.textContent = 'Send Forum Feedback Request';
+          if (customBtn) customBtn.textContent = 'Sending...';
+          note.textContent = 'Sending custom report...';
         }
         return;
       }
@@ -923,6 +935,10 @@
         if (feedbackBtn) {
           feedbackBtn.disabled = true;
           feedbackBtn.textContent = 'Send Forum Feedback Request';
+        }
+        if (customBtn) {
+          customBtn.disabled = true;
+          customBtn.textContent = 'Send Custom Report (PDF)';
         }
         note.textContent = 'All waitlist members have been notified';
         waitlistNotifyArmed = false;
@@ -937,6 +953,10 @@
           feedbackBtn.disabled = true;
           feedbackBtn.textContent = 'Send Forum Feedback Request';
         }
+        if (customBtn) {
+          customBtn.disabled = true;
+          customBtn.textContent = 'Send Custom Report (PDF)';
+        }
         note.textContent = 'Select users or enable "Send to all waiting"';
         waitlistNotifyArmed = false;
         waitlistFeedbackArmed = false;
@@ -945,17 +965,21 @@
 
       btn.disabled = false;
       if (feedbackBtn) feedbackBtn.disabled = false;
+      if (customBtn) customBtn.disabled = false;
       if (waitlistNotifyArmed) {
         btn.textContent = `Are you sure? This will email ${targetCount} people.`;
         if (feedbackBtn) feedbackBtn.textContent = 'Send Forum Feedback Request';
+        if (customBtn) customBtn.textContent = 'Send Custom Report (PDF)';
         note.textContent = 'Click launch button again to confirm';
       } else if (waitlistFeedbackArmed) {
         if (feedbackBtn) feedbackBtn.textContent = `Are you sure? This will email ${targetCount} people.`;
         btn.textContent = 'Send Launch Email to Waitlist';
+        if (customBtn) customBtn.textContent = 'Send Custom Report (PDF)';
         note.textContent = 'Click feedback button again to confirm';
       } else {
         btn.textContent = 'Send Launch Email to Waitlist';
         if (feedbackBtn) feedbackBtn.textContent = 'Send Forum Feedback Request';
+        if (customBtn) customBtn.textContent = 'Send Custom Report (PDF)';
         note.textContent = 'Click again to confirm';
       }
 
@@ -965,7 +989,7 @@
     }
 
     async function handleNotifyWaitlistClick() {
-      if (waitlistNotifySending || waitlistFeedbackSending) return;
+      if (waitlistNotifySending || waitlistFeedbackSending || customReportSending) return;
 
       const targetIds = getTargetWaitlistIds();
       if (targetIds.length === 0) {
@@ -1014,7 +1038,7 @@
     }
 
     async function handleNotifyFeedbackClick() {
-      if (waitlistNotifySending || waitlistFeedbackSending) return;
+      if (waitlistNotifySending || waitlistFeedbackSending || customReportSending) return;
 
       const targetIds = getTargetWaitlistIds();
       if (targetIds.length === 0) {
@@ -1058,6 +1082,87 @@
         showToast(err.message || 'Failed to send feedback request', 'error');
       } finally {
         waitlistFeedbackSending = false;
+        updateNotifyWaitlistButton();
+      }
+    }
+
+    async function readFileAsBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const value = String(reader.result || '');
+          const marker = 'base64,';
+          const idx = value.indexOf(marker);
+          if (idx === -1) {
+            reject(new Error('Could not read PDF data'));
+            return;
+          }
+          resolve(value.slice(idx + marker.length));
+        };
+        reader.onerror = () => reject(new Error('Could not read PDF file'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleSendCustomReportClick() {
+      if (waitlistNotifySending || waitlistFeedbackSending || customReportSending) return;
+      const targetIds = getTargetWaitlistIds();
+      if (targetIds.length === 0) {
+        updateNotifyWaitlistButton();
+        return;
+      }
+
+      const confirmed = window.confirm(`Send a custom PDF report to ${targetIds.length} selected user(s)?`);
+      if (!confirmed) return;
+
+      const input = document.getElementById('custom-report-file');
+      input.dataset.targetIds = JSON.stringify(targetIds);
+      input.value = '';
+      input.click();
+    }
+
+    async function sendCustomReportToTargets(file, targetIds) {
+      customReportSending = true;
+      updateNotifyWaitlistButton();
+      try {
+        const pdfBase64 = await readFileAsBase64(file);
+        let sent = 0;
+        let errors = 0;
+
+        for (const customerId of targetIds) {
+          const entry = waitlistData.find((row) => row.id === customerId);
+          if (!entry || !entry.email) {
+            errors += 1;
+            continue;
+          }
+
+          const res = await fetch('/api/deliver', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Admin-Secret': ADMIN_SECRET
+            },
+            body: JSON.stringify({
+              to: entry.email,
+              username: entry.username || 'fan',
+              pdf_base64: pdfBase64,
+              subject: 'Your custom MyPhisHistory report + quick favor',
+              message: 'Attached is your custom report preview. If you have a minute, please post honest feedback on the phish.net forum: what looks right, what looks off, and what would make this more useful.'
+            })
+          });
+
+          if (res.ok) {
+            sent += 1;
+          } else {
+            errors += 1;
+          }
+        }
+
+        showToast(`Custom report email: ${sent} sent, ${errors} errors`, errors > 0 ? 'error' : 'success');
+      } catch (err) {
+        showToast(err.message || 'Failed to send custom report', 'error');
+      } finally {
+        customReportSending = false;
         updateNotifyWaitlistButton();
       }
     }
@@ -1141,6 +1246,29 @@
       toast.className = 'toast show ' + type;
       setTimeout(() => toast.className = 'toast', 3000);
     }
+
+    document.getElementById('custom-report-file').addEventListener('change', async function (e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') {
+        showToast('Please choose a PDF file', 'error');
+        return;
+      }
+
+      let targetIds = [];
+      try {
+        targetIds = JSON.parse(e.target.dataset.targetIds || '[]');
+      } catch (_) {
+        targetIds = [];
+      }
+
+      if (!Array.isArray(targetIds) || targetIds.length === 0) {
+        showToast('No recipients selected', 'error');
+        return;
+      }
+
+      await sendCustomReportToTargets(file, targetIds);
+    });
   </script>
 </body>
 </html>
