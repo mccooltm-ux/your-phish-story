@@ -255,19 +255,53 @@ async function buildTopSongs(shows, apiKey) {
 }
 
 async function buildTopSongsSafe(shows, apiKey) {
-  // Avoid timing out the whole snapshot request on very large histories.
-  if (shows.length > 120) {
-    return [];
+  // Keep song computation fast and resilient for heavy users.
+  // Primary pass: evenly sampled dates across history.
+  const spreadSample = sampleShowsForSongScan(shows, 48, 'spread');
+  try {
+    const primary = await Promise.race([
+      buildTopSongs(spreadSample, apiKey),
+      new Promise((resolve) => setTimeout(() => resolve([]), 4200))
+    ]);
+    if (Array.isArray(primary) && primary.length) return primary;
+  } catch (_) { /* continue to fallback */ }
+
+  // Fallback: recent activity sample (often yields enough setlist signal quickly).
+  const recentSample = sampleShowsForSongScan(shows, 24, 'recent');
+  try {
+    const fallback = await Promise.race([
+      buildTopSongs(recentSample, apiKey),
+      new Promise((resolve) => setTimeout(() => resolve([]), 2500))
+    ]);
+    if (Array.isArray(fallback) && fallback.length) return fallback;
+  } catch (_) { /* ignored */ }
+
+  return [];
+}
+
+function sampleShowsForSongScan(shows, maxCount, mode) {
+  if (!Array.isArray(shows) || !shows.length) return [];
+  if (shows.length <= maxCount) return shows;
+
+  const sorted = [...shows].sort((a, b) => String(a.showdate).localeCompare(String(b.showdate)));
+
+  if (mode === 'recent') {
+    return sorted.slice(-maxCount);
   }
 
-  try {
-    return await Promise.race([
-      buildTopSongs(shows, apiKey),
-      new Promise((resolve) => setTimeout(() => resolve([]), 3500))
-    ]);
-  } catch (_) {
-    return [];
+  const picks = [];
+  const used = new Set();
+  const lastIndex = sorted.length - 1;
+
+  for (let i = 0; i < maxCount; i += 1) {
+    const idx = Math.round((i * lastIndex) / (maxCount - 1));
+    if (!used.has(idx)) {
+      used.add(idx);
+      picks.push(sorted[idx]);
+    }
   }
+
+  return picks;
 }
 
 async function fetchSongsForShowDate(showDate, apiKey) {
