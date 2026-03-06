@@ -25,7 +25,16 @@ async function fetchAllWaitlistCustomers() {
   return customers;
 }
 
-function buildEmailHtml(username) {
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function buildLaunchEmailHtml(username) {
   const safeUsername = String(username || 'there')
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -89,7 +98,67 @@ function buildEmailHtml(username) {
 </html>`;
 }
 
-async function sendLaunchEmail(to, username) {
+function buildForumFeedbackEmailHtml(username) {
+  const safeUsername = escapeHtml(username || 'there');
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a0a;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color:#111;border-radius:12px;overflow:hidden;">
+          <tr>
+            <td style="background-color:#1a2744;padding:24px 32px;text-align:center;">
+              <h1 style="margin:0;font-size:24px;color:#c5973f;letter-spacing:1px;">MyPhisHistory</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:32px;">
+              <p style="color:#f5f5f5;font-size:18px;font-weight:600;margin:0 0 16px 0;">Hey ${safeUsername},</p>
+              <p style="color:#ccc;font-size:15px;line-height:1.6;margin:0 0 16px 0;">
+                Quick favor: if you’ve tried the snapshot, could you post honest feedback on the phish.net forum?
+              </p>
+              <p style="color:#ccc;font-size:15px;line-height:1.6;margin:0 0 24px 0;">
+                What looks right, what looks off, and what would make this more useful for fans.
+              </p>
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding:0 0 24px 0;">
+                    <a href="https://forum.phish.net/" style="display:inline-block;background-color:#e85d04;color:#ffffff;font-size:16px;font-weight:600;text-decoration:none;padding:14px 40px;border-radius:8px;">
+                      Post Feedback on phish.net
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="color:#888;font-size:13px;line-height:1.5;margin:0;">Thanks for helping shape this early.</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 32px;border-top:1px solid #222;text-align:center;">
+              <p style="color:#555;font-size:12px;margin:0;">MyPhisHistory · Not affiliated with Phish or Phish.net</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+async function sendEmail({ to, username, campaign }) {
+  const isFeedback = campaign === 'forum_feedback';
+  const subject = isFeedback
+    ? 'Quick favor: honest feedback on phish.net forum?'
+    : 'Your Phish Story is ready';
+  const html = isFeedback
+    ? buildForumFeedbackEmailHtml(username)
+    : buildLaunchEmailHtml(username);
+
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -99,9 +168,9 @@ async function sendLaunchEmail(to, username) {
     body: JSON.stringify({
       from: 'MyPhisHistory <support@myphishistory.com>',
       to,
-      subject: 'Your Phish Story is ready',
+      subject,
       reply_to: 'mccooltm@gmail.com',
-      html: buildEmailHtml(username)
+      html
     })
   });
 
@@ -129,6 +198,12 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    const campaign = String(req.body?.campaign || 'launch').trim();
+    const validCampaigns = new Set(['launch', 'forum_feedback']);
+    if (!validCampaigns.has(campaign)) {
+      return res.status(400).json({ error: 'Invalid campaign type.' });
+    }
+
     const selectedIds = Array.isArray(req.body?.customer_ids)
       ? req.body.customer_ids.map((id) => String(id || '').trim()).filter(Boolean)
       : null;
@@ -145,9 +220,9 @@ module.exports = async function handler(req, res) {
       }
 
       const metadata = customer.metadata || {};
-      const alreadyNotified =
-        metadata.waitlist_notified === 'true' ||
-        metadata.notified === 'true';
+      const alreadyNotified = campaign === 'forum_feedback'
+        ? metadata.waitlist_feedback_requested === 'true'
+        : (metadata.waitlist_notified === 'true' || metadata.notified === 'true');
 
       if (alreadyNotified) {
         skipped += 1;
@@ -163,15 +238,23 @@ module.exports = async function handler(req, res) {
       const username = metadata.phishnet_username || 'fan';
 
       try {
-        await sendLaunchEmail(email, username);
+        await sendEmail({ to: email, username, campaign });
         const now = new Date().toISOString();
+        const campaignMetadata = campaign === 'forum_feedback'
+          ? {
+              waitlist_feedback_requested: 'true',
+              waitlist_feedback_requested_at: now
+            }
+          : {
+              waitlist_notified: 'true',
+              waitlist_notified_at: now,
+              notified: 'true',
+              notified_at: now
+            };
         await stripe.customers.update(customer.id, {
           metadata: {
             ...metadata,
-            waitlist_notified: 'true',
-            waitlist_notified_at: now,
-            notified: 'true',
-            notified_at: now
+            ...campaignMetadata
           }
         });
         sent += 1;
