@@ -848,21 +848,11 @@
           <div class="input-hint">We'll notify you when it launches</div>
         </div>
 
-        <label class="gift-toggle" style="margin-bottom:16px;">
-          <input type="checkbox" id="show-on-public" />
-          Show my username on the public waitlist
-        </label>
-
         <button type="submit" class="btn-primary" id="waitlist-submit-btn">
           Join the Waitlist
         </button>
         <div class="order-submit-note">No charge. We'll email you when Your Phish Story goes live.</div>
       </form>
-
-      <div id="public-waitlist-wrap" style="display:none;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);">
-        <div class="card-section-title" style="margin-bottom:8px;">Fan Waitlist</div>
-        <div id="public-waitlist-list" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
-      </div>
 
       <div class="order-footer">
         Questions? <a href="#" onclick="showContactModal();return false;" style="color:var(--accent);text-decoration:underline;cursor:pointer;">Contact us</a>
@@ -1022,7 +1012,6 @@
 
       const username = document.getElementById('waitlist-username').value.trim();
       const email = document.getElementById('waitlist-email').value.trim();
-      const showOnPublic = document.getElementById('show-on-public').checked;
 
       if (!username) {
         showWaitlistError('Please enter your Phish.net username.');
@@ -1046,8 +1035,7 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             username,
-            email,
-            show_on_public: showOnPublic
+            email
           })
         });
 
@@ -1058,7 +1046,7 @@
 
         waitlistSuccess.style.display = 'block';
         waitlistSuccess.textContent = data.updated ? "You're already on the waitlist — your info is updated." : "You're on the waitlist.";
-        posthog.capture('waitlist_joined', { username: username, email: email, show_on_public: showOnPublic });
+        posthog.capture('waitlist_joined', { username: username, email: email });
         await loadWaitlistStats();
       } catch (err) {
         showWaitlistError(err.message || 'Failed to join waitlist.');
@@ -1080,9 +1068,6 @@
         if (!res.ok) throw new Error('Failed to load waitlist stats.');
 
         const statsWrap = document.getElementById('waitlist-stats');
-        const publicWrap = document.getElementById('public-waitlist-wrap');
-        const publicList = document.getElementById('public-waitlist-list');
-
         if (data.total_count > 0) {
           statsWrap.style.display = 'block';
           document.getElementById('waitlist-total').textContent = data.total_count;
@@ -1090,25 +1075,6 @@
           document.getElementById('waitlist-states').textContent = data.states_represented;
         } else {
           statsWrap.style.display = 'none';
-        }
-
-        if (Array.isArray(data.public_usernames) && data.public_usernames.length > 0) {
-          publicList.innerHTML = '';
-          data.public_usernames.forEach(function (username) {
-            const chip = document.createElement('span');
-            chip.style.display = 'inline-block';
-            chip.style.padding = '6px 10px';
-            chip.style.border = '1px solid rgba(232,145,110,0.25)';
-            chip.style.borderRadius = '999px';
-            chip.style.background = 'rgba(232,145,110,0.1)';
-            chip.style.color = '#e8916e';
-            chip.style.fontSize = '0.82rem';
-            chip.textContent = username;
-            publicList.appendChild(chip);
-          });
-          publicWrap.style.display = 'block';
-        } else {
-          publicWrap.style.display = 'none';
         }
       } catch (_) {
         // Non-fatal; keep signup functional even if stats fail to load.
