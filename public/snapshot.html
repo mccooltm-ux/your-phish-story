@@ -176,7 +176,14 @@ async function generateSnapshot() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
-    const data = await res.json();
+    const contentType = res.headers.get('content-type') || '';
+    let data;
+    if (contentType.includes('application/json')) {
+      data = await res.json();
+    } else {
+      const text = await res.text();
+      data = { error: text ? text.slice(0, 200) : 'Unexpected server response.' };
+    }
     if (!res.ok || !data.success) {
       showError('No Shows Found', data.error || 'Check your Phishnet username and try again.');
       return;

@@ -20,6 +20,9 @@ module.exports = async function handler(req, res) {
     }
 
     const apiKey = process.env.PHISHNET_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: 'Server misconfigured: PHISHNET_API_KEY is not set.' });
+    }
     const showData = await fetchJson('https://api.phish.net/v5/attendance/username/' + encodeURIComponent(username) + '.json?apikey=' + apiKey);
 
     if (!showData || !showData.data || showData.data.length === 0) {
@@ -60,7 +63,7 @@ module.exports = async function handler(req, res) {
     const eraBreakdown = buildEraBreakdown(shows);
     const longestDrought = computeLongestDrought(sorted);
     const statesByFrequency = buildStatesByFrequency(shows);
-    const topSongs = await buildTopSongs(shows, apiKey);
+    const topSongs = await buildTopSongsSafe(shows, apiKey);
     const tagline = buildTagline({
       totalShows,
       topVenue: topVenues[0] || null,
@@ -154,7 +157,7 @@ async function trackSnapshotLead(username, totalShows) {
 
 function fetchJson(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, (resp) => {
+    const req = https.get(url, (resp) => {
       let data = '';
       resp.on('data', chunk => data += chunk);
       resp.on('end', () => {
@@ -162,6 +165,10 @@ function fetchJson(url) {
         catch (e) { reject(new Error('Invalid JSON from Phish.net')); }
       });
     }).on('error', reject);
+
+    req.setTimeout(8000, () => {
+      req.destroy(new Error('Upstream request timeout'));
+    });
   });
 }
 
@@ -255,6 +262,22 @@ async function buildTopSongs(shows, apiKey) {
     .map(([key, count]) => ({ name: displayNames.get(key) || key, count }))
     .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
     .slice(0, 5);
+}
+
+async function buildTopSongsSafe(shows, apiKey) {
+  // Avoid timing out the whole snapshot request on very large histories.
+  if (shows.length > 120) {
+    return [];
+  }
+
+  try {
+    return await Promise.race([
+      buildTopSongs(shows, apiKey),
+      new Promise((resolve) => setTimeout(() => resolve([]), 3500))
+    ]);
+  } catch (_) {
+    return [];
+  }
 }
 
 async function fetchSongsForShowDate(showDate, apiKey) {
