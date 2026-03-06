@@ -44,7 +44,35 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ success: true });
     }
 
-    // Search Stripe customers with waitlist metadata
+    const type = (req.query && req.query.type) ? String(req.query.type) : 'waitlist';
+
+    if (type === 'snapshots') {
+      const result = await stripe.customers.search({
+        query: 'metadata["snapshot"]:"true"',
+        limit: 100
+      });
+
+      const snapshots = result.data.map((c) => ({
+        id: c.id,
+        username: c.metadata?.phishnet_username || 'UNKNOWN',
+        email: c.email || null,
+        snapshot_count: parseInt(c.metadata?.snapshot_count || '1', 10) || 1,
+        total_shows: parseInt(c.metadata?.snapshot_total_shows || '0', 10) || 0,
+        first_at: c.metadata?.snapshot_first_at || null,
+        last_at: c.metadata?.snapshot_last_at || null,
+        created: c.created
+      }));
+
+      snapshots.sort((a, b) => {
+        const aTime = a.last_at ? Date.parse(a.last_at) : a.created * 1000;
+        const bTime = b.last_at ? Date.parse(b.last_at) : b.created * 1000;
+        return bTime - aTime;
+      });
+
+      return res.status(200).json({ snapshots, count: snapshots.length });
+    }
+
+    // Default: waitlist entries
     const result = await stripe.customers.search({
       query: 'metadata["waitlist"]:"true"',
       limit: 100

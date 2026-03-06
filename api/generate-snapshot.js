@@ -1,4 +1,5 @@
 const https = require('https');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const ERA_RANGES = [
   { label: '1.0', start: '1983-01-01', end: '2000-12-31' },
@@ -71,6 +72,12 @@ module.exports = async function handler(req, res) {
 
     if (!share) {
       try {
+        await trackSnapshotLead(username, totalShows);
+      } catch (trackErr) {
+        console.error('Snapshot tracking failed:', trackErr.message);
+      }
+
+      try {
         const { Resend } = require('resend');
         const resend = new Resend(process.env.RESEND_API_KEY);
         await resend.emails.send({
@@ -105,6 +112,44 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: 'Failed to generate snapshot. Please try again.' });
   }
 };
+
+async function trackSnapshotLead(username, totalShows) {
+  if (!process.env.STRIPE_SECRET_KEY) return;
+  const safeUsername = String(username || '').replace(/"/g, '').trim();
+  if (!safeUsername) return;
+
+  const now = new Date().toISOString();
+  const query = `metadata["snapshot"]:"true" AND metadata["phishnet_username"]:"${safeUsername}"`;
+  const search = await stripe.customers.search({ query, limit: 1 });
+  const existing = search.data && search.data[0] ? search.data[0] : null;
+
+  if (existing) {
+    const previousCount = parseInt(existing.metadata?.snapshot_count || '0', 10);
+    const nextCount = Number.isFinite(previousCount) ? previousCount + 1 : 1;
+    await stripe.customers.update(existing.id, {
+      metadata: {
+        ...(existing.metadata || {}),
+        snapshot: 'true',
+        phishnet_username: safeUsername,
+        snapshot_count: String(nextCount),
+        snapshot_last_at: now,
+        snapshot_total_shows: String(totalShows)
+      }
+    });
+    return;
+  }
+
+  await stripe.customers.create({
+    metadata: {
+      snapshot: 'true',
+      phishnet_username: safeUsername,
+      snapshot_count: '1',
+      snapshot_first_at: now,
+      snapshot_last_at: now,
+      snapshot_total_shows: String(totalShows)
+    }
+  });
+}
 
 function fetchJson(url) {
   return new Promise((resolve, reject) => {

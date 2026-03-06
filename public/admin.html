@@ -396,6 +396,7 @@
     <div class="tab-bar">
       <button class="active" onclick="switchTab('orders', this)">Orders</button>
       <button onclick="switchTab('waitlist', this)">Waitlist <span class="waitlist-badge" id="waitlist-count-badge">0</span></button>
+      <button onclick="switchTab('snapshots', this)">Snapshots <span class="waitlist-badge" id="snapshot-count-badge">0</span></button>
     </div>
 
     <div id="orders-tab">
@@ -423,6 +424,12 @@
       </div>
       <div id="waitlist-container">
         <div class="loading">Loading waitlist...</div>
+      </div>
+    </div>
+
+    <div id="snapshots-tab" style="display:none;">
+      <div id="snapshots-container">
+        <div class="loading">Loading snapshots...</div>
       </div>
     </div>
   </div>
@@ -504,6 +511,13 @@
             const wData = await wRes.json();
             document.getElementById('stat-waitlist').textContent = wData.count || 0;
             document.getElementById('waitlist-count-badge').textContent = wData.count || 0;
+          }
+        } catch (_) { /* non-critical */ }
+        try {
+          const sRes = await fetch('/api/admin/waitlist?type=snapshots', { headers: { 'X-Admin-Secret': ADMIN_SECRET } });
+          if (sRes.ok) {
+            const sData = await sRes.json();
+            document.getElementById('snapshot-count-badge').textContent = sData.count || 0;
           }
         } catch (_) { /* non-critical */ }
       } catch (err) {
@@ -740,7 +754,9 @@
       btn.classList.add('active');
       document.getElementById('orders-tab').style.display = tab === 'orders' ? 'block' : 'none';
       document.getElementById('waitlist-tab').style.display = tab === 'waitlist' ? 'block' : 'none';
+      document.getElementById('snapshots-tab').style.display = tab === 'snapshots' ? 'block' : 'none';
       if (tab === 'waitlist') loadWaitlist();
+      if (tab === 'snapshots') loadSnapshots();
     }
 
     // --- Waitlist ---
@@ -772,6 +788,58 @@
       } catch (err) {
         document.getElementById('waitlist-container').innerHTML = '<div class="loading" style="color:#f87171;">Failed to load waitlist</div>';
       }
+    }
+
+    // --- Snapshots ---
+    let snapshotsData = [];
+
+    async function loadSnapshots() {
+      document.getElementById('snapshots-container').innerHTML = '<div class="loading">Loading snapshots...</div>';
+      try {
+        const res = await fetch('/api/admin/waitlist?type=snapshots', {
+          headers: { 'X-Admin-Secret': ADMIN_SECRET }
+        });
+        if (res.status === 401) {
+          document.getElementById('snapshots-container').innerHTML = '<div class="loading" style="color:#f87171;">Invalid password</div>';
+          return;
+        }
+        const data = await res.json();
+        snapshotsData = data.snapshots || [];
+        document.getElementById('snapshot-count-badge').textContent = snapshotsData.length;
+        renderSnapshots();
+      } catch (err) {
+        document.getElementById('snapshots-container').innerHTML = '<div class="loading" style="color:#f87171;">Failed to load snapshots</div>';
+      }
+    }
+
+    function renderSnapshots() {
+      if (snapshotsData.length === 0) {
+        document.getElementById('snapshots-container').innerHTML = '<div class="empty">No snapshot activity yet</div>';
+        return;
+      }
+
+      let html = `<table class="order-table">
+        <thead><tr>
+          <th>#</th><th>Last Seen</th><th>Username</th><th>Shows</th><th>Snapshots</th><th>Email</th>
+        </tr></thead><tbody>`;
+
+      snapshotsData.forEach((entry, i) => {
+        const seenAt = entry.last_at
+          ? new Date(entry.last_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
+          : new Date(entry.created * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+
+        html += `<tr>
+          <td style="color:#666;">${i + 1}</td>
+          <td style="white-space:nowrap;color:#888;">${seenAt}</td>
+          <td><strong>${entry.username}</strong></td>
+          <td style="color:#e8916e;font-weight:600;">${entry.total_shows || '—'}</td>
+          <td style="color:#c9d1d9;">${entry.snapshot_count}</td>
+          <td style="color:#888;">${entry.email || '—'}</td>
+        </tr>`;
+      });
+
+      html += '</tbody></table>';
+      document.getElementById('snapshots-container').innerHTML = html;
     }
 
     function getPendingNotifyCount() {
