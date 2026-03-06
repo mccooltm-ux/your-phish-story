@@ -80,18 +80,7 @@ module.exports = async function handler(req, res) {
         console.error('Snapshot tracking failed:', trackErr.message);
       }
 
-      try {
-        const { Resend } = require('resend');
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        await resend.emails.send({
-          from: 'MyPhisHistory <support' + '@' + 'myphishistory.com>',
-          to: process.env.NOTIFICATION_EMAIL,
-          subject: 'Free Snapshot: ' + username + ' (' + totalShows + ' shows)',
-          html: '<div style="font-family:sans-serif;padding:20px;"><h2>New Free Snapshot Lead</h2><p><strong>Username:</strong> ' + username + '</p><p><strong>Shows:</strong> ' + totalShows + '</p><p><strong>Years:</strong> ' + firstYear + '-' + lastYear + '</p><p><strong>Venues:</strong> ' + uniqueVenues + '</p></div>'
-        });
-      } catch (emailErr) {
-        console.error('Snapshot notification email failed:', emailErr.message);
-      }
+      // Snapshot lead emails intentionally disabled.
     }
 
     return res.status(200).json({
