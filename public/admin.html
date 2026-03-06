@@ -345,6 +345,18 @@
       cursor: not-allowed;
       background: #141414;
     }
+    .btn-remove-waitlist {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      border: 1px solid #f87171;
+      background: #1a1a1a;
+      color: #f87171;
+      cursor: pointer;
+    }
+    .btn-remove-waitlist:hover {
+      background: #2e0a0a;
+    }
   </style>
 </head>
 <body>
@@ -895,7 +907,7 @@
 
       let html = `<table class="order-table">
         <thead><tr>
-          <th></th><th>#</th><th>Joined</th><th>Username</th><th>Name</th><th>Email</th><th>Status</th>
+          <th></th><th>#</th><th>Joined</th><th>Username</th><th>Name</th><th>Email</th><th>Status</th><th>Action</th>
         </tr></thead><tbody>`;
 
       waitlistData.forEach((entry, i) => {
@@ -923,11 +935,40 @@
           <td style="color:#aaa;font-style:italic;">${entry.name || '—'}</td>
           <td style="color:#888;">${entry.email}</td>
           <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+          <td><button class="btn-remove-waitlist" onclick='removeFromWaitlist(${JSON.stringify(entry.id)}, ${JSON.stringify(entry.username)})'>Remove</button></td>
         </tr>`;
       });
 
       html += '</tbody></table>';
       document.getElementById('waitlist-container').innerHTML = html;
+    }
+
+    async function removeFromWaitlist(customerId, username) {
+      const confirmed = window.confirm(`Remove ${username} from the waitlist?`);
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch('/api/admin/waitlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Secret': ADMIN_SECRET
+          },
+          body: JSON.stringify({ customer_id: customerId })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+          throw new Error(data.error || 'Failed to remove from waitlist');
+        }
+
+        showToast(`${username} removed from waitlist`, 'success');
+        waitlistNotifyArmed = false;
+        selectedWaitlistIds.delete(customerId);
+        await loadWaitlist();
+      } catch (err) {
+        showToast(err.message || 'Failed to remove from waitlist', 'error');
+      }
     }
 
     // --- Toast ---

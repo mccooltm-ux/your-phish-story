@@ -2,7 +2,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const ADMIN_SECRET = process.env.ADMIN_SECRET || '';
 
 module.exports = async function handler(req, res) {
-  if (req.method !== 'GET') {
+  if (req.method !== 'GET' && req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
@@ -16,6 +16,34 @@ module.exports = async function handler(req, res) {
   }
 
   try {
+    if (req.method === 'POST') {
+      const customerId = typeof req.body?.customer_id === 'string' ? req.body.customer_id.trim() : '';
+      if (!customerId) {
+        return res.status(400).json({ error: 'customer_id is required' });
+      }
+
+      const customer = await stripe.customers.retrieve(customerId);
+      const metadata = customer.metadata || {};
+
+      await stripe.customers.update(customerId, {
+        metadata: {
+          ...metadata,
+          waitlist: 'false',
+          waitlist_public: 'false',
+          phishnet_username: '',
+          waitlist_show_count: '',
+          waitlist_states_csv: '',
+          waitlist_joined_at: '',
+          waitlist_notified: '',
+          waitlist_notified_at: '',
+          notified: '',
+          notified_at: ''
+        }
+      });
+
+      return res.status(200).json({ success: true });
+    }
+
     // Search Stripe customers with waitlist metadata
     const result = await stripe.customers.search({
       query: 'metadata["waitlist"]:"true"',
